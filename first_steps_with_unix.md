@@ -7,6 +7,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **man**: show the manual page for a command
 * **echo**: say something
 * **env**: print your environment
+* **which/type**: tells you the location of a program
 * **touch**: create an empty regular file
 * **pwd**: print working directory, where you are right now
 * **ls**: list files in current directory
@@ -40,9 +41,6 @@ I assume you are on a command line by now, so let's look at some commands.
 * **>**: redirecty the output of a command into a file
 * **<**: redirect contents of a file into a command
 
-# File system layout
-
-The top level of a Unix file system is "/" which is called "root."  Confusingly, there is also an account named "root" which is basically the super-user/sysadmin (systems administrator).  Unix has always been a multi-tenant system
 
 # Pronunciation
 
@@ -52,6 +50,49 @@ The top level of a Unix file system is "/" which is called "root."  Confusingly,
 * **$**: dollar
 * **!**: bang
 * **#!**: shebang
+* **~**: twiddle or tilde; shortcut to your home directory when alone, shortcut to another user's home directory when used like "~bhurwitz"
+
+# Handy command line shortcuts
+
+* <TAB>: hit the Tab key for command completion
+* **!!**: execute the last command again
+* **!$**: the last argument from your previous command line (think of the $ as the right anchor in a regex)
+* CTRL-R: reverse search of your history
+* Up/down cursor keys: go backwards/forwards in your history
+* CTRL-A, CTRL-E: jump to the start, end of the command line when in emacs mode (default)
+
+Protip: If you are on a Mac, it's easy to remap your (useless) CAPSLOCK key to CTRL.  Much less strain on your hand as you will find you need CTRL quite a bit, even more so if you choose emacs for your $EDITOR.
+
+# Altering your environment
+
+As you see above, "env" will list all the key-value pairs defining your environment.  For instance, everyone has a $HOME directory that you can see with ```echo $HOME```.  The exact location of $HOME can vary among systems, e.g.:
+
+* Mac: /Users/kyclark
+* Ocelot: /home/u20/kyclark
+* Stampede: /home1/03137/kyclark
+
+Your $PATH setting is extremely important as it defines the directory locations that will be searched (in order) to find programs.  Here's my $PATH on the UA HPC:
+
+```
+$ echo $PATH
+/rsgrps/bhurwitz/hurwitzlab/bin:/sbin:/bin:/usr/bin:/usr/sbin:/usr/lpp/mmfs/bin:/usr/pbs/bin:/var/spool/pas/repository/pas-appmaker:/opt/sgi/sbin:/opt/sgi/bin:/usr/local/bin:/home/u20/kyclark/bin:/home/u20/kyclark/perl5/bin:/rsgrps/bhurwitz/hurwitzlab/tools/bpipe-0.9.9/bin:/home/u20/kyclark/.local/bin:/home/u20/kyclark/.rakudobrew/bin:/home/u20/kyclark/bin
+```
+
+You'll notice the diretories are separated by colons, and I have the shared "hurwitzlab" directory first in my path.  Much of our work will require access to tools that are not installed by default on the HPC.  You could build them into your own $HOME directory, but it will be easier if you just add this shared diretory to your $PATH.  From the command line, you can do this:
+
+```
+PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH
+```
+
+You just told your shell (bash) to set the PATH variable to our "hurwitzlab" diretory and then whatever it was set to before.  Obviously we want this to happen each time we log in, so we can add this command to "$HOME/.bashrc":
+
+```
+echo "PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH" >> ~/.bashrc
+```
+
+# File system layout
+
+The top level of a Unix file system is "/" which is called "root."  Confusingly, there is also an account named "root" which is basically the super-user/sysadmin (systems administrator).  Unix has always been a multi-tenant system
 
 # Exercises
 
@@ -165,4 +206,4 @@ Excellent.  Smithers, massage my brain.
 
 ## Something with sequences
 
-Let's use the NCBI SRA Toolkit to download a small data set to play with.  If you are on the UA HPC, then you should have "/rsgrps/bhurwitz/hurwitzlab/bin" in your $PATH.
+We will now use the NCBI SRA Toolkit to download a small data set to play with.  If you are on the UA HPC, then you should have "/rsgrps/bhurwitz/hurwitzlab/bin" in your $PATH so that ```which fastq-dump``` should return "/rsgrps/bhurwitz/hurwitzlab/bin/fastq-dump"
