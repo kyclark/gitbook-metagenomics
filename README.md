@@ -1,6 +1,6 @@
 # Bioinformatics
 
-The field of "bioinformatics" is biology plus data science.  For the latter, most people find Unix-like operating systems to be the most efficient way to conduct research.Almost all our tools run in Unix, most of them from the command line, so the bioinformatician must know how to move data around, run programs, and chain the output of one program into another to create analysis pipelines.
+The field of "bioinformatics" is biology plus data science.  For the latter, most people find Unix-like operating systems to be the most efficient way to conduct research. Almost all our tools run in Unix, most of them from the command line, so the bioinformatician must know how to move data around, run programs, and chain the output of one program into another to create analysis pipelines.
 
 # Metagenomics
 
