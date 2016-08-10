@@ -18,6 +18,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **rmdir**: remove a directory
 * **rm**: remove a file (or "rm -r" to remove a directory)
 * **cat**: concatenate files (cf. http://porkmail.org/era/unix/award.html)
+* **column**: arrange text into columns
 * **sort**: sort text or numbers
 * **uniq**: remove duplicates *from a sorted list*
 * **sed**: stream editor for altering text
@@ -38,11 +39,14 @@ I assume you are on a command line by now, so let's look at some commands.
 * **rsync**: remote sync; uses scp but only copies data that is different
 * **ftp**: use "file transfer protocol" to retrieve large data sets (better than HTTP/browsers, esp for getting data onto remote systems)
 * **|**: pipe the output of a command into another command
-* **>**: redirecty the output of a command into a file
+* **>, >>**: redirect the output of a command into a file; the file will be created if it does not exist; the single arrow indicates that you wish to overwrite any existing file, while the double-arrows say to append to an existing file
 * **<**: redirect contents of a file into a command
 * **wget**: web get a file from an HTTP location, cf. "wget is not a crime" and Aaron Schwartz
 * **ftp**: original FTP client, very clunky
 * **ncftp**: more modern FTP client that automatically handles anonymous logins
+* **nano**: a very simple text editor; until you're ready to commit to vim or emacs, start here
+* **md5sum**: calculate the MD5 checksum of a file
+* **diff**: find the differences between two files
 
 # Pronunciation
 
@@ -242,15 +246,15 @@ Excellent.  Smithers, massage my brain.
 
 ## Something with sequences
 
-Let's get some sequence data from the iMicrobe FTP site.  Both "wget" and "ncftpget" will do the trick:
+Now we will get some sequence data from the iMicrobe FTP site.  Both "wget" and "ncftpget" will do the trick:
 
 ```
-$ mkdir -p ~/work/abe487
+$ mkdir -p ~/work/abe487/contigs
 $ cd !$
 $ wget ftp://ftp.imicrobe.us/abe487/contigs/contigs.zip
 ```
 
-Side track: How do we know we got the correct data?  Let's go back and look at that FTP site, and you'll see that there is a "contigs.zip.md5" file that we can "less" on the server to view the contents:
+Side track: How do we know we got the correct data?  Go back and look at that FTP site, and you will see that there is a "contigs.zip.md5" file that we can "less" on the server to view the contents:
 
 ```
 $ ncftp ftp://ftp.imicrobe.us/abe487/contigs
@@ -269,7 +273,7 @@ ncftp /abe487/contigs > less contigs.zip.md5
 ncftp /abe487/contigs > exit
 ```
 
-You can read up on MD5 (https://en.wikipedia.org/wiki/Md5sum) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches that we see on the server, then we can be sure that we have the exact file that is on the FTP site:
+You can read up on MD5 (https://en.wikipedia.org/wiki/Md5sum) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches what we see on the server, then we can be sure that we have the exact file that is on the FTP site:
 
 ```
 $ md5sum contigs.zip
@@ -314,10 +318,11 @@ Usage: grep [OPTION]... PATTERN [FILE]...
 Try 'grep --help' for more information.
 ```
 
-What is going on?  Remember when we captured the "oo" words that we used the ">" symbol to tell Unix to *redirect* the output of "grep" into a file.  We need to tell Unix that we mean a literal greater-than sign:
+What is going on?  Remember when we captured the "oo" words that we used the ">" symbol to tell Unix to *redirect* the output of "grep" into a file.  We need to tell Unix that we mean a literal greater-than sign by placing it in single or double quotes or putting a backslash in front of it:
 
 ```
 $ grep '>' group12_contigs.fasta
+$ grep \> group12_contigs.fasta
 ```
 
 You should actually see nothing because something quite insidious happened with that first "grep" statement -- it overwrote our original "group12_contigs.fasta" with the result of "grep"ing for nothing, which is nothing:
@@ -341,7 +346,7 @@ $ grep '>' group12_contigs.fasta | wc -l
 132
 ```
 
-Hey, I could see doing that often.  Maybe we should make this into an "alias" (see above).  The problem is that the "argument" to the function (the filename) is stuck in the middle, so it would make it tricky to use an alias for this.  We can create a bash function that we add to our .bashrc:
+Hey, I could see doing that often.  Maybe we should make this into an "alias" (see above).  The problem is that the "argument" to the function (the filename) is stuck in the middle of the chain of commands, so it would make it tricky to use an alias for this.  We can create a bash function that we add to our .bashrc:
 
 ```
 function countseqs() {
@@ -365,6 +370,155 @@ name                  alignment    min_len   max_len   avg_len  num_seqs
 group12_contigs.fasta FALSE           5136    116409  22974.30       132
 ```
 
+Run "seqmagick -h" to see everything it can do.
+
+Moving on, let's find how many contig IDs in "group12_contigs.fasta" contain the number "47":
+
+```
+$ grep 47 group12_contigs.fasta > group12_ids_with_47
+[login3@~/work/sequences]$ cat !$
+cat group12_ids_with_47
+>Contig_247
+>Contig_447
+>Contig_476
+>Contig_1947
+>Contig_4764
+>Contig_4767
+>Contig_13471
+```
+
+Here we did a little "useless use of cat," but it's OK.  We also could have used "less" to view the file.  Here's another useless use of cat to copy a file:
+
+```
+$ cat group12_ids_with_47 > temp1_ids
+```
+
+Additionally, we want to copy the file again to make duplicates:
+
+```
+$ cp group12_ids_with_47 temp2_ids
+```
+
+How can we be sure these files are the same?  Let's use "diff":
+
+```
+$ diff temp1_ids temp2_ids
+```
+
+You should see nothing, which is a case of "no news is good news."  The don't differ in any way.  We can verify this with "md5sum":
+
+```
+$ md5sum temp*
+957390ab4c31db9500d148854f542eee  temp1_ids
+957390ab4c31db9500d148854f542eee  temp2_ids
+```
+
+They are the same file.  If there were even one character difference, they would generate different hashes.
+
+Now we will create a file with duplicate IDs:
+
+```
+$ cat temp1_ids temp2_ids > duplicate_ids
+```
+
+Check contents of "duplicate_ids" using "less" or "cat."  Now grab all of the contigs IDs from "group20_contigs.fasta" that contain the number "51."  Concatenate the new IDs to the duplicate_ids file in a file called "multiple_ids":
+
+```
+$ cp duplicate_ids multiple_ids
+$ grep 51 group20_contigs.fasta >> !$
+grep 51 group20_contigs.fasta >> multiple_ids
+```
+
+Notice the ">>" arrows to indicate that we are *appending* to the existing "multiple_ids" file.
+
+Remove the existing "temp" files using a "*" wildcard:
+
+```
+$ rm temp*
+```
+
+Now let's explore more of what "sort" and "uniq" can do for us.  We want to find which IDs are unique and which are duplicated.  If we read the manpage ("man uniq"), we see that there are "-d" and "-u" flags for doing just that.  However, we've already seen that input to "uniq" needs to be sorted, so we need to remember to do that:
+
+```
+$ sort multiple_ids | uniq -d > temp1_ids
+$ sort multiple_ids | uniq -u > temp2_ids
+$ diff temp*
+1,7c1,11
+< >Contig_13471
+< >Contig_1947
+< >Contig_247
+< >Contig_447
+< >Contig_476
+< >Contig_4764
+< >Contig_4767
+---
+> >Contig_10051
+> >Contig_1651
+> >Contig_4851
+> >Contig_5141
+> >Contig_5143
+> >Contig_5164
+> >Contig_5170
+> >Contig_5188
+> >Contig_6351
+> >Contig_9651
+> >Contig_9851
+```
+
+Let's remove our temp files again and make a "clean_ids" file:
+
+```
+$ rm temp*
+$ sort multiple_ids | uniq > clean_ids
+```
+
+We can use "sed" to alter the IDs.  The "s//" command say to "substitute" the first thing with the second thing, e.g., to replace all occurences of "foo" with "bar", use "s/foo/bar" (http://stackoverflow.com/questions/4868904/what-is-the-origin-of-foo-and-bar).
+
+```
+$ sed 's/C/c/' clean_ids
+$ sed 's/_/./' clean_ids
+# sed 's/>//' clean_ids > newclean_ids
+
+That last one removes the FASTA file artifact that identifies the beginning of an ID but is not part of the ID.  We can use this with "seqmagick" now to extract those sequences and find out how many were found:
+
+```
+seqmagick convert --include-from-file newclean_ids group12_contigs.fasta newgroup12_contigs.fasta
+$ seqmagick info !$
+seqmagick info newgroup12_contigs.fasta
+name                     alignment    min_len   max_len   avg_len  num_seqs
+newgroup12_contigs.fasta FALSE           5587     30751  16768.14         7
+```
+
+We can get stats on all our files:
+
+```
+$ seqmagick info *fasta > fasta-info
+$ cat !$
+name                     alignment    min_len   max_len   avg_len  num_seqs
+group12_contigs.fasta    FALSE           5136    116409  22974.30       132
+group20_contigs.fasta    FALSE           5029     22601   7624.38       203
+group24_contigs.fasta    FALSE           5024     81329  12115.70       139
+newgroup12_contigs.fasta FALSE           5587     30751  16768.14         7
+```
+
+We can use "cut" to view various columns:
+
+```
+$ cut -f 2 fasta-info
+$ cut -f 2,4 fasta-info
+$ cut -f 2-4 fasta-info
+```
+
+But it does not line up very nicely.  We can use "column" to fix this:
+
+```
+$ cut -f 2-4 fasta-info | column -t
+alignment  min_len  max_len
+FALSE      5136     116409
+FALSE      5029     22601
+FALSE      5024     81329
+FALSE      5587     30751
+```
 
 ## Abandoned idea
 
