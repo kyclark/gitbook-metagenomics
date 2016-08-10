@@ -120,7 +120,7 @@ $ w | awk 'NR>2' | cut -d ' ' -f 1 | sort | uniq | wc -l
 138
 ```
 
-# Count "oo" words
+## Count "oo" words
 
 On almost every Unix system, you can find "/usr/share/dict/words."  Let's use "grep" to find how many have the "oo" vowel combination.  It's a long list, so I'll pipe it into "head" to see just the first five:
 
@@ -163,3 +163,6 @@ $ bc <<< 158+10302
 
 Excellent.  Smithers, massage my brain.
 
+## Something with sequences
+
+Let's use the NCBI SRA Toolkit to download a small data set to play with.  If you are on the UA HPC, then you should have "/rsgrps/bhurwitz/hurwitzlab/bin" in your $PATH.
