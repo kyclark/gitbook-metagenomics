@@ -344,10 +344,27 @@ $ grep '>' group12_contigs.fasta | wc -l
 Hey, I could see doing that often.  Maybe we should make this into an "alias" (see above).  The problem is that the "argument" to the function (the filename) is stuck in the middle, so it would make it tricky to use an alias for this.  We can create a bash function that we add to our .bashrc:
 
 ```
-function cntseq() {
+function countseqs() {
   grep '>' $1 | wc -l
 }
 ```
+
+After you add this, remember to source this file to make it available:
+
+```
+$ source ~/.bashrc
+$ countseqs group12_contigs.fasta
+132
+```
+
+Same answer.  Good.  However, someone beat us to the punch.  There is a powerful tool called "seqmagick" (https://github.com/fhcrc/seqmagick) that will do this (and much, much more).  It's installed into the "hurwitzlab/bin" directory, or you can install it locally:
+
+```
+$ seqmagick info group12_contigs.fasta
+name                  alignment    min_len   max_len   avg_len  num_seqs
+group12_contigs.fasta FALSE           5136    116409  22974.30       132
+```
+
 
 ## Abandoned idea
 
