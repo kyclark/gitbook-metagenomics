@@ -29,6 +29,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **cut**: select columns from the output of a program
 * **wc**: (character) word (and line) count
 * **more/less**: pager programs that show you a "page" of text at a time; cf. https://unix.stackexchange.com/questions/81129/what-are-the-differences-between-most-more-and-less/81131
+* **bc**: calculator
 * **df**: report file system disk space usage; useful to find a place to land your data
 * **du**: report disk usage; recommend "du -shc"; useful to identify large directories that need to be removed
 * **ssh**: secure shell, like telnet only with encryption
@@ -56,7 +57,7 @@ The top level of a Unix file system is "/" which is called "root."  Confusingly,
 
 In all the following, when you see a "$" it is a metacharacter indicating that this is a command-line prompt for a normal (not super-user) account.  Your prompt may be anything you like (search for "PS1 unix prompt" to learn more).  Anyway, point is that you should type (copy/paste) all the stuff *after* the $.  If you ever see a prompt with "#," it's indicating a command that should be run as the super-user/root account, e.g., installing some software into a system-wide directory so it can be shared by all users.
 
-## Number of users
+## Number of unique users
 
 Find the number of unique users on a shared system
 
@@ -118,4 +119,47 @@ Yes, that is correct.  Now let's remove the "head -5" and use "wc" to count all 
 $ w | awk 'NR>2' | cut -d ' ' -f 1 | sort | uniq | wc -l
 138
 ```
+
+# Count "oo" words
+
+On almost every Unix system, you can find "/usr/share/dict/words."  Let's use "grep" to find how many have the "oo" vowel combination.  It's a long list, so I'll pipe it into "head" to see just the first five:
+
+```
+$ grep 'oo' /usr/share/dict/words | head -5
+abloom
+aboon
+aboveproof
+abrood
+abrook
+```
+
+Yes, that works, so now let's count the words:
+
+```
+$ grep 'oo' /usr/share/dict/words | wc -l
+10460
+```
+
+How many of those words additionally contain the "ow" sequence?
+
+```
+$ grep 'oo' /usr/share/dict/words | grep 'ow' | wc -l
+158
+```
+
+How many *do not* contain the "ow" sequence?
+
+```
+$ grep 'oo' /usr/share/dict/words | grep -v 'ow' | wc -l
+10302
+```
+
+Do those numbers add up?
+
+```
+$ bc <<< 158+10302
+10460
+```
+
+Excellent.  Smithers, massage my brain.
 
