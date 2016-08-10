@@ -1,6 +1,6 @@
-# Unix basics
+# Getting access to systems
 
-Given that our class will have students on a variety of operating systems (Windows, OSX, Linux), we will use the HPC (high performance computing) cluster at the University of Arizona for our work.  Students Windows might find the Cygwin tools useful for getting access to tools like "ssh" and "scp."  Students on OSX and Linux machines may choose to install software locally using package management tools like "homebrew" (OSX) or "apt-get" and "yum" (Linux).
+Given that our class will have students on a variety of operating systems (Windows, OSX, Linux), we will use the HPC (high performance computing) cluster at the University of Arizona for our work.  Students using the Windows operating system might find the Cygwin tools useful for getting access to tools like "ssh" and "scp."  Students on OSX and Linux machines may choose to install software locally using package management tools like "homebrew" (OSX) or "apt-get" and "yum" (Linux).
 
 ## University of Arizona HPC
 
