@@ -35,8 +35,8 @@ The "stampede" cluster is another HPC resource that is freely available to our s
 
 ## Cyverse (UA)
 
-The Cyverse project is an NSF-funding cyberinfrastructure project headquartered at the University of Arizona.  It began life as "iPlant" in 2008. Our students may choose to make use of Cyverse infrastructure, as well, such as "apps" for assemblies, gene calling, protein clustering, and such.  Students should go to https://user.cyverse.org/ to create an account.  Again, we recommend you use the same username as your TACC account to make communication between the TACC and UA systems easier.
+Cyverse is an NSF-funding cyberinfrastructure project headquartered at the University of Arizona.  It began life as "iPlant" in 2008. Our students may choose to make use of Cyverse infrastructure, as well, such as "apps" for assemblies, gene calling, protein clustering, and such.  Students should go to https://user.cyverse.org/ to create an account.  Again, we recommend you use the same username as your TACC account to make communication between the TACC and UA systems easier.
 
 ## Docker, VirtalBox
 
-If you are not a UA student with access to our HPC or cannot get into TACC, you can follow along at home using a virtual machine such as a Docker or VirtualBox image installed on your machine.  
+If cannot gain access to the UA HPC or TACC, you can follow along at home using a virtual machine such as a Docker or VirtualBox image installed on your machine.
