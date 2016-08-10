@@ -1,6 +1,6 @@
 # Summary
 
 * [Introduction](README.md)
-* [Unix basics](unix_basics.md)
+* [01-Unix basics](unix_basics.md)
 * [Programming](programming.md)
 
