@@ -1,2 +1,2 @@
-# Programming
+# Programming with Perl 6
 
