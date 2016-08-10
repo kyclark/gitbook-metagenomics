@@ -70,10 +70,52 @@ antontre pts/1    149.165.156.129  Sat14    3days  0.10s  0.10s /bin/sh -i
 huddack  pts/3    128.4.131.189    09:38    4:56m  0.15s  0.15s -bash
 ```
 
-We need to skip the first two lines of header:
+We need to skip the first two lines of header, so we can pipe the output of "w" into "awk" and tell it we only want to see output when the Number of Records is greater than 2:
 
 ```
-$ w | awk 'NR>2'
+$ w | awk 'NR>2' | head -5
+antontre pts/1    149.165.156.129  Sat14    4days  0.10s  0.10s /bin/sh -i
+huddack  pts/3    128.4.131.189    09:38    5:13m  0.15s  0.15s -bash
+antontre pts/5    149.165.156.129  Sun19    2days  0.14s  0.14s /bin/sh -i
+minyard  pts/8    129.114.64.18    29Jul16  4:24m  3:46m  3:46m top
+antontre pts/11   149.165.156.129  Sun23    2days  0.24s  0.24s /bin/sh -i
 ```
 
-w | cut -f 1 -d ' ' | sort | uniq | wc -l
+We can see right away that the some users like "antontre" are logged in multiple times.  Let's "cut" out just the first column of data.  The manpage for "cut" says that it defaults to using the tab character to determine columns, so we'll need to tell it to use spaces:
+
+```
+$ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1
+antontre
+huddack
+antontre
+minyard
+antontre
+```
+
+Great, let's "uniq" that output:
+
+```
+$ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1 | uniq
+antontre
+huddack
+antontre
+minyard
+antontre
+```
+
+That's not right.  Remember I said earlier that "uniq" only works *on sorted input*?  So let's sort those names first:
+
+```
+$ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1 | sort | uniq
+antontre
+huddack
+minyard
+```
+
+Yes, that is correct.  Now let's remove the "head -5" and use "wc" to count all the lines (-l) of input:
+
+```
+$ w | awk 'NR>2' | cut -d ' ' -f 1 | sort | uniq | wc -l
+138
+```
+
