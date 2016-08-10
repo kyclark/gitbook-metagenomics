@@ -40,7 +40,9 @@ I assume you are on a command line by now, so let's look at some commands.
 * **|**: pipe the output of a command into another command
 * **>**: redirecty the output of a command into a file
 * **<**: redirect contents of a file into a command
-
+* **wget**: web get a file from an HTTP location, cf. "wget is not a crime" and Aaron Schwartz
+* **ftp**: original FTP client, very clunky
+* **ncftp**: more modern FTP client that automatically handles anonymous logins
 
 # Pronunciation
 
@@ -88,6 +90,32 @@ You just told your shell (bash) to set the PATH variable to our "hurwitzlab" dir
 
 ```
 echo "PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH" >> ~/.bashrc
+```
+
+Side note: Dotfiles (https://en.wikipedia.org/wiki/Hidden_file_and_hidden_directory) are files with names that begin with a dot "." and include:
+
+* **.**: the current directory
+* **..**: the parent directory
+
+They are normally hidden from view unless you use "ls -a" to list "all" files.
+
+Your ".bashrc" (or maybe ".profile" or maybe ".bash_profile" depending on your system) file is read every time you login to your system, so you can remember your customizations.
+
+# Aliases
+
+Sometimes you'll find you're using a particular command quite often and want to create a shortcut.  You can assign any command to a single "alias" like so:
+
+```
+alias cx='chmod +x'
+alias up2='cd ../../'
+alias up3='cd ../../../'
+```
+
+If you execute this on the command line, the alias will be saved until you log out.  Adding this to your .bashrc will 
+make it available every time you log in.  When you make a change and want the shell to bring those into the current environment, you need to "source" the file.  The command "." is an alias for "source":
+
+```
+$ source ~/.bashrc
 ```
 
 # File system layout
@@ -174,7 +202,15 @@ abrood
 abrook
 ```
 
-Yes, that works, so now let's count the words:
+Yes, that works, so redirect those words into a file and count them:
+
+```
+$ grep 'oo' /usr/share/dict/words > oo-words
+$ wc -l !$
+10460 oo-words
+```
+
+Let's count them directly out of "grep":
 
 ```
 $ grep 'oo' /usr/share/dict/words | wc -l
@@ -206,4 +242,176 @@ Excellent.  Smithers, massage my brain.
 
 ## Something with sequences
 
-We will now use the NCBI SRA Toolkit to download a small data set to play with.  If you are on the UA HPC, then you should have "/rsgrps/bhurwitz/hurwitzlab/bin" in your $PATH so that ```which fastq-dump``` should return "/rsgrps/bhurwitz/hurwitzlab/bin/fastq-dump"
+Let's get some sequence data from the iMicrobe FTP site.  Both "wget" and "ncftpget" will do the trick:
+
+```
+$ mkdir -p ~/work/abe487
+$ cd !$
+$ wget ftp://ftp.imicrobe.us/abe487/contigs/contigs.zip
+```
+
+Side track: How do we know we got the correct data?  Let's go back and look at that FTP site, and you'll see that there is a "contigs.zip.md5" file that we can "less" on the server to view the contents:
+
+```
+$ ncftp ftp://ftp.imicrobe.us/abe487/contigs
+NcFTP 3.2.5 (Feb 02, 2011) by Mike Gleason (http://www.NcFTP.com/contact/).
+Connecting to 128.196.131.100...
+Welcome to the imicrobe.us repository
+Logging in...
+Login successful.
+Logged in to ftp.imicrobe.us.
+Current remote directory is /abe487/contigs.
+ncftp /abe487/contigs > ls
+contigs.zip        contigs.zip.md5
+ncftp /abe487/contigs > less contigs.zip.md5
+
+1b7e58177edea28e6441843ddc3a68ab  contigs.zip
+ncftp /abe487/contigs > exit
+```
+
+You can read up on MD5 (https://en.wikipedia.org/wiki/Md5sum) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches that we see on the server, then we can be sure that we have the exact file that is on the FTP site:
+
+```
+$ md5sum contigs.zip
+1b7e58177edea28e6441843ddc3a68ab  contigs.zip
+```
+
+Yes, those two sums match.  Note that sometimes the program is just called "md5."
+
+So, back to the exercise.  Let's unpack the contigs:
+
+```
+$ unzip contigs.zip
+Archive:  contigs.zip
+  inflating: group12_contigs.fasta
+  inflating: group20_contigs.fasta
+  inflating: group24_contigs.fasta
+$ rm contigs.zip
+```
+
+These files are in FASTA format (https://en.wikipedia.org/wiki/FASTA_format), which basically looks like this:
+
+```
+>MCHU - Calmodulin - Human, rabbit, bovine, rat, and chicken
+ADQLTEEQIAEFKEAFSLFDKDGDGTITTKELGTVMRSLGQNPTEAELQDMINEVDADGNGTID
+FPEFLTMMARKMKDTDSEEEIREAFRVFDKDGNGYISAAELRHVMTNLGEKLTDEEVDEMIREA
+DIDGDGQVNYEEFVQMMTAK*
+>gi|5524211|gb|AAD44166.1| cytochrome b [Elephas maximus maximus]
+LCLYTHIGRNIYYGSYLYSETWNTGIMLLLITMATAFMGYVLPWGQMSFWGATVITNLFSAIPYIGTNLV
+EWIWGGFSVDKATLNRFFAFHFILPFTMVALAGVHLTFLHETGSNNPLGLTSDSDKIPFHPYYTIKDFLG
+LLILILLLLLLALLSPDMLGDPDNHMPADPLNTPLHIKPEWYFLFAYAILRSVPNKLGGVLALFLSIVIL
+GLMPFLHTSKHRSMMLRPLSQALFWTLTMDLLTLTWIGSQPVEYPYTIIGQMASILYFSIILAFLPIAGX
+IENY
+```
+
+Header lines start with ">", then the sequence follows.  Sequences may be broken up over several lines of 50 or 80 characters, but it's just as common to see the sequences take only one (sometimes very long) line.  Sequences may be nucleotides, proteins, very short DNA/RNA, longer contigs (shorter strands assembled into contiguous regions), or entire chromosomes or even genomes.
+
+So, how many sequences are in "group12_contigs.fasta"?  To answer, we just need to count how many times we see ">".  We can do that with "grep":
+
+```
+$ grep > group12_contigs.fasta
+Usage: grep [OPTION]... PATTERN [FILE]...
+Try 'grep --help' for more information.
+```
+
+What is going on?  Remember when we captured the "oo" words that we used the ">" symbol to tell Unix to *redirect* the output of "grep" into a file.  We need to tell Unix that we mean a literal greater-than sign:
+
+```
+$ grep '>' group12_contigs.fasta
+```
+
+You should actually see nothing because something quite insidious happened with that first "grep" statement -- it overwrote our original "group12_contigs.fasta" with the result of "grep"ing for nothing, which is nothing:
+
+```
+$ ls -l group12_contigs.fasta
+-rw-rw---- 1 kyclark staff 0 Aug 10 15:08 group12_contigs.fasta
+```
+
+Ugh, OK, I have to go back and "wget" the "contigs.zip" file to restore it.  That's OK.  Things like this happen all the time.  
+
+```
+$ ls -lh group12_contigs.fasta
+-rw-rw---- 1 kyclark staff 2.9M Aug 10 14:38 group12_contigs.fasta
+```
+
+Now that I have restored my data, I want to count how many greater-than signs in the file:
+
+```
+$ grep '>' group12_contigs.fasta | wc -l
+132
+```
+
+Hey, I could see doing that often.  Maybe we should make this into an "alias" (see above).  The problem is that the "argument" to the function (the filename) is stuck in the middle, so it would make it tricky to use an alias for this.  We can create a bash function that we add to our .bashrc:
+
+```
+function cntseq() {
+  grep '>' $1 | wc -l
+}
+```
+
+## Abandoned idea
+
+We will now use the NCBI SRA Toolkit to download a small data set to play with.  If you are on the UA HPC, then you should have "/rsgrps/bhurwitz/hurwitzlab/bin" in your $PATH so that ```which fastq-dump``` should return "/rsgrps/bhurwitz/hurwitzlab/bin/fastq-dump".  If you do not have access to this directory, then you can install the program following the directions https://ncbi.github.io/sra-tools/.  If you are on another shared system like stampede, you might be able to load pre-built binaries with "module load."  You can first "module spider sra" or "module keyword sra" to see if it is available and then "module load sratoolkit."  You can always go to the NCBI SRA website at "https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=run_browser&run=SRR390728" and directly download the FASTQ file.  Alternately, you could use "wget" or "ncftpget" to directly download the file from the NCBI FTP site:
+
+```
+$ wget ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR304/SRR304976/SRR304976.sra
+```
+
+But then you will still need to use "fastq-dump" to extract the FASTQ from the SRA file.  
+
+We will make a directory for our work:
+
+```
+$ mkdir -p ~/work/SRR390728
+$ cd !$
+$ fastq-dump SRR390728
+Read 7178576 spots for SRR390728
+Written 7178576 spots for SRR390728
+```
+
+If all goes well, then you should have the file "SRR390728.fastq" in your directory.  How big is the file?
+
+```
+$ ls -lh SRR390728.fastq
+-rw-rw-r-- 1 kyclark staff 1.5G Aug 10 13:30 SRR390728.fastq
+```
+
+Very large.  We *do not* want to open this in a text editor!  Let's peek:
+
+```
+$ head SRR390728.fastq
+@SRR390728.1 1 length=72
+CATTCTTCACGTAGTTCTCGAGCCTTGGTTTTCAGCGATGGAGAATGACTTTGACAAGCTGAGAGAAGNTNC
++SRR390728.1 1 length=72
+;;;;;;;;;;;;;;;;;;;;;;;;;;;9;;665142;;;;;;;;;;;;;;;;;;;;;;;;;;;;;96&&&&(
+@SRR390728.2 2 length=72
+AAGTAGGTCTCGTCTGTGTTTTCTACGAGCTTGTGTTCCAGCTGACCCACTCCCTGGGTGGGGGGACTGGGT
++SRR390728.2 2 length=72
+;;;;;;;;;;;;;;;;;4;;;;3;393.1+4&&5&&;;;;;;;;;;;;;;;;;;;;;<9;<;;;;;464262
+@SRR390728.3 3 length=72
+CCAGCCTGGCCAACAGAGTGTTACCCCGTTTTTACTTATTTATTATTATTATTTTGAGACAGAGCATTGGTC
+```
+
+You can go read about https://en.wikipedia.org/wiki/FASTQ_format in your copious free time, but basically we're dealing with a really terrible file format (bioinformatics is full of them!).  The only sane FASTQ format sticks to strictly 4 lines per sequence:
+
+* header
+* sequence
+* header/spacer
+* quality scores
+
+We could find out how many sequences are present by counting the number of lines and dividing by four:
+
+```
+$ wc -l SRR390728.fastq
+28714304 SRR390728.fastq
+$ bc <<< 28714304/4
+7178576
+```
+
+Or we could just convert this to FASTA format.  There is a handy program called "fastq_to_fasta" from the Fastx Toolkit (http://hannonlab.cshl.edu/fastx_toolkit/) that we have installed. 
+
+```
+$ fastq_to_fasta SRR390728.fastq
+```
+
+Protip: Want to know how long a command takes?  Put "time" in front of it.
