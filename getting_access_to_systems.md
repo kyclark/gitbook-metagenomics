@@ -29,6 +29,8 @@ Please select a target system to connect to:
 
 The menu will be present on your next login session.  Make a selection from the menu to login to a head node.
 
+As of 2016, Ocelot is UA's newest cluster.  For more information, see https://confluence.arizona.edu/display/UAHPC/Ocelote+Quick+Start.
+
 ## Stampede (TACC)
 
 The "stampede" cluster is another HPC resource that is freely available to our students.  It is located at TACC, the Texas Advanced Computing Center at the University of Texas in Austin.  Go to https://portal.tacc.utexas.edu/ to create an account.  We recommend our students use the same username at TACC and Cyverse.
@@ -39,4 +41,4 @@ Cyverse is an NSF-funding cyberinfrastructure project headquartered at the Unive
 
 ## Docker, VirtalBox
 
-If cannot gain access to the UA HPC or TACC, you can follow along at home using a virtual machine such as a Docker or VirtualBox image installed on your machine.
+If cannot gain access to the UA HPC or TACC, you can follow along at home using a virtual machine such as a Docker (https://www.docker.com/) or VirtualBox (https://www.virtualbox.org/) image installed on your machine.
