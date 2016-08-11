@@ -198,4 +198,4 @@ To check for too many arguments, I added the double pipes ("||") and another con
 
 # Named arguments
 
-It's great that 
+It's great that we can make our script take arguments, so of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" (probably "file") argument is "mouse.fa."  A flag like "-v" might be a yes/no ("Boolean," if you like) indicator that we want or do not want "verbose" mode.  You've encountered these with programs like ```ls -l``` to indicate you want the "long" directory listing or "
