@@ -12,5 +12,5 @@
    * [Why Perl 6?](first_steps_with_perl_6.md)
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
-   * Hello, again. Is it me you're looking for?
+   * [Hello, again. Is it me you're looking for?](hello,_again_is_it_me_youre_looking_for.md)
 
