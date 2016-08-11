@@ -4,9 +4,13 @@ Much of the time, "bioinformatics" seems like little more than installing softwa
 
 My suggestions for installing software are (in order):
 
+## Sysadmin
+
+Go introduce yourself to your sysadmins.  Take them to lunch or order them some pizza or drop off some good beer or whiskey.  Whatever it takes to be on good terms because a good sysadmin who is responsive to your needs is an enormous help.  If they are willing to install software for you, that is the way to go.  Often, though, this is a task far beneath them, and they would expect you to be able to fend for yourself.  They may provide "sudo" (https://xkcd.com/149/) privileges to allow you to install software into shared locations (e.g., "/usr/local"), but it's more likely they would expect you to install into your $HOME.
+
 ## Package managers
 
-There are several package management systems for Linux and OSX including apt-get, yum, homebrew, macports, and more.  These usually relieve the problems of software compatibility and shared libraries.  
+There are several package management systems for Linux and OSX including apt-get, yum, homebrew, macports, and more.  These usually relieve the problems of software compatibility and shared libraries.  Unless you have "sudo" to install globally, you can configure to install into your $HOME.
 
 ## Binary installations
 
