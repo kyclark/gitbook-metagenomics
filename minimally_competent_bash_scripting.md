@@ -269,3 +269,7 @@ $ ./named01.sh -g ""
 ```
 
 Which would technically pass muster but does not actually meet our requirements.
+
+# A few more tricks
+
+## Re
