@@ -53,6 +53,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **/**: slash; the thing leaning the other way is a "backslash"
 * **etc**: et-see
 * **usr**: user
+* **#**: hash
 * **$**: dollar
 * **!**: bang
 * **#!**: shebang
