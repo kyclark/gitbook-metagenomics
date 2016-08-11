@@ -18,4 +18,4 @@ $ ./greet2.pl6 Hello Kenny
 Hello, Kenny
 ```
 
-Just look at that script.  Just look at it!  Do you see how much disappeared, and yet we still have all the functionality that we wrote before.  We have a usage statement, we have required and optional arguments, we have variable assignment, we have sane defaults, we have clean syntax.  Everything is rosy now!
+Just look at that script.  Just look at it!  Do you see how much disappeared, and yet we still have all the functionality that we wrote before?!  We have a usage statement, we have required and optional arguments, we have variable assignment, we have sane defaults, we have clean syntax.  Everything is rosy now!
