@@ -102,7 +102,7 @@ $ my-background-prog.sh &
 
 # Handy command line shortcuts
 
-* Tab: hit the Tab key for command completion
+* Tab: hit the Tab key for command completion; hit it early and often!
 * **!!**: execute the last command again
 * **!$**: the last argument from your previous command line (think of the $ as the right anchor in a regex)
 * CTRL-R: reverse search of your history
