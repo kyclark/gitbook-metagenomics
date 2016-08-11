@@ -9,5 +9,5 @@
 * [02-Programming](programming.md)
    * [Minimally competent bash scripting](minimally_competent_bash_scripting.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
-   * First steps with Perl 6
+   * [First steps with Perl 6](first_steps_with_perl_6.md)
 
