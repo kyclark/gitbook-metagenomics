@@ -2,7 +2,7 @@
 
 I assume you are on a command line by now, so let's look at some commands.
 
-* **whoami**: tells you your username
+* **whoami**: reports your username
 * **w**: shows who is currently on a system
 * **man**: show the manual page for a command
 * **echo**: say something
@@ -38,19 +38,18 @@ I assume you are on a command line by now, so let's look at some commands.
 * **scp**: secure copy a file from/to remote systems using ssh
 * **rsync**: remote sync; uses scp but only copies data that is different
 * **ftp**: use "file transfer protocol" to retrieve large data sets (better than HTTP/browsers, esp for getting data onto remote systems)
+* **ncftp**: more modern FTP client that automatically handles anonymous logins
+* **wget**: web get a file from an HTTP location, cf. "wget is not a crime" and Aaron Schwartz
 * **|**: pipe the output of a command into another command
 * **>, >>**: redirect the output of a command into a file; the file will be created if it does not exist; the single arrow indicates that you wish to overwrite any existing file, while the double-arrows say to append to an existing file
 * **<**: redirect contents of a file into a command
-* **wget**: web get a file from an HTTP location, cf. "wget is not a crime" and Aaron Schwartz
-* **ftp**: original FTP client, very clunky
-* **ncftp**: more modern FTP client that automatically handles anonymous logins
 * **nano**: a very simple text editor; until you're ready to commit to vim or emacs, start here
 * **md5sum**: calculate the MD5 checksum of a file
 * **diff**: find the differences between two files
 
 # Pronunciation
 
-* **/**: slash; the thing leaing the other way is a "backslash"
+* **/**: slash; the thing leaning the other way is a "backslash"
 * **etc**: et-see
 * **usr**: user
 * **$**: dollar
@@ -84,13 +83,13 @@ $ echo $PATH
 /rsgrps/bhurwitz/hurwitzlab/bin:/sbin:/bin:/usr/bin:/usr/sbin:/usr/lpp/mmfs/bin:/usr/pbs/bin:/var/spool/pas/repository/pas-appmaker:/opt/sgi/sbin:/opt/sgi/bin:/usr/local/bin:/home/u20/kyclark/bin:/home/u20/kyclark/perl5/bin:/rsgrps/bhurwitz/hurwitzlab/tools/bpipe-0.9.9/bin:/home/u20/kyclark/.local/bin:/home/u20/kyclark/.rakudobrew/bin:/home/u20/kyclark/bin
 ```
 
-You'll notice the diretories are separated by colons, and I have the shared "hurwitzlab" directory first in my path.  Much of our work will require access to tools that are not installed by default on the HPC.  You could build them into your own $HOME directory, but it will be easier if you just add this shared diretory to your $PATH.  From the command line, you can do this:
+You'll notice the directories are separated by colons, and I have the shared "hurwitzlab" directory first in my path.  Much of our work will require access to tools that are not installed by default on the HPC.  You could build them into your own $HOME directory, but it will be easier if you just add this shared directory to your $PATH.  From the command line, you can do this:
 
 ```
 PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH
 ```
 
-You just told your shell (bash) to set the PATH variable to our "hurwitzlab" diretory and then whatever it was set to before.  Obviously we want this to happen each time we log in, so we can add this command to "$HOME/.bashrc":
+You just told your shell (bash) to set the PATH variable to our "hurwitzlab" directory and then whatever it was set to before.  Obviously we want this to happen each time we log in, so we can add this command to "$HOME/.bashrc":
 
 ```
 echo "PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH" >> ~/.bashrc
