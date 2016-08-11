@@ -1,4 +1,4 @@
-# First steps with Perl 6
+# Why Perl 6?
 
 Larry Wall (https://en.wikipedia.org/wiki/Larry_Wall) created the Perl programming language around 1987.  With what you've seen up to this point, you may be able understand that he essentially cobbled together bash, sed, awk, and grep.  He was trying to make a basic Unix systems administration language, and so, like most other Unix languages, it was quite adept at dealing with text.  By the mid-1990s when the web was taking off and people were writing CGI (common gateway interface) scripts, Perl was reasonably mature enough to be a really good fit for all the text manipulation involved.  This was also about the time that bioinformatics was getting started, and most of that is also about dealing with massive quantities of text (e.g., "ACTG").
 
