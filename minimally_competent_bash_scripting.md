@@ -254,4 +254,18 @@ $ cat -n named01.sh
     48	echo "$GREETING, $NAME"
 ```
 
-Our s
+Our script just got much longer but also more flexible.  I've written a hundred shell scripts with just this as the template, so you can, too.  Go search for how ```getopt``` works and copy-paste this for your bash scripts.  
+
+I've introduced a new function called ```HELP``` that prints out the "Usage" statement so that it can be called when:
+
+* the script is run with no arguments (line 19)
+* the script is run with the "-h" flag (lines 25-27)
+* the script is run with bad input (lines 44-46)
+
+I initialized the NAME to "Stranger" (line 6) and then let the user know in the "Usage" what the default value will be.  When checking the GREETING in line 44, I'm actually checking that the length of the value is greater than zero because it's possible to run the script like this:
+
+```
+$ ./named01.sh -g ""
+```
+
+Which would technically pass muster but does not actually meet our requirements.
