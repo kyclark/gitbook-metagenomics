@@ -1,10 +1,10 @@
 # Minimally competent bash scripting
 
-Bash is the worst shell scripting language except for all the others.  Much of the time, all you need is a simple bash script, so let's figure out how to write a decent one.  Though there are plenty of entire books you can read, I'll share with you what I've found to be the minimal amount I use.
+Bash is the worst shell scripting language except for all the others.  For many of the analyses you'll write, all you will need is a simple bash script, so let's figure out how to write a decent one.  I'll share with you what I've found to be the minimal amount of bash I use.
 
 # Comments
 
-Every language has a way to indicate non-executable text in the source code.  Many Unix/c-style languages use the "#" (hash) sign to indicate that any text to the right should be ignored by the language, but some languages use other characters or character combinations.  Programmers may actually "comment" on their code to explain what some particularly hairy bit is doing, or they may use the characters to temporarily disable some section of code.  Here is what you might see:
+Every language has a way to indicate text in the source code that should be executed by the program.  Many Unix/c-style languages use the "#" (hash) sign to indicate that any text to the right should be ignored by the language, but some languages use other characters or character combinations.  Programmers may use comments to explain what some particularly bit of code is doing, or they may use the characters to temporarily disable some section of code.  Here is an example of what you might see:
 
 ```
 # cf. https://en.wikipedia.org/wiki/Factorial
@@ -20,13 +20,13 @@ sub fac(n) {
 }
 ```
 
-It's worth investing time in an editor that can easily comment/uncomment whole sections of code.  For instance, in vim, I have the "#" sign mapped to a function that will add or removed the appropriate comment character(s) from the beginning of the selected section.  If your editor can't do that (e.g., nano), then I suggest you find something more powerful.
+It's worth investing time in an editor that can easily comment/uncomment whole sections of code.  For instance, in vim, I have the "#" sign mapped to a function that will add or removed the appropriate comment character(s) (depending on the filetype) from the beginning of the selected section.  If your editor can't do that (e.g., nano), then I suggest you find something more powerful.
 
 # Shebang
 
-Scripting languages (sh, bash, Perl, Python, Ruby, etc.) are generally distinguished by the fact that the "program" is a regular file containing plain text that is interpreted into machine code at the time you run it.  Other languages (c, C++, Haskell) have a separate compilation step to turn their regular text source files into binary executable.  If you "less" a compiled file, you'll see a mess that might even lock up your window.  (If that happens, refer back to "Make it stop!" to kill it or just close the window and start over.)
+Scripting languages (sh, bash, Perl, Python, Ruby, etc.) are generally distinguished by the fact that the "program" is a regular file containing plain text that is interpreted into machine code at the time you run it.  Other languages (c, C++, Java, Haskell) have a separate compilation step to turn their regular text source files into a binary executable.  If you "less" a compiled file, you'll see a mess that might even lock up your window.  (If that happens, refer back to "Make it stop!" to kill it or just close the window and start over.)
 
-So, basically a "script" is a plain text file that is often executable by virtue of having the executable bit(s) turned on (cf. "Permissions").  It does not have to be executable, however.  It's acceptable to put some commands in a file and simply tell the appropriate program to interpret the file as a series of commands:
+So, basically a "script" is a plain text file that is often executable by virtue of having the executable bit(s) turned on (cf. "Permissions").  It does not have to be executable, however.  It's acceptable to put some commands in a file and simply tell the appropriate program to interpret the file:
 
 ```
 $ echo "echo Hello, World" > hello.sh
@@ -59,7 +59,7 @@ $ python hello.py
 Hello, World
 ```
 
-So we just need to let the shell know that this is Python code, and that is what the "shebang" (see "Pronuciations") line is for.  It looks like a comment, but it's special line that the shell uses to interpret the script.  I'll use an editor to add this to the "hello.py" script, then I'll ```cat``` the file so you can see what it looks like.  
+So we just need to let the shell know that this is Python code, and that is what the "shebang" (see "Pronuciations") line is for.  It looks like a comment, but it's special line that the shell uses to interpret the script.  I'll use an editor to add a shebang to the "hello.py" script, then I'll ```cat``` the file so you can see what it looks like.  
 
 ```
 $ cat hello.py
@@ -90,7 +90,7 @@ Use exit() or Ctrl-D (i.e. EOF) to exit
 
 # Positional Arguments
 
-You've now seen that a "script" is just a series of commands that are interpreted from top to bottom by a program like bash or Python.  You can automate your workflows simply by putting them into a text file, making the script executable, and running it; however, this would mean that everything is "hard-coded."  That is, if you wrote a script to clean and trim "mouse-reads.fastq" into "mouse-reads.fasta," then you need to edit the script when you get a new "fungi-reads.fastq."  Now you need to let some parts of your script be "variable" depending on the input from the user, and that's where "arguments" to your script come into play.
+You've now seen that a "script" is just a series of commands that are interpreted from top to bottom by a program like bash or Python.  You can automate your workflows simply by putting them into a text file, making the script executable, and running it; however, this would mean that everything is "hard-coded."  That is, if you wrote a script to clean and trim "mouse-reads.fastq" into "mouse-reads.fasta," then you need to edit the script when you get a new "fungi-reads.fastq."  You need to let some parts of your script be "variable" depending on the input from the user, and that's where "arguments" to your script come into play.
 
 Here is a simple bash script that looks for a couple of arguments, "greeting" and "name":
 
@@ -112,11 +112,11 @@ $ ./positional01.sh Howdy Ken
 Howdy, Ken
 ```
 
-I've used "cat -n" to number the lines so we can break this down.  Line 1 is our shebang to confirm that we have a bash script.  This is good because we can't be sure that others are using bash -- they might be using csh, tcsh, zsh, or even good olde sh (pronounced "shuh" or "ess-ach").  It's pretty much a given that any "shell" program is found in "/bin" where the most important commands are found.  As you get into other languages that can vary from system to system, you'll find those are usually installed into "/usr/local/bin," and so that's where I start to use "env" to find the program.
+I've used "cat -n" to number the lines so we can break this down.  Line 1 is our shebang to confirm that we have a bash script.  This is good because we can't be predict the user's shell -- they might be using csh, tcsh, zsh, bash, or even good olde sh (pronounced "shuh" or "ess-ach").  It's pretty much a given that any "shell" program is found in "/bin" where the most important commands are found.  As you get into other languages that can vary from system to system, you'll find those are *often* (but not always) installed into "/usr/local/bin," and so that's where I start to use "env" to find the program.
 
-Line 3 tells bash to complain if I try to use a variable that was never initialized to some value.  This is putting on your helmet.  It's not a requirement (depending on where you live), but you absolutely should do this because there might come a day when you misspell a variable, and it's really a very Good Thing to have the shell catch this mistake.
+Line 3 tells bash to complain if I try to use a variable that was never initialized to some value.  This is putting on your helmet.  It's not a requirement (depending on where you live), but you absolutely should do this because there might come a day when you misspell a variable.
 
-Lines 5 and 6 I'm assigning two new variables to the first and second arguments to the script.  Variables in bash are plain words like ```GREETING``` when you assign to them but have sigils ("$") when you use them.  Also, assignment to a variable requires *no spaces*, so this wouldn't work:
+In lines 5 and 6, I'm assigning two new variables to the first and second arguments to the script.  Variables in bash are plain words like ```GREETING``` when you assign to them but have sigils ("$") when you use them (line 8).  Also, assignment to a variable requires *no spaces*, so this wouldn't work:
 
 ```
 GREETING = $1 # this will not work!
@@ -147,22 +147,26 @@ $ ./positional02.sh "Good Day" "Kind Sir"
 Good Day, Kind Sir
 ```
 
-On line 5, I'm using a conditional wrapped in the double square brackets.  As you look at other's bash scripts, you'll often see the use of single brackets.  My limited understanding is that double brackets are safer, so I use them.  (Remember, this isn't called "minimally competent bash scripting" for nothing.)  The conditional is comparing ```$#``` to the integer "1" using the ```-lt``` (less than) operator.  There are plenty of web page that will describe all the conditions you can write in bash.  I won't belabor the point.  You can probably find plenty of other examples using common sense and a search engine.
+On line 5, I'm using a conditional wrapped in the double square brackets.  As you look at bash scripts written by other (lesser) programmers, you'll may see the use of single brackets.  My limited understanding is that double brackets are safer, so I use them.  (Remember, this isn't called "minimally competent bash scripting" for nothing.)  The conditional is comparing ```$#``` (the number of arguments to the script) to the integer "1" using the ```-lt``` (less than) operator.  There are plenty of web pages that will describe all the conditions you can write in bash -- I won't belabor the point.  You can find plenty of other examples using common sense and a search engine.
 
-Line 6 is using ```printf``` ("print format") instead of ```echo``` because I want to use the built-in function ```basename``` to extract just the filename of the currently running program ```$0```.  Without ```basename```, the "Usage" statement might have the full path to the program depending on where the user was when the program was launched, and that dog won't hunt:
+Line 6 is using ```printf``` ("print format") instead of ```echo``` because I want to use the built-in function ```basename``` to extract just the filename of the currently running program ```$0```.  
+
+> Protip: Perl 5 and Python also think of $0 as the name of the script.  In Perl it's actually the variable ```$0``` as in bash, but in Python is ```argv[0]``` -- the zeroth argument to the script.
+
+If I didn't call ```basename```, the "Usage" statement might have the full path to the program depending on where the user was when the program was launched, and that dog won't hunt:
 
 ```
 $ ~/work/abe487/book/bash/positional02.sh
 Usage: /Users/kyclark/work/abe487/book/bash/positional02.sh GREETING [NAME]
 ```
 
-Notice that the call to ```basename``` was wrapped in ```$()``` that there are no commas separating the arguments.  You can also call functions using backticks (\`\`), but they are too visually similar to single quotes for my taste.
+Notice that the call to ```basename``` was wrapped in ```$()``` and that there are no commas separating the arguments -- just like on the command line.  (That is, you don't say "cp foo, bar".)  You can also call functions using backticks (\`\`), but they are too visually similar to single quotes for my taste.
 
 It's also important to note the subtle hints given to the user in the "Usage" statement.  "[NAME]" has square brackets to indicate that it is an option, but "GREETING" does not to say it is required.  
 
 Line 7 says we need to ```exit``` the program using an exit value of "1" to indicate an error.  Unix programs use "0" to report "success" and anything else to report that something went wrong.  As you incorporate shell scripts into your pipelines, it will be important to distinguish to the operating system that a program finished with an error so that it can be propogated back to the user.  Just saying "exit" would use the default "0," so it might never be reported that the program exited because of bad input as opposed to just exiting because it finished.
 
-Line 8 is the close of the "if" -- it's "if" spell backwards.  Isn't that clever?  Yes, we programming folk are very clever.  Guess what the close of a "case" statement in bash is?  It's "esac."  Guess what the close of a "do" statement is?  It's "done."  Oops.
+Line 8 is the close of the "if" -- it's "if" spell backwards.  Isn't that clever?  Yes, we programming folk are very clever.  Guess what the close of a "case" statement in bash is?  It's "esac."  Guess what the close of a "do" statement is?  It's "done."  D'oh!
 
 The rest of the script is essentially the same, but I'd like to point out how it was called this time.  I wanted to use the GREETING "Good Day," so I had to put it in quotes so that the shell would not interpret them as two arguments.  Same with the NAME "Kind Sir."  
 
@@ -194,11 +198,11 @@ $ ./positional03.sh "Good Day" "Kind Sir"
 Good Day, Kind Sir
 ```
 
-To check for too many arguments, I added the double pipes ("||") and another conditional.  I also changed line 13 to use a ```printf``` command to highlight the importance of quoting the arguments *inside the script* so that bash won't get confused.  Try it without those quotes and try to figure out why it's doing what it's doing.  I highly recommend using the program "shellcheck" (https://github.com/koalaman/shellcheck) to find mistakes like this.  Also, consider using more powerful/helpful/sane languages -- but that's for another discussion.
+To check for too many arguments, I added an "OR" (the double pipes ```||```) and another conditional ("AND" is ```&&```).  I also changed line 13 to use a ```printf``` command to highlight the importance of quoting the arguments *inside the script* so that bash won't get confused.  Try it without those quotes and try to figure out why it's doing what it's doing.  I highly recommend using the program "shellcheck" (https://github.com/koalaman/shellcheck) to find mistakes like this.  Also, consider using more powerful/helpful/sane languages -- but that's for another discussion.
 
 # Named arguments
 
-It's great that we can make our script take arguments, so of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" (probably "file") argument is "mouse.fa."  A flag like "-v" might be a yes/no ("Boolean," if you like) indicator that we want or do not want "verbose" mode.  You've encountered these with programs like ```ls -l``` to indicate you want the "long" directory listing or ```ps -u $USER``` to indicate the value for "-u" is the $USER.
+It's great that we can make our script take arguments, some of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" ("file," probably) argument is "mouse.fa," whereas a flag like "-v" might be a yes/no ("Boolean," if you like) indicator that we do or do not want "verbose" mode.  You've encountered these with programs like ```ls -l``` to indicate you want the "long" directory listing or ```ps -u $USER``` to indicate the value for "-u" is the $USER.
 
 Here is a version that has named arguments:
 
@@ -272,7 +276,7 @@ Which would technically pass muster but does not actually meet our requirements.
 
 # A few more tricks
 
-Lastly I'm going to show you how to create some sane defaults, make missing directories, find user input, transform that input, and report back to the user.
+Lastly I'm going to show you how to create some sane defaults, make missing directories, find user input, transform that input, and report back to the user.  Here's a script that takes an IN_DIR, counts the lines of all the files therein, and reports said line counts into an optional OUT_DIR.
 
 ```
 $ cat -n basic.sh
@@ -363,10 +367,10 @@ $ cat -n basic.sh
     85	echo "Finished $(date)"
 ```
     
-I must have an IN_DIR (lines 48-51), and it must be a directory (lines 53-56). If the user does not supply an OUT_DIR, I will create a reasonable default (line 6).  One thing I love about bash is that I can call functions inside of strings, so OUT_DIR is a string (it's in double quotes) of the variable $PWD, the character "/", and the result of the function call to ```basename``` where I'm giving the optional second argument that I want removed from the first argument, and then the string "-out".  
+The IN_DIR argument is required (lines 48-51), and it must be a directory (lines 53-56). If the user does not supply an OUT_DIR, I will create a reasonable default (line 6).  One thing I love about bash is that I can call functions inside of strings, so OUT_DIR is a string (it's in double quotes) of the variable $PWD, the character "/", and the result of the function call to ```basename``` where I'm giving the optional second argument ".sh" that I want removed from the first argument, and then the string "-out".  
 
-At line 60, I create a temporary file to hold the names of the files I need to process.  A line 61, I look for the files in IN_DIR that need to be processed.  You can read the manpage for ```find``` and think about what your scirpt might need to find (".fa" files greater than 0 bytes in size last modified since some date, etc.).  At line 62, I call my ```lc``` (line count) function to see how many files I found.  If I found more than 0 files (line 64), then I move ahead with processing.  I check to see if the OUT_DIR needs to be created (lines 67-69), and then create a counter variable ("i") that I'll use to number the files as I process them.  At line 72, I start a ```while``` loop to iterate over the input from redirecting *in* the temporary file holding the file names (line 77, ```< $FILES_LIST```).  Line 74 is a "let" expression where I increment the "i" variable by one (```i++```), a ```printf``` to let the user know which file we're processing, then a simple command (```wc```) but where you might choose to BLAST the sequence file to a database of pathogens to determine how deadly the sample is.  When I'm done, I clean up the temp file (line 79).  
+At line 60, I create a temporary file to hold the names of the files I need to process.  A line 61, I look for the files in IN_DIR that need to be processed.  You can read the manpage for ```find``` and think about what your scirpt might need to find (".fa" files greater than 0 bytes in size last modified since some date, etc.).  At line 62, I call my ```lc``` (line count) function to see how many files I found.  If I found more than 0 files (line 64), then I move ahead with processing.  I check to see if the OUT_DIR needs to be created (lines 67-69), and then create a counter variable ("i") that I'll use to number the files as I process them.  At line 72, I start a ```while``` loop to iterate over the input from redirecting *in* from the temporary file holding the file names (line 77, ```< $FILES_LIST```).  Line 74 is a "let" expression where I increment the "i" variable by one (```i++```).  Then a ```printf``` to let the user know which file we're processing, then a simple command (```wc```) but where you might choose to BLAST the sequence file to a database of pathogens to determine how deadly the sample is.  When I'm done, I clean up the temp file (line 79).  
 
-The alternate path when I find no input files (line 81-83) is to report that fact.  Bracketing the main processing logic are "Started/Finished" statements so I can see how long my script took.  When you start off, you will usually sit and watch your code run before you, but eventually you'll submit the your jobs to a queue where they will run when the resources become available.
+The alternate path when I find no input files (line 81-83) is to report that fact.  Bracketing the main processing logic are "Started/Finished" statements so I can see how long my script took.  When you start your coding career, you will usually sit and watch your code run before you, but eventually you'll submit the your jobs to an HPC queue where they will be run for you on a separate machine when the resources become available.
 
-The above is, I would say, a minimally competent bash script.  If you can understand everything in there, then you know enough to be dangerous and should move on to learning more powerful languages.
+The above is, I would say, a minimally competent bash script.  If you can understand everything in there, then you know enough to be dangerous and should move on to learning more powerful languages -- like Perl!
