@@ -272,4 +272,101 @@ Which would technically pass muster but does not actually meet our requirements.
 
 # A few more tricks
 
-## Re
+Lastly I'm going to show you how to create some sane defaults, make missing directories, find user input, transform that input, and report back to the user.
+
+```
+$ cat -n basic.sh
+     1	#!/bin/bash
+     2
+     3	set -u
+     4
+     5	IN_DIR=""
+     6	OUT_DIR="$PWD/$(basename $0 '.sh')-out"
+     7
+     8	function lc() {
+     9	  wc -l "$1" | awk '{print $1}'
+    10	}
+    11
+    12	function HELP() {
+    13	  printf "Usage:\n  %s -i IN_DIR -o OUT_DIR\n\n" $(basename $0)
+    14
+    15	  echo "Required arguments:"
+    16	  echo " -i IN_DIR"
+    17	  echo "Options:"
+    18	  echo " -o OUT_DIR"
+    19	  echo
+    20	  exit ${1:-0}
+    21	}
+    22
+    23	if [[ $# -eq 0 ]]; then
+    24	  HELP 1
+    25	fi
+    26
+    27	while getopts :i:o:h OPT; do
+    28	  case $OPT in
+    29	    h)
+    30	      HELP
+    31	      ;;
+    32	    i)
+    33	      IN_DIR="$OPTARG"
+    34	      ;;
+    35	    o)
+    36	      OUT_DIR="$OPTARG"
+    37	      ;;
+    38	    :)
+    39	      echo "Error: Option -$OPTARG requires an argument."
+    40	      exit 1
+    41	      ;;
+    42	    \?)
+    43	      echo "Error: Invalid option: -${OPTARG:-""}"
+    44	      exit 1
+    45	  esac
+    46	done
+    47
+    48	if [[ ${#IN_DIR} -lt 1 ]]; then
+    49	  echo "IN_DIR is required"
+    50	  exit 1
+    51	fi
+    52
+    53	if [[ ! -d $IN_DIR ]]; then
+    54	  echo "IN_DIR \"$IN_DIR\" is not a directory."
+    55	  exit 1
+    56	fi
+    57
+    58	echo "Started $(date)"
+    59
+    60	FILES_LIST=$(mktemp)
+    61	find "$IN_DIR" -type f -name \*.sh > "$FILES_LIST"
+    62	NUM_FILES=$(lc $FILES_LIST)
+    63
+    64	if [[ $NUM_FILES -gt 0 ]]; then
+    65	  echo "Will process NUM_FILES \"$NUM_FILES\""
+    66
+    67	  if [[ ! -d $OUT_DIR ]]; then
+    68	    mkdir -p "$OUT_DIR"
+    69	  fi
+    70
+    71	  i=0
+    72	  while read FILE; do
+    73	    BASENAME=$(basename $FILE)
+    74	    let i++
+    75	    printf "%3d: %s\n" $i $BASENAME
+    76	    wc -l $FILE > $OUT_DIR/$BASENAME
+    77	  done < $FILES_LIST
+    78
+    79	  rm $FILES_LIST
+    80	  echo "See results in OUT_DIR \"$OUT_DIR\""
+    81	else
+    82	  echo "No files found in \"$IN_DIR\""
+    83	fi
+    84
+    85	echo "Finished $(date)"
+```
+    
+I must have an IN_DIR (lines 48-51), and it must be a directory (lines 53-56). If the user does not supply an OUT_DIR, I will create a reasonable default (line 6).  One thing I love about bash is that I can call functions inside of strings, so OUT_DIR is a string (it's in double quotes) of the variable $PWD, the character "/", and the result of the function call to ```basename``` where I'm giving the optional second argument that I want removed from the first argument, and then the string "-out".  
+
+At line 60, I create a temporary file to hold the names of the files I need to process.  A line 61, I look for the files in IN_DIR that need to be processed.  You can read the manpage for ```find``` and think about what your scirpt might need to find (".fa" files greater than 0 bytes in size last modified since some date, etc.).  At line 62, I call my ```lc``` (line count) function to see how many files I found.  If I found more than 0 files (line 64), then I move ahead with processing.  I check to see if the OUT_DIR needs to be created (lines 67-69), and then create a counter variable ("i") that I'll use to number the files as I process them.  At line 72, I start a ```while``` loop to iterate over the input from redirecting *in* the temporary file holding the file names (line 77, ```< $FILES_LIST```).  Line 74 is a "let" expression where I increment the "i" variable by one (```i++```), a ```printf``` to let the user know which file we're processing, then a simple command (```wc```) but where you might choose to BLAST the sequence file to a database of pathogens to determine how deadly the sample is.  When I'm done, I clean up the temp file (line 79).  
+
+The alternate path when I find no input files (line 81-83) is to report that fact.  Bracketing the main processing logic are "Started/Finished" statements so I can see how long my script took.  When you start off, you will usually sit and watch your code run before you, but eventually you'll submit the your jobs to a queue where they will run when the resources become available.
+
+The above is, I would say, a minimally competent bash script.  If you can understand everything in there, then you know enough to be dangerous and should move on to learning more powerful languages.
