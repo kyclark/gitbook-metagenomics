@@ -11,6 +11,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **touch**: create an empty regular file
 * **pwd**: print working directory, where you are right now
 * **ls**: list files in current directory
+* **find**: find files or directories matching some conditions
 * **cd**: change directory (with no arguments, cd $HOME)
 * **cp**: copy a file (or "cp -r" to copy a directory)
 * **mv**: move a file or diretory
