@@ -478,11 +478,12 @@ We can use "sed" to alter the IDs.  The "s//" command say to "substitute" the fi
 $ sed 's/C/c/' clean_ids
 $ sed 's/_/./' clean_ids
 # sed 's/>//' clean_ids > newclean_ids
+```
 
 That last one removes the FASTA file artifact that identifies the beginning of an ID but is not part of the ID.  We can use this with "seqmagick" now to extract those sequences and find out how many were found:
 
 ```
-seqmagick convert --include-from-file newclean_ids group12_contigs.fasta newgroup12_contigs.fasta
+$ seqmagick convert --include-from-file newclean_ids group12_contigs.fasta newgroup12_contigs.fasta
 $ seqmagick info !$
 seqmagick info newgroup12_contigs.fasta
 name                     alignment    min_len   max_len   avg_len  num_seqs
