@@ -28,6 +28,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **head**: view the first few (10) lines of a file
 * **tail**: view the last (10) lines of a file
 * **top**: view the programs taking the most system resources (memory, I/O, time, CPUs, etc.), cf. "htop"
+* **ps**: view the currently running processes
 * **cut**: select columns from the output of a program
 * **wc**: (character) word (and line) count
 * **more/less**: pager programs that show you a "page" of text at a time; cf. https://unix.stackexchange.com/questions/81129/what-are-the-differences-between-most-more-and-less/81131
@@ -55,7 +56,49 @@ I assume you are on a command line by now, so let's look at some commands.
 * **$**: dollar
 * **!**: bang
 * **#!**: shebang
+* **PID**: pid (not pee-eye-dee)
 * **~**: twiddle or tilde; shortcut to your home directory when alone, shortcut to another user's home directory when used like "~bhurwitz"
+
+# Make it stop!
+
+If you launch a program that won't stop, you can use CTRL-C to send an "interrupt" signal to the program.  If it is well-behaved, it should stop, but it may not.  You can open another terminal on the machine and run ```ps -fu $USER``` to find all the programs you are running.  
+
+```
+$ ps -fu $USER
+UID        PID  PPID  C STIME TTY          TIME CMD
+kyclark  31718 31692  0 12:16 ?        00:00:00 sshd: kyclark@pts/75
+kyclark  31723 31718  0 12:16 pts/75   00:00:00 -bash
+kyclark  33265 33247  0 12:16 ?        00:00:00 sshd: kyclark@pts/86
+kyclark  33277 33265  1 12:16 pts/86   00:00:00 -bash
+kyclark  33792 33277  9 12:17 pts/86   00:00:00 vim run.p6
+kyclark  33806 31723  0 12:17 pts/75   00:00:00 ps -fu kyclark
+```
+
+The PID is the "process ID" and the PPID is the "parent process ID."  In the above table, let's assume my "vim" session was locked up.  I could ```kill 33792```.  If in a reasonable amount of time (a minute or so) that doesn't work, common wisdom says you ```kill -9``` to really, really tell it to shut down, but:
+
+>No no no.  Don't use kill -9.
+>
+> It doesn't give the process a chance to cleanly:
+>
+> * shut down socket connections
+> * clean up temp files
+> * inform its children that it is going away
+> * reset its terminal characteristics
+>
+> and so on and so on and so on.
+>
+> Generally, send 15, and wait a second or two, and if that doesn't work, send 2, and if that doesn't work, send 1.  If that doesn't, REMOVE THE BINARY because the program is badly behaved!
+>
+> Don't use kill -9.  Don't bring out the combine harvester just to tidy up the flower pot.
+> cf. http://porkmail.org/era/unix/award.html#uuk9letter
+
+Along with CTRL-C, you should learn about CTRL-Z to put a process into the background.  This could be handy if, say, you were in an editor, you make a change to your code, you CTRL-Z to background the editor, you run the script to see if it worked, then you ```fg``` to bring it back to the foreground.  I would consider this a sub-optimal work environment, but it's fine if you were for some reason limited to a single terminal window.  
+
+Generally if you want a program to run in the background, you would launch it from the command line with an ampersand ("&") at the end:
+
+```
+$ my-background-prog.sh &
+```
 
 # Handy command line shortcuts
 
