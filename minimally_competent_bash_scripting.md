@@ -2,6 +2,10 @@
 
 Bash is the worst shell scripting language except for all the others.  For many of the analyses you'll write, all you will need is a simple bash script, so let's figure out how to write a decent one.  I'll share with you what I've found to be the minimal amount of bash I use.
 
+# Statements
+
+All programming language have a grammar where "statements" (like "sentences") are built up from other terms.  Some languages like Python and Haskell use whitespace to figure out the end of a "statement," which is usually just the right side of the window.  C-like languages such as bash and Perl define the end of a statement with a colon ```;```.
+
 # Comments
 
 Every language has a way to indicate text in the source code that should be executed by the program.  Many Unix/c-style languages use the "#" (hash) sign to indicate that any text to the right should be ignored by the language, but some languages use other characters or character combinations.  Programmers may use comments to explain what some particularly bit of code is doing, or they may use the characters to temporarily disable some section of code.  Here is an example of what you might see:
