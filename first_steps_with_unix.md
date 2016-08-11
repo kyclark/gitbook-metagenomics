@@ -60,14 +60,14 @@ I assume you are on a command line by now, so let's look at some commands.
 
 # Handy command line shortcuts
 
-* <TAB>: hit the Tab key for command completion
+* Tab: hit the Tab key for command completion
 * **!!**: execute the last command again
 * **!$**: the last argument from your previous command line (think of the $ as the right anchor in a regex)
 * CTRL-R: reverse search of your history
 * Up/down cursor keys: go backwards/forwards in your history
 * CTRL-A, CTRL-E: jump to the start, end of the command line when in emacs mode (default)
 
-Protip: If you are on a Mac, it's easy to remap your (useless) CAPSLOCK key to CTRL.  Much less strain on your hand as you will find you need CTRL quite a bit, even more so if you choose emacs for your $EDITOR.
+> Protip: If you are on a Mac, it's easy to remap your (useless) CAPSLOCK key to CTRL.  Much less strain on your hand as you will find you need CTRL quite a bit, even more so if you choose emacs for your $EDITOR.
 
 # Altering your environment
 
@@ -96,12 +96,8 @@ You just told your shell (bash) to set the PATH variable to our "hurwitzlab" dir
 echo "PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH" >> ~/.bashrc
 ```
 
-Side note: Dotfiles (https://en.wikipedia.org/wiki/Hidden_file_and_hidden_directory) are files with names that begin with a dot "." and include:
+> Side note: Dotfiles (https://en.wikipedia.org/wiki/Hidden_file_and_hidden_directory) are files with names that begin with a dot.  They are normally hidden from view unless you use "ls -a" to list "all" files.  A single dot "." means the current directory, and two dots ".." mean the parent directory.
 
-* **.**: the current directory
-* **..**: the parent directory
-
-They are normally hidden from view unless you use "ls -a" to list "all" files.
 
 Your ".bashrc" (or maybe ".profile" or maybe ".bash_profile" depending on your system) file is read every time you login to your system, so you can remember your customizations.
 
@@ -115,26 +111,26 @@ alias up2='cd ../../'
 alias up3='cd ../../../'
 ```
 
-If you execute this on the command line, the alias will be saved until you log out.  Adding this to your .bashrc will 
-make it available every time you log in.  When you make a change and want the shell to bring those into the current environment, you need to "source" the file.  The command "." is an alias for "source":
+If you execute this on the command line, the alias will be saved until you log out.  Adding these lines to your .bashrc will make it available every time you log in.  When you make a change and want the shell to bring those into the current environment, you need to "source" the file.  The command "." is an alias for "source":
 
 ```
 $ source ~/.bashrc
+$ . ~/.bashrc
 ```
 
 # File system layout
 
-The top level of a Unix file system is "/" which is called "root."  Confusingly, there is also an account named "root" which is basically the super-user/sysadmin (systems administrator).  Unix has always been a multi-tenant system
+The top level of a Unix file system is "/" which is called "root."  Confusingly, there is also an account named "root" which is basically the super-user/sysadmin (systems administrator).  Unix has always been a multi-tenant system ...
 
 # Exercises
 
-In all the following, when you see a "$" it is a metacharacter indicating that this is a command-line prompt for a normal (not super-user) account.  Your prompt may be anything you like (search for "PS1 unix prompt" to learn more).  Anyway, point is that you should type (copy/paste) all the stuff *after* the $.  If you ever see a prompt with "#," it's indicating a command that should be run as the super-user/root account, e.g., installing some software into a system-wide directory so it can be shared by all users.
+> Note: When you see a "$" given in the example prompts, it is a metacharacter indicating that this is the prompt for a normal (not super-user) account.  Your default prompt may be different, and it is highly configurable (search for "PS1 unix prompt" to learn more).  Anyway, point is that you should type (copy/paste) all the stuff *after* the $.  If you ever see a prompt with "#," it's indicating a command that should be run as the super-user/root account, e.g., installing some software into a system-wide directory so it can be shared by all users.
 
 ## Number of unique users
 
 Find the number of unique users on a shared system
 
-We know that "w" will tell us the users logged in.  Let's connect the output of "w" to "head" using a pipe, but we only want the first five lines:
+We know that "w" will tell us the users logged in.  Try it now on a system that has many users (i.e., not your laptop) and see the output.  We'll connect the output of "w" to "head" using a pipe "|", but we only want the first five lines:
 
 ```
 $ w | head -5
@@ -144,7 +140,7 @@ antontre pts/1    149.165.156.129  Sat14    3days  0.10s  0.10s /bin/sh -i
 huddack  pts/3    128.4.131.189    09:38    4:56m  0.15s  0.15s -bash
 ```
 
-We need to skip the first two lines of header, so we can pipe the output of "w" into "awk" and tell it we only want to see output when the Number of Records is greater than 2:
+We want to see the first five *users*, not the first five lines of output.  To skip the first two lines of headers from "w," we first pipe "w" into "awk" and tell it we only want to see output when the Number of Records (NR) is greater than 2:
 
 ```
 $ w | awk 'NR>2' | head -5
@@ -155,7 +151,7 @@ minyard  pts/8    129.114.64.18    29Jul16  4:24m  3:46m  3:46m top
 antontre pts/11   149.165.156.129  Sun23    2days  0.24s  0.24s /bin/sh -i
 ```
 
-We can see right away that the some users like "antontre" are logged in multiple times.  Let's "cut" out just the first column of data.  The manpage for "cut" says that it defaults to using the tab character to determine columns, so we'll need to tell it to use spaces:
+Let's "cut" out just the first column of data.  The manpage for "cut" says that it defaults to using the tab character to determine columns, so we'll need to tell it to use spaces:
 
 ```
 $ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1
@@ -166,7 +162,7 @@ minyard
 antontre
 ```
 
-Great, let's "uniq" that output:
+We can see right away that the some users like "antontre" are logged in multiple times, so let's "uniq" that output:
 
 ```
 $ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1 | uniq
@@ -177,7 +173,7 @@ minyard
 antontre
 ```
 
-That's not right.  Remember I said earlier that "uniq" only works *on sorted input*?  So let's sort those names first:
+Hmm, that's not right.  Remember I said earlier that "uniq" only works *on sorted input*?  So let's sort those names first:
 
 ```
 $ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1 | sort | uniq
@@ -186,11 +182,26 @@ huddack
 minyard
 ```
 
-Yes, that is correct.  Now let's remove the "head -5" and use "wc" to count all the lines (-l) of input:
+OK, that is correct.  Now let's remove the "head -5" and use "wc" to count all the lines (-l) of input:
 
 ```
 $ w | awk 'NR>2' | cut -d ' ' -f 1 | sort | uniq | wc -l
 138
+```
+
+So what you see is that we're connecting small, well-defined programs together using pipes to connect the "standard input" (STDIN) and "standard output (STDOUT) streams.  There's a third basic file handle in Unix called "standard error" (STDERR) that we'll come across later.  It's a way for programs to report problems without simply dying.  You can redirect errors into a file like so:
+
+```
+$ program 2>err
+$ program 1>out 2>err
+```
+
+The first example puts STDERR into a file called "err" and lets STDOUT print to the terminal.  The second example captures STDOUT into a file called "out" while STDERR goes to "err."  
+
+> Protip: Sometimes a program will complain about things that you cannot fix, e.g., "find" may complain about file permissions that you don't care about.  In those cases, you can redirect STDERR to a special filehandle called "/dev/null" where they are forgotten forever.  Kind of like the "memory hole" in 1984.
+
+```
+find / -name my-file.txt 2>/dev/null
 ```
 
 ## Count "oo" words
@@ -254,7 +265,7 @@ $ cd !$
 $ wget ftp://ftp.imicrobe.us/abe487/contigs/contigs.zip
 ```
 
-Side track: How do we know we got the correct data?  Go back and look at that FTP site, and you will see that there is a "contigs.zip.md5" file that we can "less" on the server to view the contents:
+> Protip: How do we know we got the correct data?  Go back and look at that FTP site, and you will see that there is a "contigs.zip.md5" file that we can "less" on the server to view the contents:
 
 ```
 $ ncftp ftp://ftp.imicrobe.us/abe487/contigs
@@ -273,14 +284,14 @@ ncftp /abe487/contigs > less contigs.zip.md5
 ncftp /abe487/contigs > exit
 ```
 
-You can read up on MD5 (https://en.wikipedia.org/wiki/Md5sum) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches what we see on the server, then we can be sure that we have the exact file that is on the FTP site:
+> You can read up on MD5 (https://en.wikipedia.org/wiki/Md5sum) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches what we see on the server, then we can be sure that we have the exact file that is on the FTP site:
 
 ```
 $ md5sum contigs.zip
 1b7e58177edea28e6441843ddc3a68ab  contigs.zip
 ```
 
-Yes, those two sums match.  Note that sometimes the program is just called "md5."
+> Yes, those two sums match.  Note that sometimes the program is just called "md5."
 
 So, back to the exercise.  Let's unpack the contigs:
 
