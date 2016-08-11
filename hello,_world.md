@@ -34,5 +34,4 @@ Well, that looks suspiciously close to the bash version, and it is almost a line
 
 Line 8 is decidedly different in that we can assign to our "greeting" and "name" variables in one line, and line 10 has something very bash-like in that we can call a function *inside a string*.  In bash, the function call is denoted with ```$()``` or backticks (\`\`), and in Perl we can wrap executable code with curly braces ```{}```.  Inside those braces on line 10, we're using the ```//``` operator to say "what's in the $name variable or, if that is not defined, then the string 'Stranger'").
 
-Now to talk about the differences in those sigils.  We've seen them in bash, and they're in awk and sed, too, but they are usually just ```$``` signs.  Now're we're seeing ```$*SPEC``` and ```@*ARGS```.  
-
+Now to talk about the differences in those sigils.  We've seen them in bash, and they're in awk and sed, too, but they are usually just ```$``` signs.  Now're we're seeing ```$*SPEC``` and ```@*ARGS```.  We need to talk about data shapes.
