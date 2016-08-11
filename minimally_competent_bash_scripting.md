@@ -198,4 +198,60 @@ To check for too many arguments, I added the double pipes ("||") and another con
 
 # Named arguments
 
-It's great that we can make our script take arguments, so of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" (probably "file") argument is "mouse.fa."  A flag like "-v" might be a yes/no ("Boolean," if you like) indicator that we want or do not want "verbose" mode.  You've encountered these with programs like ```ls -l``` to indicate you want the "long" directory listing or "
+It's great that we can make our script take arguments, so of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" (probably "file") argument is "mouse.fa."  A flag like "-v" might be a yes/no ("Boolean," if you like) indicator that we want or do not want "verbose" mode.  You've encountered these with programs like ```ls -l``` to indicate you want the "long" directory listing or ```ps -u $USER``` to indicate the value for "-u" is the $USER.
+
+Here is a version that has named arguments:
+
+```
+$ cat -n named01.sh
+     1	#!/bin/bash
+     2
+     3	set -u
+     4
+     5	GREETING=""
+     6	NAME="Stranger"
+     7
+     8	function HELP() {
+     9	  printf "Usage:\n  %s -g GREETING [-n NAME]\n\n" $(basename $0)
+    10	  echo "Required arguments:"
+    11	  echo " -g GREETING"
+    12	  echo
+    13	  echo "Options:"
+    14	  echo " -n NAME ($NAME)"
+    15	  echo
+    16	  exit ${1:-0}
+    17	}
+    18
+    19	if [[ $# -eq 0 ]]; then
+    20	  HELP 1
+    21	fi
+    22
+    23	while getopts :g:n:h OPT; do
+    24	  case $OPT in
+    25	    h)
+    26	      HELP
+    27	      ;;
+    28	    g)
+    29	      GREETING="$OPTARG"
+    30	      ;;
+    31	    n)
+    32	      NAME="$OPTARG"
+    33	      ;;
+    34	    :)
+    35	      echo "Error: Option -$OPTARG requires an argument."
+    36	      exit 1
+    37	      ;;
+    38	    \?)
+    39	      echo "Error: Invalid option: -${OPTARG:-""}"
+    40	      exit 1
+    41	  esac
+    42	done
+    43
+    44	if [[ ${#GREETING} -lt 1 ]]; then
+    45	  HELP 1
+    46	fi
+    47
+    48	echo "$GREETING, $NAME"
+```
+
+Our s
