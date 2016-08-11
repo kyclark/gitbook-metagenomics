@@ -10,4 +10,5 @@
    * [Minimally competent bash scripting](minimally_competent_bash_scripting.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
+   * Hello, World
 
