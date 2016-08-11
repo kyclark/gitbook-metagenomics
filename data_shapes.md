@@ -41,5 +41,17 @@ When you have a key-value association, that belongs in a hash AKA "map" or "dict
 {species => H_sapiens, taxid => 9606}
 > put %genome<species>;
 H_sapiens
+> %genome.keys
+(species taxid)
 ```
 
+In the case of each variable, something that should be very striking is that we can ask the variables to do things for us.  We can ask a scalar how many "chars" (characters) it has, we can have a list join its elements together using a comma to create a string that we can print, and we can ask the hash to give us the value for some given key or even all the keys it has.  We can even go meta (literally) and ask the variables what they can do for us.  I must elide the output, but you should try this in your own REPL:
+
+```
+> $greeting.^methods
+(BUILD Int Num chomp pred succ simplematch match ...)
+> @nums.^methods
+(iterator from-iterator new STORE reification-target shape pop shift splice ...)
+> %genome.^methods
+(clone BIND-KEY name keyof of default dynamic push append ...)
+```
