@@ -1,4 +1,4 @@
-# Hello, again. Is it me you're looking for?
+# I Am Greet
 
 Let's revisit our greeting script and see how we can do much better than bash-Perl.  
 
