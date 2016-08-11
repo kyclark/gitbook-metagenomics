@@ -5,3 +5,9 @@ The field of "bioinformatics" is biology plus data science.  For the latter, mos
 # Metagenomics
 
 Metagenomics is a subset of bioinformatics where we deal with unknown communities of organisms comprised of bacteria, viruses, fungi, archeae, etc.  We deal exclusively with sequence-based data, usually measured in the gigabytes and -bases.  Sequencing runs typically produce millions or tens of millions of reads.  Our goal is to derive some useful knowledge from uncultured samples.  We might try to identify pathogens in human wounds, protein function in open ocean water, or relative abundance of microbes in soil.
+
+# Authors and Contributors
+
+* Ken Youens-Clark <kyclark@gmail.com>
+* Bonnie Hurwitz <bhurwitz@email.arizona.edu>
+* Ben Tully 
