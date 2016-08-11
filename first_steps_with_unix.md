@@ -101,6 +101,36 @@ Generally if you want a program to run in the background, you would launch it fr
 $ my-background-prog.sh &
 ```
 
+Lastly, know that most Unix programs interpret CTRL-D as the end-of-input signal.  You can use this to send the "exit" command to most any interactive program, even your shell.  Here's a way to enter some text into a file directly from the command line without using a text editor:
+
+```
+$ cat > wheelbarrow
+so much depends
+upon
+
+a red wheel
+barrow
+
+glazed with rain
+water
+
+beside the white
+chickens.
+<CTRL-D>
+$ cat wheelbarrow
+so much depends
+upon
+
+a red wheel
+barrow
+
+glazed with rain
+water
+
+beside the white
+chickens.
+```
+
 # Handy command line shortcuts
 
 * Tab: hit the Tab key for command completion; hit it early and often!
