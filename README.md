@@ -10,4 +10,17 @@ Metagenomics is a subset of bioinformatics where we deal with unknown communitie
 
 * Ken Youens-Clark <kyclark@gmail.com>
 * Bonnie Hurwitz <bhurwitz@email.arizona.edu>
-* Ben Tully 
+
+# About the authors
+
+## Ken
+
+Ken went to college (the University of North Texas, 1990) thinking he might study music and become  a professional drummer.  He decided against that particular career but didn't have an alternate.  He changed his major a couple of times (business, communications) before deciding on an English literature degree just so he could get out of undergrad in five years.  NB: never did programming cross his mind, and biology was he most loathed science.
+
+After college, the cold hard reality of poverty set it, and he cast about for a job that 1) would be interesting and 2) people would pay him (well) to do.  At his first job (1995), he learned Microsoft's Access database and created his company's first website by writing HTML into Notepad and using a Windows FTP client to upload to their ISP.  The die was cast.  His next job was writing a technical manual for a piece of software written in VisualBasic on Windows 3.1.  He was offered a position to learn VB and support the program and another Access program.  He went on to learn another database (DBase IV) and language (Delphi).  His next job was developing Windows desktop applications in Delphi/Interbase, but he was itching to get into web applications.  So his next job (c. 1998) was writing VBScript in Microsoft ASP with SQLServer as a database.  At this point, Ken was fairly much fed up with Microsoft and rediscovered Unix.
+
+Ken's first email client in college was "pine" running on the Unix machines which he accessed through the computer labs.  He used "talk" to chat with friends, and so had been exposed to the celebrated "command line."  Now he discovered that his ISP offered "shell" accounts on their servers accessible by "telnet."  He was reading more about Unix on the Internet and how people were using the Perl programming language with CGI (common gateway interface) to create interactive web pages.  The more Ken learned about Unix and Perl and "open source/free" software, the more he realized he'd found his tribe.  His next job (1999) he moved into developing web apps on Linux platforms using the Apache web server with the MySQL database and Perl (the "LAMP" stack).
+
+Around 2001, Ken saw that a very celebrated Perl developer named Lincoln Stein was looking to hire people.  Ken got hired to work on the comparative plant genomics database called "Gramene," but really had no idea what Lincoln had done apart from his modules and books.  He was a very important character in a fairly new field called "bioinformatics," and he ran a research lab at Cold Spring Harbor Laboratory in Cold Spring Harbor, NY.  Lincoln hired Ken to write a web-based visual comparative map application (CMap) to augment existing web genome browsers like the UCSC browser, the Ensembl browser, and Lincoln's own Gbrowse.  This was Ken's entree into the world of biology and genomics.  Around 2004, Lincoln hired Bonnie Hurwitz who left a few years later to earn her PhD from the University of Arizona.  In 2014, Bonnie set up her new lab at the UofA and hired Ken to create the iMicrobe project from the smoldering ashes of the CAMERA project.
+
+Ken currently enjoys research computing, teaching, and the pursuit of his MS at the UofA along with living in Tucson with his family (wife, three children).  He likes to bike, cook, and play music.
