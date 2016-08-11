@@ -147,7 +147,7 @@ $ ./positional02.sh "Good Day" "Kind Sir"
 Good Day, Kind Sir
 ```
 
-On line 5, I'm using a conditional wrapped in the double square brackets.  As you look at bash scripts written by other (lesser) programmers, you'll may see the use of single brackets.  My limited understanding is that double brackets are safer, so I use them.  (Remember, this isn't called "minimally competent bash scripting" for nothing.)  The conditional is comparing ```$#``` (the number of arguments to the script) to the integer "1" using the ```-lt``` (less than) operator.  There are plenty of web pages that will describe all the conditions you can write in bash -- I won't belabor the point.  You can find plenty of other examples using common sense and a search engine.
+On line 5, I'm using a conditional wrapped in the double square brackets.  As you look at bash scripts written by other (lesser) programmers, you'll may see the use of single brackets.  My limited understanding is that double brackets are safer, so I use them.  (Remember, this isn't called "minimally competent bash scripting" for nothing.)  The conditional is comparing ```$#``` (the number of arguments to the script) to the integer "1" using the ```-lt``` (less than) operator.  (All of the arguments are contained in the variable ```$@```.)  There are plenty of web pages that will describe all the conditions you can write in bash -- I won't belabor the point.  You can find plenty of other examples using common sense and a search engine.
 
 Line 6 is using ```printf``` ("print format") instead of ```echo``` because I want to use the built-in function ```basename``` to extract just the filename of the currently running program ```$0```.  
 
