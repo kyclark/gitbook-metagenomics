@@ -1,0 +1,2 @@
+# Minimally competent bash scripting
+
