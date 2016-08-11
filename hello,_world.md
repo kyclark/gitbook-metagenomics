@@ -25,21 +25,9 @@ $ cat -n greet1.pl6
      7
      8	my ($greeting, $name) = @*ARGS;
      9
-    10	put "$greeting, {$name // 'Stranger'}";
-[saguaro@~/work/abe487/book/perl6]$ vi greet1.pl6
-[saguaro@~/work/abe487/book/perl6]$ cat -n greet1.pl6
-     1	#!/usr/bin/env perl6
-     2
-     3	unless (1 <= @*ARGS.elems <= 2) {
-     4	    printf "Usage: %s GREETING [NAME]\n", $*SPEC.basename($*PROGRAM-NAME);
-     5	    exit 1;
-     6	}
-     7
-     8	my ($greeting, $name) = @*ARGS;
-     9
     10	put "$greeting, {$name // 'Stranger'}!";
 $ ./greet1.pl6 Howdy "Old Joe Clark"
 Howdy, Old Joe Clark!
 ```
 
-Well, that looks suspiciously close to the bash version, and it is almost a line-for-line translation.  Let's 
+Well, that looks suspiciously close to the bash version, and it is almost a line-for-line translation.  Let's break it down.  Line 1 is our now-familiar shebang.  We don't need to know the exact path to the Perl6 binary as long as it's somewhere in our $PATH.  Next we check the number of arguments to the script by looking at @\*ARGS 
