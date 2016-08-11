@@ -7,4 +7,5 @@
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
 * [02-Programming](programming.md)
+   * Organizing with Makefiles
 
