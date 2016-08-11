@@ -4,4 +4,6 @@ Bash is the worst shell scripting language except for all the others.  Much of t
 
 # Shebang
 
-Scripting languages (sh, bash, Perl, Python, Ruby, etc.) are generally distinguished by the fact that the "program" is a regular file containing plain text that is interpreted into machine code at the time you run it.  Other languages (c, C++, Haskell) have a separate compilation step to turn their regular text source files into binary executable.  If you "less" a compiled file, you'll 
+Scripting languages (sh, bash, Perl, Python, Ruby, etc.) are generally distinguished by the fact that the "program" is a regular file containing plain text that is interpreted into machine code at the time you run it.  Other languages (c, C++, Haskell) have a separate compilation step to turn their regular text source files into binary executable.  If you "less" a compiled file, you'll see a mess that might even lock up your window.  (If that happens, refer back to "Make it stop!" to kill it or just close the window and start over.)
+
+So, basically a "script" is a plain text file that is often executable (by virtue of having the executable bit(s) turned on, cf. 
