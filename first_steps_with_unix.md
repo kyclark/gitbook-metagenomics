@@ -117,6 +117,47 @@ $ source ~/.bashrc
 $ . ~/.bashrc
 ```
 
+# Permissions
+
+When you execute "ls -l," you'll see the "long" listing of the contents of a directory similar to this:
+
+```
+-rwxr-xr-x   1 kyclark  staff     174 Aug  9 20:21 abs.py*
+drwxr-xr-x  14 kyclark  staff     476 Aug  3 12:14 anaconda3/
+```
+
+The first column of data contains a wealth of information represent in 10 bits.  The first bit is:
+
+* "-" for a regular file
+* "d" for a directory
+* "l" for a symlink (like a shortcut)
+
+The other nine bits are broken into sets of three bits that represent the permissions for the "user," "group," and "other."  The "abs.py" is a regular file we can tell from the first dash.  The next three bits show "rwx" which means that the user ("kyclark") has read, write, and execute permissions for this file.  The next three bits show "r-x" meaning that the group ("staff") can read and execute the file only.  The same is true for all others.
+
+When you create a file, the normal default is that it is not executable.  You must specifically tell Unix to change the mode of the file using the "chmod" command.  Often it's enough to say:
+
+```
+$ chmod +x myprog.sh
+```
+
+To turn on the execute bits for everyone, but it's possible to have much finer control of the permissions.  If you only want user and group to have execute, then do:
+
+```
+$ chmod ug+x myprog.sh
+```
+
+Removing is done with a "-," so any combination of "[ugo][+-][rwx]" will usually get you what you want.
+
+Sometimes you may see instructions to "chmod 775" a file.  This is using octal notation where the three bits "rwx" correspond to the digits "421," so the first "7" is "4+2+1" which equals "r" whereas the "5" = "4+1" so "w".  Therefore "chmod 775" is the same as 
+
+```
+$ chmod -rwx myfile
+$ chmod ug+rwx myfile
+$ chmod o+rw myfile
+```
+
+So you can see that it can be much faster to use the octal notation.
+
 # File system layout
 
 The top level of a Unix file system is "/" which is called "root."  Confusingly, there is also an account named "root" which is basically the super-user/sysadmin (systems administrator).  Unix has always been a multi-tenant system ...
