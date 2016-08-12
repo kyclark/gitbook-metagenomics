@@ -175,7 +175,7 @@ $ echo $PATH | sed "s/:/:\n/g"
 /home/u20/kyclark/bin
 ```
 
-You'll notice the directories are separated by colons, and I have the shared "hurwitzlab" directory first in my path.  Much of our work will require access to tools that are not installed by default on the HPC.  You could build them into your own $HOME directory, but it will be easier if you just add this shared directory to your $PATH.  From the command line, you can do this:
+I've used "sed" to add a newline after each colon so you can more easily see that the directories are separated by colons.  Notice that I have the shared "hurwitzlab" directory first in my path.  Much of our work will require access to tools that are not installed by default on the HPC.  You could build them into your own $HOME directory, but it will be easier if you just add this shared directory to your $PATH.  From the command line, you can do this:
 
 ```
 PATH=/rsgrps/bhurwitz/hurwitzlab/bin:$PATH
