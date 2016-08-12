@@ -12,6 +12,9 @@ $ cat -n greet2.pl6
 $ ./greet2.pl6
 Usage:
   ./greet2.pl6 <greeting> [<name>]
+$ ./greet2.pl6 --help
+Usage:
+  ./greet2.pl6 <greeting> [<name>]
 $ ./greet2.pl6 Hello
 Hello, Stranger
 $ ./greet2.pl6 Hello Kenny
