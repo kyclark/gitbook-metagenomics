@@ -155,23 +155,23 @@ As you see above, "env" will list all the key-value pairs defining your environm
 Your $PATH setting is extremely important as it defines the directory locations that will be searched (in order) to find programs.  Here's my $PATH on the UA HPC:
 
 ```
-$ echo $PATH | sed "s/:/\n/g"
-/rsgrps/bhurwitz/hurwitzlab/bin
-/sbin
-/bin
-/usr/bin
-/usr/sbin
-/usr/lpp/mmfs/bin
-/usr/pbs/bin
-/var/spool/pas/repository/pas-appmaker
-/opt/sgi/sbin
-/opt/sgi/bin
-/usr/local/bin
-/home/u20/kyclark/bin
-/home/u20/kyclark/perl5/bin
-/rsgrps/bhurwitz/hurwitzlab/tools/bpipe-0.9.9/bin
-/home/u20/kyclark/.local/bin
-/home/u20/kyclark/.rakudobrew/bin
+$ echo $PATH | sed "s/:/:\n/g"
+/rsgrps/bhurwitz/hurwitzlab/bin:
+/sbin:
+/bin:
+/usr/bin:
+/usr/sbin:
+/usr/lpp/mmfs/bin:
+/usr/pbs/bin:
+/var/spool/pas/repository/pas-appmaker:
+/opt/sgi/sbin:
+/opt/sgi/bin:
+/usr/local/bin:
+/home/u20/kyclark/bin:
+/home/u20/kyclark/perl5/bin:
+/rsgrps/bhurwitz/hurwitzlab/tools/bpipe-0.9.9/bin:
+/home/u20/kyclark/.local/bin:
+/home/u20/kyclark/.rakudobrew/bin:
 /home/u20/kyclark/bin
 ```
 
