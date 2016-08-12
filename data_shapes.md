@@ -55,3 +55,5 @@ In the case of each variable, something that should be very striking is that we 
 > %genome.^methods
 (clone BIND-KEY name keyof of default dynamic push append ...)
 ```
+
+This only begins to scratch the surface.  You can read more at https://docs.perl6.org/type.html.
