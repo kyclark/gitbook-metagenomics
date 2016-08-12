@@ -13,5 +13,5 @@
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
    * [I Am Greet](hello,_again_is_it_me_youre_looking_for.md)
-   * Add It Up
+   * [Add It Up](add_it_up.md)
 
