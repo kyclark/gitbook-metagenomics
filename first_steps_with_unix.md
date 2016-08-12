@@ -250,6 +250,11 @@ $ chmod o+rw myfile
 
 So you can see that it can be much faster to use the octal notation.
 
+When you are trying to share data with your colleagues who are on the same system, you may put something into a shared location but they complain that they cannot read it or nothing is there.  The problem is most likely permissions.  The  "uask" setting on a system determines the default permissions, and it may be that the directory and/or files are readable only by you.  It may also be that you are not in a common group that you can use to grant permission, in which case you can either:
+
+* politely ask your sysadmin to create a new group OR
+* ```chmod 777``` the directory, which is probably the worst option as it makes the directory completely accessible to anyone to do anything.  In short, don't do this unless you really don't care if someone accidentally or maliciously wipes out your data.
+
 # File system layout
 
 The top level of a Unix file system is "/" which is called "root."  Confusingly, there is also an account named "root" which is basically the super-user/sysadmin (systems administrator).  Unix has always been a multi-tenant system ...
