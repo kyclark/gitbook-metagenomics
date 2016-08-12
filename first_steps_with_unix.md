@@ -52,6 +52,7 @@ I assume you are on a command line by now, so let's look at some commands.
 # Pronunciation
 
 * **/**: slash; the thing leaning the other way is a "backslash"
+* **sh**: shuh or "ess-ach"
 * **etc**: et-see
 * **usr**: user
 * **#**: hash
