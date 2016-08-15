@@ -124,7 +124,7 @@ $ cat -n dna5.pl6
     14 	}
 ```
 
-At line 4, I declare the hash ```%count``` that will hold key-value pairs where the keys will be the nucleotides and the values will be the number of times we saw them.  It's important (for this version) to initialize the counts or line 13 will complain if a given string does not have any of the named bases.  To get around that, we can use a ```map``` statement:
+At line 4, I declare the hash ```%count``` that will hold key-value pairs where the keys will be the nucleotides and the values will be the number of times we saw them.  It's important (for this version) to initialize the counts or line 13 will complain if a given base does not have a value.  To get around that, we can use a ```map``` statement:
 
 ```
 $ cat -n dna6.pl6
