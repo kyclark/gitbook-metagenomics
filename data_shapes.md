@@ -8,7 +8,7 @@ Time to fire up ```perl6``` and start typing.  The following show the result of 
 
 ## Scalars $
 
-If you have just one of a thing like our greeting or name, then you put it into a "scalar" or singular variable.  These are prefixed with a ```$``` like ```$greeting``` and can hold only one value.  If you set it to a second value, the first value is forever lost (unless you set it to be immutable -- more on that later).
+If you have just one of a thing like our greeting or name, then you put it into a "scalar" or singular variable.  These are prefixed with a ```$``` like ```$greeting``` and can hold only one value.  If you set it to a second value, the first value is forever lost unless you set it to be immutable using ```:=```.
 
 ```
 > my $greeting = "How you doin'?";
@@ -19,6 +19,11 @@ How you doin'?
 3.14
 > $pi * 2
 6.28
+> my $money := 1_000_000;
+1000000
+> $money = 0
+Cannot assign to an immutable value
+  in block <unit> at <unknown file> line 1
 ```
 
 ## Lists @
