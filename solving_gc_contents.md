@@ -87,8 +87,7 @@ $ cat -n dna3.pl6
 What's fun is that ```for``` can act like ```given``` and use smart matching on ```$_``` AKA "the topic" (or "thing" or "it").  Here's a shorter version:
 
 ```
-$ cat -n !$
-cat -n dna4.pl6
+$ cat -n dna4.pl6
      1 	#!/usr/bin/env perl6
      2
      3 	sub MAIN (Str $dna!) {
