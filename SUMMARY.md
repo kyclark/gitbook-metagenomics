@@ -12,6 +12,6 @@
    * [Why Perl 6?](first_steps_with_perl_6.md)
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
-   * [I Am Greet](I_am_greet.md)
+   * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
 
