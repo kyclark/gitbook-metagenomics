@@ -8,12 +8,12 @@
    * [Unix exercises](unix_exercises.md)
 * [Programming](programming.md)
    * [Minimally competent bash scripting](minimally_competent_bash_scripting.md)
-   * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [Solving GC contents](solving_gc_contents.md)
+   * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
 
