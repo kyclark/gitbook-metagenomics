@@ -15,4 +15,5 @@
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [Problem Set](problem_set.md)
+   * Solving GC contents
 
