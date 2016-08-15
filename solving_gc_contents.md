@@ -78,9 +78,11 @@ $ cat -n dna3.pl6
     12 	        }
     13 	    }
     14
-    15 	    put join ' ', $num-A, $num-C, $num-G, $num-T;
+    15 	    put ($num-A, $num-C, $num-G, $num-T).join(' ');
     16 	}
 ```
+
+Notice the change at line 15 where I make a temporary (anonymous) list from the four counters and then call the ```.join``` method on the list. 
 
 What's fun is that ```for``` can act like ```given``` and use smart matching on ```$_``` AKA "the topic" (or "thing" or "it").  Here's a shorter version:
 
