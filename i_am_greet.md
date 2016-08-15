@@ -57,7 +57,8 @@ $ cat -n greet4.pl6
 $ ./greet4.pl6
 Usage:
   ./greet4.pl6 --greeting=<Str> [--name=<Str>]
-$ ./greet4.pl6 --greeting="Top o' the morning"Top o' the morning, Stranger
+$ ./greet4.pl6 --greeting="Top o' the morning"
+Top o' the morning, Stranger
 $ ./greet4.pl6 --greeting="Top o' the morning" --name=11
 Top o' the morning, 11
 ```
