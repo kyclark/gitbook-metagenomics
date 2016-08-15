@@ -33,4 +33,30 @@ $ ./adder1.pl6 2 4.8
   adder1.pl6 <Int> <Int>
 ```
 
-At line 5, I'm declaring two required integer variables called ```$a``` and ```$b```.  If the user provides any arguments that don't match that signature, then we've seen how Perl 6 will generate a decent usage statement.  Here I've thrown in my own ```USAGE``` method to show how you can create your own, much like the ```HELP``` that we created in bash.
+At line 5, I'm declaring two required integer variables called ```$a``` and ```$b```.  If the user provides any arguments that don't match that signature, then we've seen how Perl 6 will generate a decent usage statement.  Here I've thrown in my own ```USAGE``` method to show how you can create your own, exactly like we created in bash.  It gets run automatically on bad input.
+
+But now we have a problem in that we'd like to be able to add anything that looks like a number, and ```Int``` won't allow the argument "4.8."  We can move up the type hierarchy to ```Numeric``` to be more generic:
+
+```
+$ cat -n adder2.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4
+     5 	sub MAIN (Numeric $a!, Numeric $b!) { put $a + $b }
+     6
+     7 	sub USAGE {
+     8 	    note sprintf "  %s <Numeric> <Numeric>\n", $*SPEC.basename($*PROGRAM-NAME);
+     9 	}
+$ ./adder2.pl6 2>err
+$ cat err
+  adder2.pl6 <Numeric> <Numeric>
+$ ./adder2.pl6 2.71828 3.14159
+5.85987
+$ ./adder2.pl6 2.71828 5.4e+3
+5402.71828
+```
+
+Something else I added was the ```note``` in ```USAGE``` so that the usage statement is printed to STDERR (standard error).  You can read about other useful I/O (input/output) methods at https://docs.perl6.org/type/IO.
+
+What I like about creating descriptive signatures for ```MAIN``` is that it helps us define what inputs we require and communicates the requirements efficiently to the user.  You are encouraged to always use a ```MAIN``` entry point when possible.
