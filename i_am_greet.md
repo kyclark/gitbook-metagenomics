@@ -43,7 +43,7 @@ $ ./greet3.pl6 --name=Wilbur --greeting=Salutations
 Salutations, Wilbur
 ```
 
-By putting a colon ```:``` in front of the argument names, we used a shorthand to create a ```Pair``` type (https://docs.perl6.org/type/Pair).  This was much easier than all that ```getopt``` business in bash, and naming the arguments lets the user specify them in any order desired.  The ```!``` at the end of ```:$greeting!``` indicates that this is a required argument, while the ```=``` after ```$name``` indicates a default value for an optional argument.
+By putting a colon ```:``` in front of the argument names, we used a shorthand to create a ```Pair``` type (https://docs.perl6.org/type/Pair).  This was much easier than all that ```getopt``` business in bash, and naming the arguments lets the user specify them in any order desired.  The ```!``` at the end of ```:$greeting!``` indicates that this is a required argument, while the ```=``` after ```$name``` indicates a default value for an optional argument.  You can learn more about the signatures of subroutines https://docs.perl6.org/type/Signature.
 
 Did you notice also that the generated help included a hint as the type of data wanted by each argument?  The ```(Any)``` is a data type (https://docs.perl6.org/type.html) in Perl 6 at the top of the type hierarchy (https://docs.perl6.org/type/Any).  We could indicate that we want strings by adding a type to the signature:
 
