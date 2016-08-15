@@ -5,7 +5,7 @@ For this section, I'm going to walk through an evolution of the "DNA" problem fr
 ```
 $ ./dna1.pl6 AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC
 20 12 17 21
-[saguaro@~/work/abe487/book/perl6]$ cat -n dna1.pl6
+$ cat -n dna1.pl6
      1 	#!/usr/bin/env perl6
      2
      3 	sub MAIN (Str $dna!) {
