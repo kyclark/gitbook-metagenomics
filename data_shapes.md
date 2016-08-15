@@ -15,11 +15,7 @@ If you have just one of a thing like our greeting or name, then you put it into 
 How you doin'?
 > $greeting.chars
 14
-> my $pi = 3.14;
-3.14
-> $pi * 2
-6.28
-> my $money := 1_000_000;
+> my $money := 1e+6;
 1000000
 > $money = 0
 Cannot assign to an immutable value
@@ -50,7 +46,7 @@ H_sapiens
 (species taxid)
 ```
 
-In the case of each variable, something that should be very striking is that we can ask the variables to do things for us.  We can ask a scalar how many "chars" (characters) it has, we can have a list join its elements together using a comma to create a string that we can print, and we can ask the hash to give us the value for some given key or even all the keys it has.  We can even go meta (literally) and ask the variables what they can do for us.  I must elide the output, but you should try this in your own REPL:
+In the case of each variable, something that should be very striking is that we can ask the variables to do things for us.  We can ask a scalar how many "chars" (characters) it has, we can have a list join its elements together using a comma to create a string that we can print, and we can ask the hash to give us the value for some given key or even all the keys it has.  We can even go meta (literally) and ask the variables what they can do for us.  I will elide the output here, but you should try this in your own REPL:
 
 ```
 > $greeting.^methods
