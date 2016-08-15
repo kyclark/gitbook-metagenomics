@@ -24,7 +24,7 @@ $ ./dna1.pl6 foobar
 1 0 0 0
 ```
 
-Not a bad start.  Our program expects a String of DNA on the command line (line 3).  We declare four variables at line 4 to hold the counts for A, C, G, and T.  (Note that Perl 6 variables are allowed to have dashes or quotes.)  Line 6 sets up a ```for``` loop (https://docs.perl6.org/syntax/for) that calls the ```comb``` method (https://docs.perl6.org/type/Str#routine_comb) on the ```$dna``` to supply ```$letter``` so that we can inspect each letter individually.  Lines 7-10 compare each letter's upper- and lowercase version (lowercase is often used to "softmask" highly repetitive regions of DNA like in plant genomes) to decide which counter to increment with  ```++``` (https://docs.perl6.org/routine/$PLUS_SIGN$PLUS_SIGN).  At line 13, we print out the results as described on the website.
+Not a bad start.  Our program expects a String of DNA on the command line (line 3).  We declare four variables at line 4 to hold the counts for A, C, G, and T.  Line 6 sets up a ```for``` loop (https://docs.perl6.org/syntax/for) that calls the ```comb``` method (https://docs.perl6.org/type/Str#routine_comb) on the ```$dna``` to supply ```$letter``` so that we can inspect each letter individually.  Lines 7-10 compare each letter's upper- and lowercase version (lowercase is often used to "softmask" highly repetitive regions of DNA like in plant genomes) to decide which counter to increment with  ```++``` (https://docs.perl6.org/routine/$PLUS_SIGN$PLUS_SIGN).  At line 13, we print out the results as described on the website.
 
 Here's a version that makes some improvements:
 
