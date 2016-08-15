@@ -10,7 +10,7 @@ $ ./hello.pl6
 Hello, World!
 ```
 
-Well, that looks almost exactly like bash and Python.  Except that is used ```put``` (like ```puts``` in Ruby) instead of ```print```.  Maybe this won't be too hard?  
+Well, that looks almost exactly like bash and Python except that it uses ```put``` (like ```puts``` in Ruby) instead of ```echo``` or ```print```.  Maybe this won't be too hard?  
 
 OK, let's rewrite our "greeting" script in Perl6.  
 
