@@ -179,7 +179,7 @@ $ cat -n dna7.pl6
      7 	}
  ```
  
-Lastly, I'd like to create a version that can handle input from a file as well as a string:
+Next, I'd like to create a version that can handle input from a file as well as a string:
 
 ```
 $ cat -n dna8.pl6
@@ -204,3 +204,45 @@ result = conditional ?? true-branch !! false-branch
 ```
 
 In my case, the conditional is to the the ```$input``` as an ```IO``` object and test the ```e``` (exists, https://docs.perl6.org/type/IO$COLON$COLONPath#File_test_operators).  If it is ```True```, then execute the ```slurp``` method on the IO object; otherwise, just use the ```$input```.  Notice that the Bag returns "0" for any missing elements, so no initialization was required.
+
+The advantage to using the "bag" solution is that we can easily expand the script to also count, for instance, "N"s which are unknown base calls or the bases in RNA or proteins:
+
+```
+$ cat -n char-count.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Str $input!) {
+     4 	    my $text  = $input.IO.e ?? $input.IO.slurp !! $input;
+     5 	    my $bag   = $text.comb.Bag;
+     6 	    for $bag.keys.grep(/<[a..zA..Z]>/).sort -> $char {
+     7 	        put join "\t", $char, $bag{$char};
+     8 	    }
+     9 	}
+$ ./char-count.pl6 AANCTANGNACTAGG
+A      	5
+C      	2
+G      	3
+N      	3
+T      	2
+$ ./char-count.pl6 prot.fa
+A      	58
+C      	47
+D      	42
+E      	55
+F      	36
+G      	60
+H      	47
+I      	47
+K      	42
+L      	44
+M      	51
+N      	54
+P      	56
+Q      	50
+R      	59
+S      	42
+T      	45
+V      	50
+W      	55
+Y      	60
+```
