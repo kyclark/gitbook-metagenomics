@@ -219,7 +219,7 @@ $ cat -n named01.sh
      5	GREETING=""
      6	NAME="Stranger"
      7
-     8	function HELP() {
+     8	function USAGE() {
      9	  printf "Usage:\n  %s -g GREETING [-n NAME]\n\n" $(basename $0)
     10	  echo "Required arguments:"
     11	  echo " -g GREETING"
@@ -231,13 +231,13 @@ $ cat -n named01.sh
     17	}
     18
     19	if [[ $# -eq 0 ]]; then
-    20	  HELP 1
+    20	  USAGE 1
     21	fi
     22
     23	while getopts :g:n:h OPT; do
     24	  case $OPT in
     25	    h)
-    26	      HELP
+    26	      USAGE
     27	      ;;
     28	    g)
     29	      GREETING="$OPTARG"
@@ -256,7 +256,7 @@ $ cat -n named01.sh
     42	done
     43
     44	if [[ ${#GREETING} -lt 1 ]]; then
-    45	  HELP 1
+    45	  USAGE 1
     46	fi
     47
     48	echo "$GREETING, $NAME"
@@ -264,7 +264,7 @@ $ cat -n named01.sh
 
 Our script just got much longer but also more flexible.  I've written a hundred shell scripts with just this as the template, so you can, too.  Go search for how ```getopt``` works and copy-paste this for your bash scripts.  
 
-I've introduced a new function called ```HELP``` that prints out the "Usage" statement so that it can be called when:
+I've introduced a new function called ```USAGE``` that prints out the "Usage" statement so that it can be called when:
 
 * the script is run with no arguments (line 19)
 * the script is run with the "-h" flag (lines 25-27)
@@ -295,7 +295,7 @@ $ cat -n basic.sh
      9	  wc -l "$1" | awk '{print $1}'
     10	}
     11
-    12	function HELP() {
+    12	function USAGE() {
     13	  printf "Usage:\n  %s -i IN_DIR -o OUT_DIR\n\n" $(basename $0)
     14
     15	  echo "Required arguments:"
@@ -307,13 +307,13 @@ $ cat -n basic.sh
     21	}
     22
     23	if [[ $# -eq 0 ]]; then
-    24	  HELP 1
+    24	  USAGE 1
     25	fi
     26
     27	while getopts :i:o:h OPT; do
     28	  case $OPT in
     29	    h)
-    30	      HELP
+    30	      USAGE
     31	      ;;
     32	    i)
     33	      IN_DIR="$OPTARG"
