@@ -3,8 +3,6 @@
 For this section, I'm going to walk through an evolution of the "DNA" problem from the Rosalind.info website (http://rosalind.info/problems/dna).  Here is a first version:
 
 ```
-$ ./dna1.pl6 AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC
-20 12 17 21
 $ cat -n dna1.pl6
      1 	#!/usr/bin/env perl6
      2
