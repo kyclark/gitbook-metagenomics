@@ -2,7 +2,7 @@
 
 Perl has various containers for different shapes of data.  You can have one thing (a string of DNA), lots of things (a list of transcription factors), a key-value pair (metadata about a sample like species = 'H. sapiens,' age = 33, gender = 'male'), etc.  Perl would call these things "scalars," "lists," and "hashes," and these shapes are almost universal to all programming languages.  Perl has several other useful shapes like bags and sets, and we'll get to those later. 
 
-Languages like Python, Ruby, Haskell, Java, make no visual distinction between their reserved words and variables.  Perl's language designers feel that the variables should stand out from the language itself, and that the sigils (decorations on the front, cf. "https://en.wikipedia.org/wiki/Sigil_(computer_programming)") on the variables should give the reader an indication of the shape of the data.  
+Perl's language designers feel that the variables should stand out from the language itself, and that the sigils (decorations on the front, cf. "https://en.wikipedia.org/wiki/Sigil_(computer_programming)") on the variables should give the reader an indication of the shape of the data.  Languages like Python, Ruby, Haskell, Java, make no visual distinction between their reserved words and variables.   
 
 Time to fire up ```perl6``` and start typing.  The following show the result of typing the examples into the REPL.
 
