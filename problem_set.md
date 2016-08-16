@@ -1,22 +1,22 @@
 # Problem Set
 
-# Clean sequences
+# 1. Clean sequences
 
 Write a bash script to clean up some raw sequence.
 
-# Compute GC
+# 2. Compute GC
 
 Solve the GC content problem on Rosalind (http://rosalind.info/problems/gc/).  Then use that program to profile FASTA files and predict species.
 
-# Find motifs
+# 3. Find motifs
 
 Solve http://rosalind.info/problems/subs/ to find motifs in strings.
 
-# Compute Hamming
+# 4. Compute Hamming
 
 Solve http://rosalind.info/problems/hamm/ to find the number of SNP/SNVs in two sequences.
 
-# Protein translation
+# 5. Protein translation
 
 Solve http://rosalind.info/problems/prot/.  Read the translation table from this:
 
