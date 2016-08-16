@@ -67,3 +67,72 @@ $ cat -n upper2.pl6
  
 > Golfing: Sometimes you may here about programmers (often Perl hackers) who like to "golf" their programs.  It's an attempt to create a program using the fewest keystrokes as possible, similar to the strategy in golf where the player tries to strike the ball as few times as possible to put it into the cup.  It's not a necessarily admirable quality to make one's code as terse as possible, but there is some truth to the notion that more code means more bugs.  There are incredibly powerful ideas built into every language, and learning how they can save you from writing code is worth the effort of writing fewer bugs.  If you understand ```map```, then you probably also understand why ```for``` loops and mutable variables are dangerous.  If you don't, then keep studying.
 
+# CSV & tab-delimited files
+
+One of the most common text file formats is records separated by newlines ("\n" or "\r\n" on Windows) where the fields of the records are delimited by commas ("comma-separated values" or "CSV") or tabs ("tab-delimited").  Here is an example that will extract a field from a delimited text file showing "[t]he leading causes of death by sex and ethnicity in New York City in since 2007" (https://data.cityofnewyork.us/api/views/jb7j-dtam/rows.csv?accessType=DOWNLOAD).
+
+```
+$ cat -n simple1.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4
+     5 	sub MAIN (Str $file!, Int :$n=0, Str :$sep=',') {
+     6 	    die "Not a file ($file)" unless $file.IO.f;
+     7
+     8 	    for $file.IO.lines -> $line {
+     9 	        my @fields = $line.split($sep);
+    10 	        put @fields[$n];
+    11 	    }
+    12 	}
+$ ./simple1.pl6 causes.csv | head -3
+Year
+2010
+2010
+```
+
+The problem with relying on the position of data is that someone may change the number of columns, and that will break your code.  It's better, when possible, to use the *name* of the fields, and this particular file does have named fields:
+
+```
+$ head -1 causes.csv
+Year,Ethnicity,Sex,Cause of Death,Count,Percent
+```
+
+Here's a version that merges the headers on the first line with each data record to create a hash:
+
+```
+$ cat -n parser2.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4
+     5 	sub MAIN (Str $file!, Str :$sep=',', Int :$limit=0) {
+     6 	    die "Not a file ($file)" unless $file.IO.f;
+     7
+     8 	    my $fh = open $file;
+     9 	    my @fields = $fh.get.split($sep);
+    10
+    11 	    my @data;
+    12 	    my $i = 0;
+    13 	    for $fh.lines -> $line {
+    14 	        @data.push(@fields Z=> $line.split($sep));
+    15 	        last if $limit > 0 && ++$i > $limit;
+    16 	    }
+    17
+    18 	    say @data;
+    19 	}
+$ ./parser2.pl6 --limit=1 causes.csv
+[(Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count => 297 Percent => 5) (Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => INFLUENZA AND PNEUMONIA Count => 201 Percent => 3)]
+```
+
+I added a "--limit" option so I could stop it on the first record.  I also introduce the ```say``` function so you can look at the data that was collected.  The function ```dd``` (data dump) will also show you the structure:
+
+```
+Array @data = [(:Year("2010"), :Ethnicity("NON-HISPANIC BLACK"), :Sex("MALE"), "Cause of Death" => "HUMAN IMMUNODEFICIENCY VIRUS DISEASE", :Count("297"), :Percent("5")).Seq, (:Year("2010"), :Ethnicity("NON-HISPANIC BLACK"), :Sex("MALE"), "Cause of Death" => "INFLUENZA AND PNEUMONIA", :Count("201"), :Percent("3")).Seq]
+```
+
+These differ from ```print``` and ```put``` which both show:
+
+```
+Year   	2010 Ethnicity 	NON-HISPANIC BLACK Sex 	MALE Cause of Death    	HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count     	297 Percent    	5 Year 	2010 Ethnicity	NON-HISPANIC BLACK Sex  	MALE Cause of Death    	INFLUENZA AND PNEUMONIA Count 	201 Percent     	3
+```
