@@ -1,6 +1,6 @@
 # Organizing with Makefiles
 
-GNU "make" (https://www.gnu.org/software/make/) will help you organize your code and testing.  I'm going to introduce it here as we'll use it in the next section to write a script.  You only need to learn a few things about make to be productive. 
+GNU "make" (https://www.gnu.org/software/make/) will help you organize your code and testing.  You only need to learn a few things about make to be productive. 
 
 First, you create text file called "Makefile" (or "makefile").  Whenever you run something on the command line that you might want to run again, you should probably put it into your Makefile so you don't have to go searching through your history to find the magic incantation of some command that actually did what you wanted.  Don't be like me and think "It's totally OK to leave my sunglasses in the driver's seat because I definitely will not forget they are there and then sit on them when I come back to my car."  Don't think "I'll be able to remember that command after lunch."  Just add it to you Makefile! 
 
@@ -23,3 +23,5 @@ If you run "make" with no target name, it will run the first target which is "te
 # Writing tests
 
 You can easily write a test suite in Perl using the "Test" module.  The DNA test script checks that the script prints a "usage"-like statement when run with no arguments or if it prints the correct output given a known sequence from either the command line or a file.  You can look at the "test.pl6" script to understand more how it works.  You should totally write tests.  Tests are good, M'K?
+
+One methodology to writing software is to actually write the tests *first* and then write the software passes the tests.  It's a fine way to define at least the behavior of a program, e.g., the expected output for a given input.  This is another reason I would encourage you to create a ```MAIN``` entry point with named parameters as it forces you to consider what you want from the user.  
