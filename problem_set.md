@@ -24,11 +24,11 @@ Solve the GC content problem on Rosalind (http://rosalind.info/problems/gc/).  T
 
 # 3. Find motifs
 
-Solve http://rosalind.info/problems/subs/ to find motifs in strings.
+Solve http://rosalind.info/problems/subs/ to find motifs in strings.  Use this to find ORFs.
 
 # 4. Compute Hamming
 
-Solve http://rosalind.info/problems/hamm/ to find the number of SNP/SNVs in two sequences.
+Solve http://rosalind.info/problems/hamm/ to find the number of SNP/SNVs in two sequences.  Use this to determine sequence similarity.
 
 # 5. Protein translation
 
@@ -103,4 +103,4 @@ UUU	F
 
 # Shared k-mers
 
-Create a program that will find the number of shared k-mers of a given size among a set of sequences in a FASTA file.
+Create a program that will find the number of shared k-mers of a given size among a set of sequences in a FASTA file.  Use this to determine sequence similarity.
