@@ -1,6 +1,8 @@
 # DNA Profiling
 
-For this section, I'm going to walk through an evolution of the "DNA" problem from the Rosalind.info website (http://rosalind.info/problems/dna).  Here is a first version:
+Larry has often claimed that Perl is designed to support users from beginners to advanced.  We can start with simple syntax and ideas and refine our programs as we learn about more powerful techniques.  For this section, I'm going to walk through an evolution of the "DNA" problem from the Rosalind.info website (http://rosalind.info/problems/dna).  I'll start with basic imperative programming methods and move towards shorter, more declarative and functional code.
+
+Here is a first version:
 
 ```
 $ cat -n dna1.pl6
@@ -24,7 +26,7 @@ $ ./dna1.pl6 foobar
 1 0 0 0
 ```
 
-Not a bad start.  Our program expects a String of DNA on the command line (line 3).  We declare four variables at line 4 to hold the counts for A, C, G, and T.  Line 6 sets up a ```for``` loop (https://docs.perl6.org/syntax/for) that calls the ```comb``` method (https://docs.perl6.org/type/Str#routine_comb) on the ```$dna``` to supply ```$letter``` so that we can inspect each letter individually.  Lines 7-10 compare each letter's upper- and lowercase version to decide which counter to increment with  ```++``` (https://docs.perl6.org/routine/$PLUS_SIGN$PLUS_SIGN).  *NB: Lowercase is often used to "softmask" highly repetitive regions of DNA like in plant genomes.*   At line 13, we print out the results as described on the website.
+Not a bad start.  Our program expects a String of DNA on the command line (line 3).  We declare four variables at line 4 to hold the counts for A, C, G, and T.  Line 6 sets up a ```for``` loop (https://docs.perl6.org/syntax/for) that calls the ```comb``` method (https://docs.perl6.org/type/Str#routine_comb) on the ```$dna``` so that we can inspect each ```$letter``` individually.  Lines 7-10 compare each letter's upper- and lowercase version to decide which counter to increment with  ```++``` (https://docs.perl6.org/routine/$PLUS_SIGN$PLUS_SIGN).  *NB: Lowercase is often used to "softmask" highly repetitive regions of DNA like in plant genomes.*   At line 13, we print out the results as described on the website.
 
 Here's a version that makes some improvements:
 
