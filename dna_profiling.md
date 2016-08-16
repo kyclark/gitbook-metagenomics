@@ -1,4 +1,4 @@
-# DNA Profiling
+# Tetranucleotide profiling
 
 Larry has often claimed that Perl is designed to support users from beginners to advanced.  We can start with simple syntax and ideas and refine our programs as we learn about more powerful techniques.  For this section, I'm going to walk through an evolution of the "DNA" problem from the Rosalind.info website (http://rosalind.info/problems/dna).  I'll start with basic imperative programming methods and move towards shorter, more declarative and functional code.
 
