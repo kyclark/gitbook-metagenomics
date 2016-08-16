@@ -1,10 +1,24 @@
 # Problem Set
 
-# 1. Clean sequences
+# Clean sequences
 
 Write a bash script to clean up some raw sequence.
 
-# 2. Compute GC
+# Create a FASTA file
+
+Given an input file of sequences, one-per-line, create a FASTA-formatted file.  Extra credit: block the sequences to a maximum column width, default 50.
+
+# FASTA stats
+
+Given one or more input files of sequences in FASTA format, recreate this output:
+
+```
+$ seqmagick info mouse.fa | awk '{print $1,$3,$4,$5,$6}' | column -t
+name      min_len  max_len  avg_len  num_seqs
+mouse.fa  50       100      84.32    500
+```
+
+# Compute GC content
 
 Solve the GC content problem on Rosalind (http://rosalind.info/problems/gc/).  Then use that program to profile FASTA files and predict species.
 
@@ -86,3 +100,7 @@ UUC	F
 UUG	L
 UUU	F
 ```
+
+# Shared k-mers
+
+Create a program that will find the number of shared k-mers of a given size among a set of sequences in a FASTA file.
