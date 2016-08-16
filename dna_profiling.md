@@ -1,4 +1,4 @@
-# Solving GC contents
+# DNA Profiling
 
 For this section, I'm going to walk through an evolution of the "DNA" problem from the Rosalind.info website (http://rosalind.info/problems/dna).  Here is a first version:
 
