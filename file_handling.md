@@ -114,12 +114,20 @@ $ cat -n parser2.pl6
     10
     11 	    my @data;
     12 	    for $fh.lines -> $line {
-    13 	        @data.push(@fields Z=> $line.split($sep));
-    14 	        last if $limit > 0 && @data.elems > $limit;
-    15 	    }
-    16
-    17 	    say @data;
-    18 	}
+    13 	        my @values = $line.split($sep);
+    14 	        my %record;
+    15 	        for 0..^@fields.elems -> $i {
+    16 	            my $key = @fields[$i];
+    17 	            my $val = @values[$i];
+    18 	            %record{ $key } = $val;
+    19 	        }
+    20 	        @data.push(%record);
+    21
+    22 	        last if $limit > 0 && @data.elems > $limit;
+    23 	    }
+    24
+    25 	    say @data;
+    26 	}
 $ ./parser2.pl6 --limit=1 causes.csv
 [(Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count => 297 Percent => 5) (Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => INFLUENZA AND PNEUMONIA Count => 201 Percent => 3)]
 ```
