@@ -113,17 +113,20 @@ $ cat -n parser2.pl6
      9 	    my @fields = $fh.get.split($sep);
     10
     11 	    my @data;
-    12 	    my $i = 0;
-    13 	    for $fh.lines -> $line {
-    14 	        @data.push(@fields Z=> $line.split($sep));
-    15 	        last if $limit > 0 && ++$i > $limit;
-    16 	    }
-    17
-    18 	    say @data;
-    19 	}
+    12 	    for $fh.lines -> $line {
+    13 	        @data.push(@fields Z=> $line.split($sep));
+    14 	        last if $limit > 0 && @data.elems > $limit;
+    15 	    }
+    16
+    17 	    say @data;
+    18 	}
 $ ./parser2.pl6 --limit=1 causes.csv
 [(Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count => 297 Percent => 5) (Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => INFLUENZA AND PNEUMONIA Count => 201 Percent => 3)]
 ```
+
+In this version, I ```open``` the file (line 8) to get a "filehandle" (often abbreviated "fh") which is a way to get access to the contents of the file.  I did this so that I could call the ```get``` method (https://docs.perl6.org/type/IO$COLON$COLONHandle#method_get) to retrieve just the first line which I expect to have the field names.  That returns a string which I then call ```split``` using the ```$sep``` (separator) argument (which defaults to a comma).
+
+At lines 10-11, I initialize two variables that I will need inside the ```for``` loop.  Consider that I'm about to go picking apples.  Before I go to the orchard, I need to get a basket to carry the apples back out.  The ```@data``` is array is my basket.  At line 13, I call the ```push``` method to add the result of a zip operation.
 
 I added a "--limit" option so I could stop it on the first record.  I also introduce the ```say``` function so you can look at the data that was collected.  The function ```dd``` (data dump) will also show you the structure:
 
@@ -136,3 +139,4 @@ These differ from ```print``` and ```put``` which both show:
 ```
 Year   	2010 Ethnicity 	NON-HISPANIC BLACK Sex 	MALE Cause of Death    	HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count     	297 Percent    	5 Year 	2010 Ethnicity	NON-HISPANIC BLACK Sex  	MALE Cause of Death    	INFLUENZA AND PNEUMONIA Count 	201 Percent     	3
 ```
+
