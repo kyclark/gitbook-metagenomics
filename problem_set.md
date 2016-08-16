@@ -1,12 +1,14 @@
 # Problem Set
 
+Be sure to check out https://github.com:kyclark/abe487.git for the tests!
+
 # Clean sequences
 
 Write a bash script to clean up some raw sequence.
 
 # Create a FASTA file
 
-Given an input file of sequences, one-per-line, create a FASTA-formatted file.  Extra credit: block the sequences to a maximum column width, default 50.
+Create a script called "txt2fasta.pl6" that accepts an input file of sequences, one-per-line, and emits FASTA-formatted sequences.  Sequence IDs should be an incrementing integer value starting at 1.  Extra credit: block the sequences to a maximum column width, default 50.
 
 # FASTA stats
 
