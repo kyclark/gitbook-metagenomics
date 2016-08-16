@@ -13,7 +13,7 @@
    * [Data Shapes](data_shapes.md)
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
-   * [Solving GC contents](solving_gc_contents.md)
+   * [DNA Profiling](solving_gc_contents.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
 
