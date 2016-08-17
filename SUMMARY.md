@@ -6,7 +6,6 @@
    * [First steps with Unix](first_steps_with_unix.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
-* [Unix basics](unixbasics1_md.md)
 * [Bash](bash.md)
 * [Git basics](git_basics.md)
 * [Perl](programming.md)
