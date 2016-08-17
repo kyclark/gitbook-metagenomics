@@ -1,7 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
-* Unix basics
+* [Unix basics](unix_basics1.md)
 * [Getting access to systems](getting_access_to_systems.md)
 * [Unix basics](unix_basics.md)
    * [First steps with Unix](first_steps_with_unix.md)
