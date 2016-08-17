@@ -37,6 +37,26 @@ $ cat -n dna2.pl6
      3 	sub MAIN (Str $dna!) {
      4 	    my ($num-A, $num-C, $num-G, $num-T) = 0, 0, 0, 0;
      5
+     6 	    for $dna.comb -> $letter {
+     7 	        if    $letter eq 'a' | 'A' { $num-A++ }
+     8 	        elsif $letter eq 'c' | 'C' { $num-C++ }
+     9 	        elsif $letter eq 'g' | 'G' { $num-G++ }
+    10 	        elsif $letter eq 't' | 'T' { $num-T++ }
+    11 	    }
+    12
+    13 	    put "$num-A $num-C $num-G $num-T";
+    14 	}
+```
+
+Rather than repeat ```$letter eq``` for both the upper- and lowercase letters, I'm using a Junction (https://docs.perl6.org/type/Junction) to evaluate either option at the same time.  Here's another idea:
+
+```
+$ cat -n dna3.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Str $dna!) {
+     4 	    my ($num-A, $num-C, $num-G, $num-T) = 0, 0, 0, 0;
+     5
      6 	    for $dna.lc.comb -> $letter {
      7 	        if    $letter eq 'a' { $num-A++ }
      8 	        elsif $letter eq 'c' { $num-C++ }
@@ -65,7 +85,7 @@ Death for stop not could I Because
 Most languages have a "switch" or "case" (like for our options checking in bash) statement.  Perl's is called ```given``` (https://docs.perl6.org/language/control#given), it's like a giant if/elsif statement, only much, much better:
 
 ```
-$ cat -n dna3.pl6
+$ cat -n dna4.pl6
      1 	#!/usr/bin/env perl6
      2
      3 	sub MAIN (Str $dna!) {
@@ -89,7 +109,7 @@ Notice the change at line 15 where I make a temporary (anonymous) list from the 
 What's fun is that ```for``` can act like ```given``` and use smart matching on ```$_``` AKA "the topic" (or "thing" or "it").  Here's a shorter version:
 
 ```
-$ cat dna4.pl6
+$ cat dna5.pl6
 #!/usr/bin/env perl6
 
 sub MAIN (Str $dna!) {
@@ -106,7 +126,7 @@ sub MAIN (Str $dna!) {
 }
 ```
 
-Now I'm going to show you a version where we don't have to create variables for each of the nucleotides:
+Now I'm going to show you a version where we use a hash instead of a bunch of scalars:
 
 ```
 $ cat -n dna5.pl6
@@ -199,7 +219,7 @@ $ ./dna8.pl6 foobar
 1 0 0 0
 ```
 
-At line 4, I'm going to set my ```$dna``` equal to either the contents of the ```$input``` (if it is a file) or the input itselt.  I'm using a ternary operator (https://docs.perl6.org/language/operators#index-entry-Ternary_operator) that follow the pattern:
+At line 4, I'm going to set my ```$dna``` equal to either the contents of the ```$input``` (if it is a file) or the input itself.  I'm using a ternary operator (https://docs.perl6.org/language/operators#index-entry-Ternary_operator) that follow the pattern:
 
 ```
 result = conditional ?? true-branch !! false-branch
@@ -249,10 +269,13 @@ W      	55
 Y      	60
 ```
 
-It's most likely you'll encounter sequence data in some standard format that includes some information about the sequences (metadata, or data about the data).  Usually we see FASTA format, and it's not necessarily easy to parse; therefore, we're going to reach for a tool someone else built to do this for us.  Let's try out the BioInfo (https://github.com/MattOates/BioInfo) library.  To install it:
+# Handling FASTA
+
+It's most likely you'll encounter sequence data in some standard format that includes information about the sequences (metadata, or data about the data).  Usually we see FASTA format, and it's not necessarily easy to parse; therefore, we're going to reach for a tool someone else built to do this for us.  Let's try out the BioInfo (https://github.com/MattOates/BioInfo) and BioPerl6 libraries.  To install:
 
 ```
 $ panda install BioInfo
+$ panda install BioPerl6
 ```
 
 And here is how we can incorporate it into our code:
