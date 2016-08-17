@@ -18,5 +18,5 @@
    * [DNA Profiling](dna_profiling.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-   * Delimited text
+   * [Delimited text](delimited_text.md)
 
