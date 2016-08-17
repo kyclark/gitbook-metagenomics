@@ -10,7 +10,6 @@
 * [Unix basics](unixbasics1_md.md)
 * [Git basics](git_basics.md)
 * [Programming](programming.md)
-   * [Minimally competent bash scripting](minimally_competent_bash_scripting.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
