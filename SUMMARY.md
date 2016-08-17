@@ -1,6 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
+   * foo
 * [First steps with Unix](first_steps_with_unix.md)
 * [Unix basics](unixbasics1_md.md)
    * unix1.md
