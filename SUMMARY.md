@@ -1,9 +1,9 @@
 # Summary
 
 * [Introduction](README.md)
+* Unix basics
 * [Getting access to systems](getting_access_to_systems.md)
 * [Unix basics](unix_basics.md)
-   * [Getting access to systems](getting_access_to_systems.md)
    * [First steps with Unix](first_steps_with_unix.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
@@ -19,5 +19,4 @@
    * [DNA Profiling](dna_profiling.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-* Unix basics
 
