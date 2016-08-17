@@ -1,10 +1,10 @@
 # File handling
 
-Most data in bioinformatics is exchanged an some sort of text format (GenBank, GFF, FASTA, EMBL, XML, OBO, etc.).  Reading and writing from text is bread-and-butter work, so let's do some.
+Most data in bioinformatics is exchanged an some sort of text format.  Reading and writing from text is bread-and-butter work, so let's do some.
 
-# Tests
+# File tests
 
-Given some input, how do you know it's a file, that you can read it, etc.?  In our bash section, we came across Unix file tests with this:
+Given some input, how do you know it's a file, that you can read it, etc.?  In our bash section, we came across Unix file tests with this where we wanted to check if ```$OUT_DIR``` was a directory using ```-d```:
 
 ```
 if [[ ! -d $OUT_DIR ]]; then
@@ -26,15 +26,13 @@ Here's a trivial example to UPPERCASE the contents of a file:
 $ cat -n upper1.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	use v6;
-     4
-     5 	sub MAIN (Str $file!) {
-     6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    for $file.IO.lines -> $line {
-     9 	        put $line.uc;
-    10 	    }
-    11 	}
+     3 	sub MAIN (Str $file!) {
+     4 	    die "Not a file ($file)" unless $file.IO.f;
+     5
+     6 	    for $file.IO.lines -> $line {
+     7 	        put $line.uc;
+     8 	    }
+     9 	}
 $ ./upper1.pl6 foo
 Not a file (foo)
   in sub MAIN at ./upper1.pl6 line 6
@@ -48,22 +46,22 @@ ALL MIMSY WERE THE BOROGOVES,
   AND THE MOME RATHS OUTGRABE.
 ```
 
-At line 6, we should first check that the input was actually a file.  If it is not, then we ```die``` with an error message which will halt execution (see above).  At line 8, we start a ```for``` loop using the ```$file.IO.lines``` (https://docs.perl6.org/type/IO$COLON$COLONHandle#method_lines) method to open the file and read in each of the lines into the ```$line``` variable.  Lastly we ```put``` the uppercase (```uc```) version of the line.
+At line 4, we should first check that the input was actually a file.  If it is not, then we ```die``` with an error message which will halt execution (see above).  At line 6, we start a ```for``` loop using the ```$file.IO.lines``` (https://docs.perl6.org/type/IO$COLON$COLONHandle#method_lines) method to open the file and read in each of the lines into the ```$line``` variable.  Lastly we ```put``` the uppercase (```uc```) version of the line.
 
-We can borrow a technique from functional programming with ```map``` to make this shorter:
+We can borrow a technique from functional programming with ```map``` (https://docs.perl6.org/routine/map) to make this shorter:
 
 ```
 $ cat -n upper2.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	use v6;
-     4
-     5 	sub MAIN (Str $file!) {
-     6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    put $file.IO.lines.map(*.uc).join("\n");
-     9 	}
- ```
+     3 	sub MAIN (Str $file!) {
+     4 	    die "Not a file ($file)" unless $file.IO.e;
+     5
+     6 	    put $file.IO.lines.map(*.uc).join("\n");
+     7 	}
+```
+
+This technique pushes the lines of the file directly into a the ```uc``` transformation and then into the join to make a new string.
  
 > Golfing: Sometimes you may here about programmers (often Perl hackers) who like to "golf" their programs.  It's an attempt to create a program using the fewest keystrokes as possible, similar to the strategy in golf where the player tries to strike the ball as few times as possible to put it into the cup.  It's not a necessarily admirable quality to make one's code as terse as possible, but there is some truth to the notion that more code means more bugs.  There are incredibly powerful ideas built into every language, and learning how they can save you from writing code is worth the effort of writing fewer bugs.  If you understand ```map```, then you probably also understand why ```for``` loops and mutable variables are dangerous.  If you don't, then keep studying.
 
