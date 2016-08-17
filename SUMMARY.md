@@ -17,7 +17,7 @@
    * [File handling](file_handling.md)
    * [Delimited text](delimited_text.md)
    * [DNA Profiling](dna_profiling.md)
+   * Sequence similarity
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-   * Sequence similarity
 
