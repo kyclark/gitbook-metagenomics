@@ -2,9 +2,9 @@
 
 * [Introduction](README.md)
 * [Unix basics](unix_basics.md)
+   * [Unix commands](unix_commands.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
-   * [Unix commands](unix_commands.md)
 * [First steps with Unix](first_steps_with_unix.md)
 * [Unix basics](unixbasics1_md.md)
    * unix1.md
