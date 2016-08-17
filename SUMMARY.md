@@ -9,7 +9,7 @@
 * [First steps with Unix](first_steps_with_unix.md)
 * [Unix basics](unixbasics1_md.md)
 * [Git basics](git_basics.md)
-* [Programming](programming.md)
+* [Perl](programming.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
