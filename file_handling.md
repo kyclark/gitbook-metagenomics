@@ -136,7 +136,9 @@ In this version, I ```open``` the file (line 8) to get a "filehandle" (often abb
 
 At lines 10-11, I initialize two variables that I will need inside the ```for``` loop.  Consider that I'm about to go picking apples.  Before I go to the orchard, I need to get a basket to carry the apples back out.  The ```@data``` is array is my basket.  
 
-Lines 15-19 are 
+Lines 14-19 are probably a little confusing, so let's break it down.  I want to create a key-value structure that associates the headers in the first line to the fields in each record, so I declare ```my %record``` at line 14.  Then I want to step through the *numbered positions* of the ```@fields``` so that I can pair them up with their ```@values```.  List-type structures in Perl start numbering at 0, so I start my ```for``` loop with that.  Then I use the ```..^``` operator to construct a Range (https://docs.perl6.org/type/Range) that goes up to *but not including* the number of elements in ```@fields```.  It's the hat ```^``` that says to the Range constructor to stop one less than the thing it's next to.  You can also put it on the left or both (or neither).  We have to stop before the *number* of elements in ``ields``` because of the 0-based numbering -- that is, if there are 3 ```@fields```, then they are in positions 0, 1, and 2.  So that explains the loading of the ```$i``` variable (NB: "i" is a very common "integer" variable.  If a second value is needed, then it's common to move on to "j," "k," etc.)
+
+A line 1
 
 I added a "--limit" option so I could stop it on the first record.  I also introduce the ```say``` function so you can look at the data that was collected.  The function ```dd``` (data dump) will also show you the structure:
 
