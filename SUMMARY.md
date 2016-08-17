@@ -4,7 +4,6 @@
 * [Unix](unix_basics.md)
    * [Getting access to systems](getting_access_to_systems.md)
    * [First steps with Unix](first_steps_with_unix.md)
-   * [Unix commands](unix_commands.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
 * [Unix basics](unixbasics1_md.md)
