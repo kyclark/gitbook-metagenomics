@@ -15,8 +15,8 @@
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
+   * [Delimited text](delimited_text.md)
    * [DNA Profiling](dna_profiling.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-   * [Delimited text](delimited_text.md)
 
