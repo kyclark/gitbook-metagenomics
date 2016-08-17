@@ -1,8 +1,8 @@
 # Summary
 
 * [Introduction](README.md)
-* [Unix basics](unixbasics1_md.md)
 * [First steps with Unix](first_steps_with_unix.md)
+* [Unix basics](unixbasics1_md.md)
 * [Unix basics](unix_basics.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
