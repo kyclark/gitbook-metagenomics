@@ -248,3 +248,61 @@ V      	50
 W      	55
 Y      	60
 ```
+
+It's most likely you'll encounter sequence data in some standard format that includes some information about the sequences (metadata, or data about the data).  Usually we see FASTA format, and it's not necessarily easy to parse; therefore, we're going to reach for a tool someone else built to do this for us.  Let's try out the BioInfo (https://github.com/MattOates/BioInfo) library.  To install it:
+
+```
+$ panda install BioInfo
+```
+
+And here is how we can incorporate it into our code:
+
+```
+$ cat -n fasta-stat.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4 	use BioInfo::Parser::FASTA;
+     5 	use BioInfo::IO::FileParser;
+     6
+     7 	sub MAIN (Str $file!) {
+     8 	    die "Not a file ($file)" unless $file.IO.f;
+     9
+    10 	    my $seq_file = BioInfo::IO::FileParser.new(
+    11 	        file     => $file,
+    12 	        parser   => BioInfo::Parser::FASTA
+    13 	    );
+    14
+    15 	    while (my $seq = $seq_file.get()) {
+    16 	        say $seq.id;
+    17 	    }
+    18 	}
+[saguaro@~/work/abe487/book/perl6/dna]$ ./fasta-stat.pl6 mouse.fa | head -3
+HWI-ST885:65:C07WUACXX:2:1101:1361:2112
+HWI-ST885:65:C07WUACXX:2:1101:1476:2173
+HWI-ST885:65:C07WUACXX:2:1101:1443:2177
+```
+
+And here is a version using BioPerl6:
+
+```
+$ cat -n fasta-stat2.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4 	use Bio::SeqIO;
+     5
+     6 	sub MAIN (Str $file!) {
+     7 	    die "Not a file ($file)" unless $file.IO.f;
+     8
+     9 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+    10
+    11 	    while (my $seq = $seqIO.next-Seq) {
+    12 	        say $seq.seq;
+    13 	    }
+    14 	}
+$ ./fasta-stat2.pl6 mouse.fa | head -3
+TTTGATACTCCTATTAAGTAAAAGTTTTTAGGGTCTGTATAAAACGAAGCCTGAGCATACCCTCTTGCTGTAT
+TGTGCTCCCGATGCTTTTATCGCAGCCTCCATCAAGTCATTTGAGCGGAATTTGCCTGTTCCTACAAATAGGCGGGAGCTG
+GAAAACGAAAACGGAGAGTTAGCCCTTATAGTTCCAGAAAAAGAAATGGATGCAGGAGCGG
+```
