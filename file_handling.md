@@ -134,7 +134,9 @@ $ ./parser2.pl6 --limit=1 causes.csv
 
 In this version, I ```open``` the file (line 8) to get a "filehandle" (often abbreviated "fh") which is a way to get access to the contents of the file.  I did this so that I could call the ```get``` method (https://docs.perl6.org/type/IO$COLON$COLONHandle#method_get) to retrieve just the first line which I expect to have the field names.  That returns a string which I then call ```split``` using the ```$sep``` (separator) argument (which defaults to a comma).
 
-At lines 10-11, I initialize two variables that I will need inside the ```for``` loop.  Consider that I'm about to go picking apples.  Before I go to the orchard, I need to get a basket to carry the apples back out.  The ```@data``` is array is my basket.  At line 13, I call the ```push``` method to add the result of a zip operation.
+At lines 10-11, I initialize two variables that I will need inside the ```for``` loop.  Consider that I'm about to go picking apples.  Before I go to the orchard, I need to get a basket to carry the apples back out.  The ```@data``` is array is my basket.  
+
+Lines 15-19 are 
 
 I added a "--limit" option so I could stop it on the first record.  I also introduce the ```say``` function so you can look at the data that was collected.  The function ```dd``` (data dump) will also show you the structure:
 
@@ -148,3 +150,30 @@ These differ from ```print``` and ```put``` which both show:
 Year   	2010 Ethnicity 	NON-HISPANIC BLACK Sex 	MALE Cause of Death    	HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count     	297 Percent    	5 Year 	2010 Ethnicity	NON-HISPANIC BLACK Sex  	MALE Cause of Death    	INFLUENZA AND PNEUMONIA Count 	201 Percent     	3
 ```
 
+This next version
+
+```
+$ cat -n parser3.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4
+     5 	sub MAIN (Str $file!, Str :$sep=',', Int :$limit=0, Str :$comment) {
+     6 	    die "Not a file ($file)" unless $file.IO.f;
+     7
+     8 	    # copy to make mutable
+     9 	    (my $delim = $sep) ~~ s/\\t/\t/;
+    10 	    my $fh     = open $file;
+    11 	    my @fields = $fh.get.split($delim);
+    12
+    13 	    my @data;
+    14 	    for $fh.lines -> $line {
+    15 	        next if $comment.defined &&
+    16 	                $line.substr(0, $comment.chars) eq $comment;
+    17 	        @data.push(@fields Z=> $line.split($delim));
+    18 	        last if $limit > 0 && @data.elems > $limit;
+    19 	    }
+    20
+    21 	    say @data;
+    22 	}
+```
