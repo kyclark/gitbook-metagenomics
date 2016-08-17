@@ -1,13 +1,13 @@
 # Summary
 
 * [Introduction](README.md)
+* [Unix basics](unix_basics.md)
+   * [Installing software](installing_software.md)
+   * [Unix exercises](unix_exercises.md)
 * [First steps with Unix](first_steps_with_unix.md)
 * [Unix basics](unixbasics1_md.md)
    * unix1.md
 * [Getting access to systems](getting_access_to_systems.md)
-* [Unix basics](unix_basics.md)
-   * [Installing software](installing_software.md)
-   * [Unix exercises](unix_exercises.md)
 * [Git basics](git_basics.md)
 * [Programming](programming.md)
    * [Minimally competent bash scripting](minimally_competent_bash_scripting.md)
