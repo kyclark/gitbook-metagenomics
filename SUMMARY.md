@@ -1,12 +1,12 @@
 # Summary
 
 * [Introduction](README.md)
-* [Git basics](git_basics.md)
 * [Unix basics](unix_basics.md)
    * [Getting access to systems](getting_access_to_systems.md)
    * [First steps with Unix](first_steps_with_unix.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
+* [Git basics](git_basics.md)
 * [Programming](programming.md)
    * [Minimally competent bash scripting](minimally_competent_bash_scripting.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
