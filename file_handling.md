@@ -204,7 +204,7 @@ However, what we want is a new list of Pairs which are created with the ```=>```
 {name => Gene, rank => "Staff, serial_number => Sargeant"}
 ```
 
-Zips can work with lists of different values.  Here is how I can pair the list <a b c> with a lazy, infinite list of integers:
+Zips can work with lists of different values.  Here is how I can pair the list ("a", "b", "c") with a lazy, infinite list of integers:
 
 ```
 > <a b c> Z 1..*
@@ -239,7 +239,7 @@ $ cat -n parser3.pl6
     22 	}
 ```
 
-Line 9 is pretty cryptic and needs to be explained.  First off, when parsing tab-delimited files, it's difficult to pass in a non-printable character on the command line.  Passing an *actual* tab (by hitting the <Tab> key) doesn't work, and most people wouldn't know to enter:
+Line 9 is pretty cryptic and needs to be explained.  First off, when parsing tab-delimited files, it's difficult to pass in a non-printable character on the command line.  Passing an *actual* tab (by hitting the "Tab" key) doesn't work, and most people wouldn't know to enter:
 
 ```
 ./parser3.pl6 --sep=$(\t) ...
@@ -251,8 +251,52 @@ So we assume that the user will enter this:
 ./parser3.pl6 --sep=\t ...
 ```
 
-Which will then come in to us looking like "\\t".  We need to turn that into just "\t" which is the escape character representing the <Tab>.  We can do that with the ```s//``` substitution operator (https://docs.perl6.org/language/operators#Substitution_Operators), but not on the ```$sep``` variable because it is *read-only.*  So we copy it into ```$delim``` and then immediately bind (with ```~~```) to the substitution command.  Et voila, we have a <Tab> we can use.
+Which will then come in to us looking like "\\t".  We need to turn that into just "\t" which is the escape character representing the "Tab."  We can do that with the ```s//``` substitution operator (https://docs.perl6.org/language/operators#Substitution_Operators), but not on the ```$sep``` variable because it is *read-only.*  So we copy it into ```$delim``` and then immediately bind (with ```~~```) to the substitution command.  Et voila, we have a "Tab" we can use.
 
 Line 15 is the logic for skipping comments.  In the way that ```last``` will exit a loop, ```next``` will immediately jump to the next iteration of the loop.  Line 16 use a ```substr``` (substring) operation to look at the first part of the ```$line``` to see if it matches the ```$comment``` string.  I'm taking into account that the ```$comment``` may be more than one character (e.g., "//").  Line 17 doesn't bother to create a ```%record``` but just pushes the result of the zip ```Z=>```.
 
-And with that, we have written a fairly decent delimited text parser!  This sort of thing in very standard, and so it would actually behoove us to use an existing module such as "
+And with that, we have written a fairly decent delimited text parser!  This sort of thing in very standard, and so it would actually behoove us to use an existing module such as "CSV::Parser" or "Text::CSV" (http://modules.perl6.org/#q=csv).  They will both accomplish the task, so it's just a matter of which one appeals to you more.
+
+You can install a module using the "panda" tool:
+
+```
+$ panda install CSV::Parser
+==> Fetching CSV::Parser
+==> Building CSV::Parser
+==> Testing CSV::Parser
+t/01_multiline_csv.t ... ok
+t/02_escaped_csv.t ..... ok
+t/03_delimiters_csv.t .. ok
+t/04_binary_csv.t ...... ok
+All tests successful.
+Files=4, Tests=4,  2 wallclock secs ( 0.02 usr  0.01 sys +  1.75 cusr  0.22 csys =  2.00 CPU)
+Result: PASS
+==> Installing CSV::Parser
+==> Successfully installed CSV::Parser
+```
+
+Here is how the code would look:
+
+```
+$ cat -n parser4.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use v6;
+     4 	use CSV::Parser;
+     5
+     6 	sub MAIN (Str $file!, Str :$sep=',', Int :$limit=0, Str :$comment) {
+     7 	    die "Not a file ($file)" unless $file.IO.f;
+     8 	    my $fh     = open $file;
+     9 	    my $parser = CSV::Parser.new(
+    10 	                 file_handle => $fh, contains_header_row => True );
+    11
+    12 	    my @data;
+    13 	    until $fh.eof {
+    14 	        @data.push(%($parser.get_line))
+    15 	    }
+    16
+    17 	    say @data;
+    18 	}
+```
+
+This module does not handle comment lines.  If you needed that, you could either go back to your own module or you could look at the author's code and add to it.  Most author's will have a Github repository that you can fork and then submit a "pull request" (PR).  Also, you might just write the author and ask very nicely to add the feature you want.
