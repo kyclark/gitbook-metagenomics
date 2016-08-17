@@ -7,7 +7,6 @@
    * [Unix exercises](unix_exercises.md)
 * [First steps with Unix](first_steps_with_unix.md)
 * [Unix basics](unixbasics1_md.md)
-   * unix1.md
 * [Getting access to systems](getting_access_to_systems.md)
 * [Git basics](git_basics.md)
 * [Programming](programming.md)
