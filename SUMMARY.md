@@ -8,6 +8,7 @@
    * [Unix exercises](unix_exercises.md)
 * [First steps with Unix](first_steps_with_unix.md)
 * [Unix basics](unixbasics1_md.md)
+* [Bash](bash.md)
 * [Git basics](git_basics.md)
 * [Perl](programming.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
@@ -19,5 +20,4 @@
    * [DNA Profiling](dna_profiling.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-* [Bash](bash.md)
 
