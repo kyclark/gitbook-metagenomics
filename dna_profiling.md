@@ -142,7 +142,7 @@ $ cat -n dna5.pl6
     10 	        when 't' { %count<T>++ }
     11 	    }
     12
-    13 	    put join ' ', %count<A C T G>;
+    13 	    put join ' ', %count<A C G T>;
     14 	}
 ```
 
@@ -162,7 +162,7 @@ $ cat -n dna6.pl6
     10 	        when 't' { %count<T>++ }
     11 	    }
     12
-    13 	    put join ' ', %count<A C T G>.map({ $_ // 0 });
+    13 	    put join ' ', %count<A C G T>.map({ $_ // 0 });
     14 	}
 ```
 
@@ -182,8 +182,8 @@ Any of .^name, .perl, .gist, or .say can stringify undefined things, if needed. 
 (List)
 > %count<A C T G>.map({ $_  // 0 })
 (1 0 0 5)
-> join ' ', %count<A C T G>.map({ $_  // 0 })
-1 0 0 5
+> join ' ', %count<A C G T>.map({ $_  // 0 })
+1 0 5 0
 ```
 
 What the above shows is that we get a List back when we ask for multiple keys from a hash.  That list might contain nothing for a given key, so we use the ```map``` function to apply an anonymous function (the bit in ```{}```) to each member of the list.  The function says "either *the topic* or, if it's not defined, then 0."  
