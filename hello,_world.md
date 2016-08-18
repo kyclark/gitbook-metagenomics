@@ -25,9 +25,9 @@ $ cat -n greet1.pl6
      7
      8	my ($greeting, $name) = @*ARGS;
      9
-    10	put "$greeting, {$name // 'Stranger'}!";
+    10	put "$greeting, {$name // 'Stranger'}";
 $ ./greet1.pl6 Howdy "Old Joe Clark"
-Howdy, Old Joe Clark!
+Howdy, Old Joe Clark
 ```
 
 Well, that looks suspiciously close to the bash version.  Line 1 is our now-familiar shebang.  We don't need to know the exact path to the Perl6 binary as long as it's somewhere in our $PATH.  On line 3, we check the number of arguments to the script by looking at ```@*ARGS``` which is equivalent to bash's ```$@```.  In bash we had to write two separate conditionals to check if the number of arguments was with a range, but in Perl we can write it just like in algebra class, "X <= Y <= Z" means Y is greater-than-or-equal to X and less-than-or-equal to Z.  We have ```printf``` in Perl, but we *do* separate our arguments with commas unlike bash.  Also, our ```basename``` method must now be prefaced with its "module" (or "package," a container for code).  On line 5 we see that we can "exit 1" just as in bash.
