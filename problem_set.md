@@ -2,6 +2,15 @@
 
 Be sure to check out https://github.com:kyclark/abe487.git for the tests!
 
+# Hello!
+
+Alter the greeting script to accept the flag "--excited" that adds an exclamation point to the end of the greeting:
+
+```
+$ ./greet.pl6 --excited --greeting="Hola" --name="Amigo"
+Hola, Amigo!
+```
+
 # Clean sequences
 
 Write a bash script to clean up some raw sequence.
@@ -24,15 +33,15 @@ mouse.fa  50       100      84.32    500
 
 Solve the GC content problem on Rosalind (http://rosalind.info/problems/gc/).  Then use that program to profile FASTA files and predict species.
 
-# 3. Find motifs
+# Find motifs
 
 Solve http://rosalind.info/problems/subs/ to find motifs in strings.  Use this to find ORFs.
 
-# 4. Compute Hamming
+# Compute Hamming
 
 Solve http://rosalind.info/problems/hamm/ to find the number of SNP/SNVs in two sequences.  Use this to determine sequence similarity.
 
-# 5. Protein translation
+# Protein translation
 
 Solve http://rosalind.info/problems/prot/.  Read the translation table from the given "table.txt."
 
