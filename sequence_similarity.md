@@ -7,3 +7,12 @@ As our field deals with the sequences of unknown communities of organisms, we ar
 A "k-mer" is a *k*-length *mer* (from Greek *meros* "part") of contiguous sequence as in the word "polymer."  So the given sequence has 3-mers like so:
 
 ```
+AGCTTTTC
+AGC
+ GCT
+  CTT
+   TTT
+    TTT
+     TTC
+```
+
