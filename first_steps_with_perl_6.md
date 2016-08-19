@@ -6,4 +6,6 @@ In 2000, Larry et al. decided to completely revise the language.  Much can be sa
 
 One of the downsides to choosing Perl 6 is that the language is relatively new.  Although it has been in development for over 15 years, it was only "officially" release at Christmas 2015 (the long-running joke being that they kept saying it would be done "by Christmas," but they never said which Christmas).  So, there are no books and very few examples to draw from on the web.  On the other hand, there is a wonderful IRC community on "irc.freenode.net" in the "#perl6" chatroom, and https://docs.perl6.org is pretty comprehensive.  Besides, this will build character.  Anyway, I'm not trying to make you an expert Perl 6 programmer, just introducing programming concepts with a language that is actually pretty fun to play with.
 
+In the following examples, I will evolve the programs from simpler to more complex to show you how learning higher-order programming techniques actually shorten your code and make it more maintainable.  Don't be worried if you don't quite understand the later versions.  Just stick with the concepts in the earlier versions and keep reading and playing with the denser functions until you understand them.
+
 With my rationalization complete, let's write some Perl (6)!
