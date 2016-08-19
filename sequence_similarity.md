@@ -64,8 +64,8 @@ Because that sort of thing is so useful, Perl let's us create our own types as a
 $ cat -n pos2.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset PosInt of Int where 0 < * < 50 ;
-     4 	sub MAIN (PosInt :$k=10) {
+     3 	subset SmallPosInt of Int where 0 < * < 50 ;
+     4 	sub MAIN (SmallPosInt :$k=10) {
      5 	    put "k = $k";
      6 	}
 $ ./pos2.pl6 -k=5
@@ -78,7 +78,7 @@ Usage:
   ./pos2.pl6 [-k=<Int>]
   ```
 
-As it happens, there is a built-in type that will constrain us to a postive integer called ```UInt``` for "unsigned integer":
+As it happens, there is a built-in type that will constrain us to a positive integer called ```UInt``` for "unsigned integer":
 
 ```
 $ cat -n pos3.pl6
@@ -94,7 +94,7 @@ Usage:
   ./pos3.pl6 [-k=<Int>]
 ```
 
-Now we can shorten our code:
+Now we can shorten our code and get type checking for free:
 
 ```
 $ cat -n kmer2.pl6
@@ -130,18 +130,17 @@ Here's a slightly shorter version that again uses the ```map``` function (https:
 $ cat -n kmer3.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset PosInt of Int where * > 0;
-     4 	sub MAIN (Str $input!, PosInt :$k=10) {
-     5 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
-     6 	    my $n   = $seq.chars - $k + 1;
-     7
-     8 	    if $n < 1 {
-     9 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
-    10 	        exit 1;
-    11 	    }
-    12
-    13 	    put join "\n", map { $seq.substr($_, $k) }, 0..^$n;
-    14 	}
+     3 	sub MAIN (Str $input!, UInt :$k=10) {
+     4 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
+     5 	    my $n   = $seq.chars - $k + 1;
+     6
+     7 	    if $n < 1 {
+     8 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
+     9 	        exit 1;
+    10 	    }
+    11
+    12 	    put join "\n", map { $seq.substr($_, $k) }, 0..^$n;
+    13 	}
 ```
 
 It's worth spending time to really learn ```map``` as it's a very safe and efficient function.  It takes two arguments:
@@ -164,7 +163,7 @@ It's important to remember that a ```map``` will always return the same number o
 (bar baz)
 ```
 
-So the "list" argument to ```map``` in line 11 is the range ```0..^$n```.  Each number in turn goes into the code block as the "topic" or "it" ```$_``` where it is used in the ```substr``` call which is a k-mer.  All the k-mers are returned as a new list to the ```join``` which then puts a newline between them before the call to ```put```.
+So the "list" argument to ```map``` in line 12 is the range ```0..^$n```.  Each number in turn goes into the code block as the "topic" ```$_``` where it is used in the ```substr``` call to extract the k-mer which are then returned as a new list to the ```join``` which then puts a newline between them before the call to ```put```.
 
 # Kmers from FASTA
 
@@ -201,22 +200,23 @@ $ cat -n fasta-kmer2.pl6
      2
      3 	use Bio::SeqIO;
      4
-     5 	sub MAIN (Str $file!, UInt :$k=10) {
-     6 	    die "Not a file ($file)" unless $file.IO.f;
-     7 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
-     8
-     9 	    while (my $seq = $seqIO.next-Seq) {
-    10 	        put join "\n", get-kmers(str => $seq.seq, k => $k);
-    11 	    }
-    12 	}
-    13
-    14 	sub get-kmers(Int :$k, Str :$str) {
-    15 	    my $n = $str.chars - $k + 1;
-    16 	    map { $str.substr($_, $k) }, 0..^$n;
-    17 	}
+     5 	sub MAIN (Str $file! where *.IO.f, UInt :$k=10) {
+     6 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+     7
+     8 	    while (my $seq = $seqIO.next-Seq) {
+     9 	        put join "\n", get-kmers(str => $seq.seq, k => $k);
+    10 	    }
+    11 	}
+    12
+    13 	sub get-kmers(Int :$k, Str :$str) {
+    14 	    my $n = $str.chars - $k + 1;
+    15 	    map { $str.substr($_, $k) }, 0..^$n;
+    16 	}
 ```
 
-This means we have to call ```get-kmers``` with Pairs for arguments (line 10), but it also means the arguments can be specified in any order.  Generally, if a function takes more than 2 or 3 arguments, I would recommend using named arguments.
+This means we have to call ```get-kmers``` with Pairs for arguments (line 10), but it also means the arguments can be specified in any order.  Generally, if a function takes more than 2 or 3 arguments, I would recommend using named arguments.  
+
+Something else you might have noticed in the above version is that I moved the check of the file-ness of ```$input``` into a constraint in the ```MAIN``` signature.  If you needed this contraint more than once, it would behoove you to create a new ```subset```.
 
 Here is another version that again dips into the function programming world and uses a new string function called ```rotor``` (http://perl6.party/post/Perl-6-.rotor-The-King-of-List-Manipulation):
 
