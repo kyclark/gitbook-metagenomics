@@ -84,3 +84,14 @@ Looks like Protein
 $ ./seq-type3.pl6 2112
 Unknown sequence type
 ```
+
+Once you've established types like this, you can use them in your code:
+
+```
+> 'ACGT' ~~ DNA
+True
+> 'ACGT' ~~ RNA
+False
+```
+
+This makes your code both readable and self-documenting.
