@@ -23,18 +23,19 @@ $ cat -n kmer1.pl6
      1 	#!/usr/bin/env perl6
      2
      3 	sub MAIN (Str $input!, Int :$k=10) {
-     4 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
-     5 	    my $n   = $seq.chars - $k + 1;
-     6
-     7 	    if $n < 1 {
-     8 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
-     9 	        exit;
-    10 	    }
-    11
-    12 	    for 0..^$n -> $i {
-    13 	        put $seq.substr($i, $k);
-    14 	    }
-    15 	}
+     4 	    die "k ($k) must be positive)" if $k < 0;
+     5 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
+     6 	    my $n   = $seq.chars - $k + 1;
+     7
+     8 	    if $n < 1 {
+     9 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
+    10 	        exit;
+    11 	    }
+    12
+    13 	    for 0..^$n -> $i {
+    14 	        put $seq.substr($i, $k);
+    15 	    }
+    16 	}
 $ ./kmer1.pl6 -k=20 input.txt
 AGCTTTTCATTCTGACTGCA
 GCTTTTCATTCTGACTGCAA
@@ -44,7 +45,7 @@ TTTCATTCTGACTGCAACGG
 TTCATTCTGACTGCAACGGG
 ```
 
-At line 5, we use a simple formula to determine the number of k-mers we can extract from the given sequence.  At lines 7-10, we decide if we can continue based on the input from the user.  Lines 12-14 should look somewhat familiar by now.  Since we're going to use the zero-based ```substr``` to extract part of the sequence, we need to use the "..^" range operator to go *up to but not including* our value for ```$n```.  After that, we just ```put``` the extracted k-mer.
+At line 4, , we use a simple formula to determine the number of k-mers we can extract from the given sequence.  At lines 7-10, we decide if we can continue based on the input from the user.  Lines 12-14 should look somewhat familiar by now.  Since we're going to use the zero-based ```substr``` to extract part of the sequence, we need to use the "..^" range operator to go *up to but not including* our value for ```$n```.  After that, we just ```put``` the extracted k-mer.
 
 Here's a slightly shorter version that again uses the ```map``` function (https://docs.perl6.org/routine/map) to eschew a ```for``` loop:
 
