@@ -39,7 +39,7 @@ Solve http://rosalind.info/problems/subs/ to find motifs in strings.  Use this t
 
 # Compute Hamming
 
-Solve http://rosalind.info/problems/hamm/ to find the number of SNP/SNVs in two sequences.  Use this to determine sequence similarity.
+Solve http://rosalind.info/problems/hamm/ to find the number of mutations (SNPs/SNVs) between two sequences.  Use this to determine sequence similarity.
 
 # Protein translation
 
@@ -47,4 +47,4 @@ Solve http://rosalind.info/problems/prot/.  Read the translation table from the 
 
 # Shared k-mers
 
-Create a program that will find the number of shared k-mers of a given size among a set of sequences in a FASTA file.  Use this to determine sequence similarity.
+Create a program that will find the number of shared k-mers of a given size among a set of sequences in a FASTA file.  Use this to determine sequence similarity.  You can use the "fasta-kmer" program to create a list of k-mers in the given sequences.
