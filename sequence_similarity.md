@@ -144,21 +144,21 @@ This means we have to call ```get-kmers``` with Pairs for arguments (line 11), b
 Here is another version that again dips into the function programming world and uses a new string function called ```rotor``` (http://perl6.party/post/Perl-6-.rotor-The-King-of-List-Manipulation):
 
 ```
-$ cat -n fasta-kmer3.pl6
-     1 	#!/usr/bin/env perl6
-     2
-     3 	use Bio::SeqIO;
-     4
-     5 	sub MAIN (Str $file!, Int :$k=10) {
-     6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
-     9
-    10 	    my $j = -1 * ($k - 1);
-    11 	    while (my $seq = $seqIO.next-Seq) {
-    12 	        put join "\n", map *.join, $seq.seq.comb.rotor: $k => $j;
-    13 	    }
-    14 	}
+$ cat fasta-kmer3.pl6
+#!/usr/bin/env perl6
+
+use Bio::SeqIO;
+
+sub MAIN (Str $file!, Int :$k=10) {
+    die "Not a file ($file)" unless $file.IO.f;
+
+    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+
+    my $j = -1 * ($k - 1);
+    while (my $seq = $seqIO.next-Seq) {
+        put $seq.seq.comb.rotor($k => $j).map(*.join).join("\n");
+    }
+}
 ```
 
 It's probably easiest to understand this by going into the REPL:
