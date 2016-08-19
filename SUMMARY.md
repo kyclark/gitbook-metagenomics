@@ -21,5 +21,5 @@
    * [Types](types.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-* HPC
+* [HPC](hpc.md)
 
