@@ -23,20 +23,97 @@ $ cat -n kmer1.pl6
      1 	#!/usr/bin/env perl6
      2
      3 	sub MAIN (Str $input!, Int :$k=10) {
-     4 	    die "k ($k) must be positive)" if $k < 0;
-     5 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
-     6 	    my $n   = $seq.chars - $k + 1;
-     7
-     8 	    if $n < 1 {
-     9 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
-    10 	        exit;
-    11 	    }
-    12
-    13 	    for 0..^$n -> $i {
-    14 	        put $seq.substr($i, $k);
+     4 	    if $k < 0 {
+     5 	        note "k ($k) must be positive\n";
+     6 	        exit 1;
+     7 	    }
+     8
+     9 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
+    10 	    my $n   = $seq.chars - $k + 1;
+    11
+    12 	    if $n < 1 {
+    13 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
+    14 	        exit 1;
     15 	    }
-    16 	}
-$ ./kmer1.pl6 -k=20 input.txt
+    16
+    17 	    for 0..^$n -> $i {
+    18 	        put $seq.substr($i, $k);
+    19 	    }
+    20 	}
+```
+
+In lines 4-7, we first want to ensure that we have a positive value for *k*, so we need to explore this idea briefly.  Another way to write this would be to move that condition into the signature:
+
+```
+$ cat -n pos1.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Int :$k where * > 0 = 10) {
+     4 	    put "k = $k";
+     5 	}
+$ ./pos1.pl6 -k=5
+k = 5
+$ ./pos1.pl6 -k=-1
+Usage:
+  ./pos1.pl6 [-k=<Int>]
+```
+
+Because that sort of thing is so useful, Perl let's us create our own types as a ```subset``` of an existing type.  I'll arbitrarily limit *k* to a positive integer less than 50:
+
+```
+$ cat -n pos2.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	subset PosInt of Int where 0 < * < 50 ;
+     4 	sub MAIN (PosInt :$k=10) {
+     5 	    put "k = $k";
+     6 	}
+$ ./pos2.pl6 -k=5
+k = 5
+$ ./pos2.pl6 -k=-1
+Usage:
+  ./pos2.pl6 [-k=<Int>]
+$ ./pos2.pl6 -k=51
+Usage:
+  ./pos2.pl6 [-k=<Int>]
+  ```
+
+As it happens, there is a built-in type that will constrain us to a postive integer called ```UInt``` for "unsigned integer":
+
+```
+$ cat -n pos3.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (UInt :$k=10) {
+     4 	    put "k = $k";
+     5 	}
+$ ./pos3.pl6 -k=5
+k = 5
+$ ./pos3.pl6 -k=-1
+Usage:
+  ./pos3.pl6 [-k=<Int>]
+```
+
+Now we can shorten our code:
+
+```
+$ cat -n kmer2.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Str $input!, UInt :$k=10) {
+     4 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
+     5 	    my $n   = $seq.chars - $k + 1;
+     6
+     7 	    if $n < 1 {
+     8 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
+     9 	        exit 1;
+    10 	    }
+    11
+    12 	    for 0..^$n -> $i {
+    13 	        put $seq.substr($i, $k);
+    14 	    }
+    15 	}
+$ ./kmer2.pl6 -k=20 input.txt
 AGCTTTTCATTCTGACTGCA
 GCTTTTCATTCTGACTGCAA
 CTTTTCATTCTGACTGCAAC
@@ -45,25 +122,26 @@ TTTCATTCTGACTGCAACGG
 TTCATTCTGACTGCAACGGG
 ```
 
-At line 4, , we use a simple formula to determine the number of k-mers we can extract from the given sequence.  At lines 7-10, we decide if we can continue based on the input from the user.  Lines 12-14 should look somewhat familiar by now.  Since we're going to use the zero-based ```substr``` to extract part of the sequence, we need to use the "..^" range operator to go *up to but not including* our value for ```$n```.  After that, we just ```put``` the extracted k-mer.
+At line 5, use a simple formula to determine the number of k-mers we can extract from the given sequence.  At lines 7-10, we decide if we can continue based on the input from the user.  Lines 12-14 should look somewhat familiar by now.  Since we're going to use the zero-based ```substr``` to extract part of the sequence, we need to use the "..^" range operator to go *up to but not including* our value for ```$n```.  After that, we just ```put``` the extracted k-mer.
 
 Here's a slightly shorter version that again uses the ```map``` function (https://docs.perl6.org/routine/map) to eschew a ```for``` loop:
 
 ```
-$ cat -n kmer2.pl6
+$ cat -n kmer3.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	sub MAIN (Str $input!, Int :$k=10) {
-     4 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
-     5 	    my $n   = $seq.chars - $k + 1;
-     6
-     7 	    if $n < 1 {
-     8 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
-     9 	    }
-    10 	    else {
-    11 	        put join "\n", map { $seq.substr($_, $k) }, 0..^$n;
-    12 	    }
-    13 	}
+     3 	subset PosInt of Int where * > 0;
+     4 	sub MAIN (Str $input!, PosInt :$k=10) {
+     5 	    my $seq = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
+     6 	    my $n   = $seq.chars - $k + 1;
+     7
+     8 	    if $n < 1 {
+     9 	        note "Cannot extract {$k}-mers from seq length {$seq.chars}";
+    10 	        exit 1;
+    11 	    }
+    12
+    13 	    put join "\n", map { $seq.substr($_, $k) }, 0..^$n;
+    14 	}
 ```
 
 It's worth spending time to really learn ```map``` as it's a very safe and efficient function.  It takes two arguments:
@@ -98,25 +176,24 @@ $ cat -n fasta-kmer1.pl6
      2
      3 	use Bio::SeqIO;
      4
-     5 	sub MAIN (Str $file!, Int :$k=10) {
+     5 	sub MAIN (Str $file!, UInt :$k=10) {
      6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
-     9
-    10 	    while (my $seq = $seqIO.next-Seq) {
-    11 	        put join "\n", get-kmers($k, $seq.seq);
-    12 	    }
-    13 	}
-    14
-    15 	sub get-kmers(Int $k, Str $str) {
-    16 	    my $n = $str.chars - $k + 1;
-    17 	    map { $str.substr($_, $k) }, 0..^$n;
-    18 	}
+     7 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+     8
+     9 	    while (my $seq = $seqIO.next-Seq) {
+    10 	        put join "\n", get-kmers($k, $seq.seq);
+    11 	    }
+    12 	}
+    13
+    14 	sub get-kmers(Int $k, Str $str) {
+    15 	    my $n = $str.chars - $k + 1;
+    16 	    map { $str.substr($_, $k) }, 0..^$n;
+    17 	}
 ```
 
-I copied the FASTA script from the previous chapter and introduced a function called ```get-kmers```.  You've already been writing functions, of course, with ```MAIN``` and calling functions like ```join``` and ```put```, but now we're calling a function we've written.  We define that it takes two positional arguments, an integer ```$k``` and a string ```$string```.  Right away the type checking caught an error as I tried to pass in the ```$seq``` *object* and not the ```$seq.seq``` *string of the sequence.*  
+I copied the FASTA script from the previous chapter and introduced a function called ```get-kmers```.  You've already been writing functions, of course, like ```MAIN``` and calling functions like ```join``` and ```put```, but now we're calling a function we've written.  We define that it takes two positional arguments, an integer ```$k``` and a string ```$string```.  Right away the type checking caught an error as I tried to pass in the ```$seq``` *object* and not the ```$seq.seq``` *string of the sequence.*  
 
-Just like with our ```MAIN```, we can change our positional arguments into named arguments by placing a ```:``` before the names (line 15):
+Just like with our ```MAIN```, we can change our positional arguments into named arguments by placing a ```:``` before the names (line 14 below):
 
 ```
 $ cat -n fasta-kmer2.pl6
@@ -124,42 +201,40 @@ $ cat -n fasta-kmer2.pl6
      2
      3 	use Bio::SeqIO;
      4
-     5 	sub MAIN (Str $file!, Int :$k=10) {
+     5 	sub MAIN (Str $file!, UInt :$k=10) {
      6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
-     9
-    10 	    while (my $seq = $seqIO.next-Seq) {
-    11 	        put join "\n", get-kmers(str => $seq.seq, k => $k);
-    12 	    }
-    13 	}
-    14
-    15 	sub get-kmers(Int :$k, Str :$str) {
-    16 	    my $n = $str.chars - $k + 1;
-    17 	    map { $str.substr($_, $k) }, 0..^$n;
-    18 	}
+     7 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+     8
+     9 	    while (my $seq = $seqIO.next-Seq) {
+    10 	        put join "\n", get-kmers(str => $seq.seq, k => $k);
+    11 	    }
+    12 	}
+    13
+    14 	sub get-kmers(Int :$k, Str :$str) {
+    15 	    my $n = $str.chars - $k + 1;
+    16 	    map { $str.substr($_, $k) }, 0..^$n;
+    17 	}
 ```
 
-This means we have to call ```get-kmers``` with Pairs for arguments (line 11), but it also means the arguments can be specified in any order.  Generally, if a function takes more than 2 or 3 arguments, I would recommend using named arguments.
+This means we have to call ```get-kmers``` with Pairs for arguments (line 10), but it also means the arguments can be specified in any order.  Generally, if a function takes more than 2 or 3 arguments, I would recommend using named arguments.
 
 Here is another version that again dips into the function programming world and uses a new string function called ```rotor``` (http://perl6.party/post/Perl-6-.rotor-The-King-of-List-Manipulation):
 
 ```
-$ cat fasta-kmer3.pl6
-#!/usr/bin/env perl6
-
-use Bio::SeqIO;
-
-sub MAIN (Str $file!, Int :$k=10) {
-    die "Not a file ($file)" unless $file.IO.f;
-
-    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
-
-    my $j = -1 * ($k - 1);
-    while (my $seq = $seqIO.next-Seq) {
-        put $seq.seq.comb.rotor($k => $j).map(*.join).join("\n");
-    }
-}
+$ cat -n fasta-kmer3.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	use Bio::SeqIO;
+     4
+     5 	sub MAIN (Str $file!, UInt :$k=10) {
+     6 	    die "Not a file ($file)" unless $file.IO.f;
+     7 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+     8
+     9 	    my $j = -1 * ($k - 1);
+    10 	    while (my $seq = $seqIO.next-Seq) {
+    11 	        put $seq.seq.comb.rotor($k => $j).map(*.join).join("\n");
+    12 	    }
+    13 	}
 ```
 
 It's probably easiest to understand this by going into the REPL:
