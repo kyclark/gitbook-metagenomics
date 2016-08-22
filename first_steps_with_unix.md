@@ -9,6 +9,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **env**: print your environment
 * **which/type**: tells you the location of a program
 * **touch**: create an empty regular file
+* **file**: briefly describe a file or directory
 * **pwd**: print working directory, where you are right now
 * **ls**: list files in current directory
 * **find**: find files or directories matching some conditions
