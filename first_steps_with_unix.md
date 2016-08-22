@@ -12,6 +12,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **pwd**: print working directory, where you are right now
 * **ls**: list files in current directory
 * **find**: find files or directories matching some conditions
+* **locate**: find files using a database, requires daemon to run
 * **cd**: change directory (with no arguments, cd $HOME)
 * **cp**: copy a file (or "cp -r" to copy a directory)
 * **mv**: move a file or diretory
