@@ -1,7 +1,57 @@
 # HPC
 
-HPC is an acronym for "high-performance computing," and it generally means using a cluster of computers.  Our students have access to two clusters at the University of Arizona, and most anyone is welcome to use the clusters at TACC.  To use the cluster, it's necessary to submit a batch job along with a description of the resources you need (e.g., memory, number of CPUs, number of nodes) to a scheduler that will start your job when the resources become available.  We will discuss schedulers "PBS" used at UA and "SLURM" used at TACC.
+HPC is an acronym for "high-performance computing," and it generally means using a cluster of computers.  Our students have access to two clusters at the University of Arizona, and most anyone is welcome to use the clusters at TACC.  To use the cluster, it's necessary to submit a batch job along with a description of the resources you need (e.g., memory, number of CPUs, number of nodes) to a scheduler that will start your job when the resources become available.  We will discuss schedulers "PBS" used at UA and "SLURM" used at TACC.  In the Github repo, you will find an "hpc" directory that contains examples for submitting to each queue.
+
+To interact PBS and SLURM, you must log in to the "head" node(s).  Often you will be placed on a random nodes such as "login1."  YOU ARE NOT ALLOWED TO DO HEAVY LIFTING ON THE HEAD NODE.  For our class, you can write files, interact with the Perl RELP, run small scripts, etc., but you should never run BLAST or launch long-running jobs on these machines.  They are intended to be used to submit jobs to the queue.
 
 # PBS
 
+The PBS command for submitting to the queue is ```qsub```.  Since this command takes many arguments, I usually write a small script to gather all the arguments and execute the command so it's documented how I ran the job.  Most of the time I call this "submit.sh" it basically does ```qsub $ARGS run.sh```.  To view your queue, use ```qstat -u $USER```.
+
 # SLURM
+
+SLURM's command for queue submission is ```sbatch```, and ```showq``` will show you your queue.
+
+# Aliases
+
+To make it easier to go back and forth between PBS and SLURM, I create aliases so that I can execute the same command on both systems:
+
+## UA HPC/PBS
+
+```
+alias qstat="/usr/local/bin/qstat_local"
+alias qs="qstat -u kyclark"
+alias qt="qstat -Jtu kyclark"
+function qkill() {
+  if [ "${1}x" = "x" ]; then
+    echo Now I crush you!
+    OUT=`qstat -u kyclark | grep kyclark | cut -f 1 -d ' ' | sed 's/\[\]\..*/[]/' | xargs qdel`
+
+    if [ $? -eq 0 ]; then
+        echo Jobs killed
+    else
+        echo -e "\nError submitting job\n$OUT\n"
+    fi
+  else
+    echo Argument = \"$1\"
+    echo "This isn't the command you're looking for. I don't take arguments"
+  fi
+}
+
+function qr() {
+  WHO=${1:-kyclark}
+  echo qstat for \"$WHO\"
+  OUT=`qstat -Jtu $WHO | tail -n +6 | awk '{print $10}' | sort | uniq -c`
+  if [ -n "$OUT" ]; then
+      echo "$OUT"
+  else
+      echo No jobs currently running.
+  fi
+}
+```
+
+## Stampede/SLURM
+
+```
+alias qs='squeue -u kyclark | column -t'
+```
