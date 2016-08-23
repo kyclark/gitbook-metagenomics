@@ -6,11 +6,20 @@ To interact PBS and SLURM, you must log in to the "head" node(s).  Often you wil
 
 # PBS
 
-The PBS command for submitting to the queue is ```qsub```.  Since this command takes many arguments, I usually write a small script to gather all the arguments and execute the command so it's documented how I ran the job.  Most of the time I call this "submit.sh" it basically does ```qsub $ARGS run.sh```.  To view your queue, use ```qstat -u $USER```.
+The PBS command for submitting to the queue is ```qsub```.  Since this command takes many arguments, I usually write a small script to gather all the arguments and execute the command so it's documented how I ran the job.  Most of the time I call this "submit.sh" it basically does ```qsub $ARGS run.sh```.  To view your queue, use ```qstat -u $USER```.  Use ```va``` to view your allocation of compute hours.  The UA has three queues: high-priority, normal, and windfall.  If you exhaust your normal hours in a month, then your jobs must run under "windfall" (catch as catch can) until your hours are replenished.
 
 # SLURM
 
-SLURM's command for queue submission is ```sbatch```, and ```showq``` will show you your queue.
+SLURM's command for queue submission is ```sbatch```, and ```showq``` will show you your queue.  Compute nodes are shared by default.  You must request exclusive access if you need.  
+
+* hpc-consult@list.arizona.edu is the help account
+
+# TACC/Stampede
+
+* TACC is part of the XSEDE (xsede.org) project.  
+* TACC does not allow the use of job arrays on their clusters.  Instead, they have written their "parametric launcher" (https://www.tacc.utexas.edu/research-development/tacc-software/the-launcher).
+* Your three important directories are ```$HOME```, ```$WORK```, and ```$SCRATCH```, and they can be accessed with ```cd```, ```cdw```, and ```cds```, respectively.  
+* Compute nodes are not shared
 
 # Aliases
 
@@ -20,15 +29,16 @@ To make it easier to go back and forth between PBS and SLURM, I create aliases s
 
 ```
 alias qstat="/usr/local/bin/qstat_local"
-alias qs="qstat -u kyclark"
-alias qt="qstat -Jtu kyclark"
+ME="kyclark"
+alias qs="qstat -u $ME"
+alias qt="qstat -Jtu $ME"
 function qkill() {
-  if [ "${1}x" = "x" ]; then
-    echo Now I crush you!
-    OUT=`qstat -u kyclark | grep kyclark | cut -f 1 -d ' ' | sed 's/\[\]\..*/[]/' | xargs qdel`
+  if [[ "${#1}" -eq 0 ]]; then
+    echo {Now I crush you!"
+    OUT=$(qstat -u $ME | grep $ME | cut -f 1 -d ' ' | sed 's/\[\]\..*/[]/' | xargs qdel)
 
-    if [ $? -eq 0 ]; then
-        echo Jobs killed
+    if [[ $? -eq 0 ]]; then
+        echo "Jobs killed"
     else
         echo -e "\nError submitting job\n$OUT\n"
     fi
@@ -39,7 +49,7 @@ function qkill() {
 }
 
 function qr() {
-  WHO=${1:-kyclark}
+  WHO=${1:-$ME}
   echo qstat for \"$WHO\"
   OUT=`qstat -Jtu $WHO | tail -n +6 | awk '{print $10}' | sort | uniq -c`
   if [ -n "$OUT" ]; then
@@ -53,5 +63,6 @@ function qr() {
 ## Stampede/SLURM
 
 ```
-alias qs='squeue -u kyclark | column -t'
+ME="kyclark"
+alias qs='squeue -u $ME | column -t'
 ```
