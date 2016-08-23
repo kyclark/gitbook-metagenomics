@@ -8,6 +8,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **echo**: say something
 * **cowsay**: have a cow say something
 * **env**: print your environment
+* **printenv**: print some/all of your environment
 * **which/type**: tells you the location of a program
 * **touch**: create an empty regular file
 * **file**: briefly describe a file or directory
