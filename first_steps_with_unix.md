@@ -6,6 +6,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **w**: shows who is currently on a system
 * **man**: show the manual page for a command
 * **echo**: say something
+* **cowsay**: have a cow say something
 * **env**: print your environment
 * **which/type**: tells you the location of a program
 * **touch**: create an empty regular file
