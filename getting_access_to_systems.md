@@ -10,8 +10,6 @@ We need to get into a Unix system.  If you're on Linux or OSX, open a terminal a
 ssh <NetID>@hpc.arizona.edu
 ```
 
-Protocol about setting up SSH keys to get around two-factor authentication.
-
 If all goes well, you should be on a machine called "gatekeeper.hpc.arizona.edu."  Verfiy this with the command "hostname<Enter>".  Use the command "menuon" to get the following menu:
 
 ```
@@ -30,6 +28,10 @@ Please select a target system to connect to:
 The menu will be present on your next login session.  Make a selection from the menu to login to a head node.
 
 As of 2016, Ocelot is UA's newest cluster.  For more information, see https://confluence.arizona.edu/display/UAHPC/Ocelote+Quick+Start.
+
+If you would like to avoid the 2-factor authentication, then read the following:
+
+https://www.protocols.io/view/ssh-to-UA-HPC-fm7bk9n
 
 ## Stampede (TACC)
 
