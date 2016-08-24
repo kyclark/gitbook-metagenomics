@@ -219,8 +219,69 @@ $ cat -n name-count5.pl6
      1 	#!/usr/bin/env perl6
      2
      3 	sub MAIN (Str $file! where *.IO.f) {
-     4 	    put $file.IO.lines.Bag.map(*.join("\t")).join("\n");
+     4 	    put $file.IO.lines.Bag.map(*.kv.join("\t")).join("\n");
      5 	}
 ```
 
-As great as hashes are, a Bag (immutable) or a BagHash (mutable) is the better option for this task.  
+As great as hashes are, a Bag (immutable) or a BagHash (mutable) is the better option for this task.  We saw a Bag in the DNA problem, so that much should not be new.  The processing of it with ```map``` and ```join``` might be confusing, so let's look more closely at that in the RELP:
+
+```
+> my $bag = 'names.txt'.IO.lines.Bag
+bag(mouse, cat(3), bird, dog(2))
+> $bag.map(*.kv.join('::'))
+(mouse::1 cat::3 bird::1 dog::2)
+> $bag.map(*.kv.join('::')).join(' -- ')
+mouse::1 -- cat::3 -- bird::1 -- dog::2
+```
+
+I'm using commas and dashes as delimiters as tabs and newlines won't show well in the REPL.  The Bag has a ```map``` method that allows us to apply a block of code to each element.  The Bag is hold Pairs like "mouse => 1," "cat => 3," so we call ```*.kv``` to get a List:
+
+```
+> (mouse => 1).kv
+(mouse 1)
+> say (mouse => 1).kv.WHAT
+(List)
+```
+
+Then we ask that the List be joined:
+
+```
+> say (mouse => 1).kv.join('::')
+mouse::1
+```
+
+The result of the ```map``` operation is a new List of Strings that we then want to ```join``` on newlines.
+
+Obviously this is a big of golf on my part.  It's not a script I would actually release or maintain, in part because it's not as functional as the previous one.  Here's is a more realistic program:
+
+```
+$ cat -n name-count6.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	subset SortBy of Str where * (elem) <key value keys values>.Bag;
+     4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
+     5 	    my $bag    = $file.IO.lines.Bag;
+     6 	    my @sorted = $sort-by ~~ /key/ ?? $bag.sort !! $bag.sort(*.value);
+     7 	    @sorted   .= reverse if $desc;
+     8 	    put join "\n", map *.join("\t"), @sorted;
+     9 	}
+ ```
+ 
+On line 3, I'm showing you another way to define a set of acceptable strings using the test ```(elem)``` to see if *the thing* (```*```) is in the Bag.  Otherwise, this script is pretty close to the earlier versions, only shorter and less error prone.  
+
+Here is another version with some interesting variations:
+
+```
+$ cat -n name-count7.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	subset SortBy of Str where * ∈ <key value keys values>.Bag;
+     4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
+     5 	    my $bag    = $file.IO.lines.Bag;
+     6 	    my @sorted = $sort-by ~~ /key/ ?? $bag.sort !! $bag.sort(*.value);
+     7 	    @sorted   .= reverse if $desc;
+     8 	    put @sorted.map(*.join("\t")).join("\n");
+     9 	} 
+```
+
+Line 3 uses the Unicode version ```∈``` of the ```(elem)``` operator.  Perl handles Unicode natively for both code and data. 
