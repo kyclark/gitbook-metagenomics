@@ -90,9 +90,7 @@ bird   	1
 mouse  	1
 ```
 
-By now, this code should look pretty self-explanatory.  We set up the ```%count``` hash so that we can increment (```++```) for each line in the file (lines 4-7), and then we call the key-value pairs via ```%count.kv``` to ```put``` the keys and their counts joined on a tab character.
-
-Now let's add an option to sort the data with an option to use descending order.
+By now, this code should look pretty self-explanatory.  We set up the ```%count``` hash so that we can increment (```++```) for each line in the file (lines 4-7), and then we call the key-value pairs via ```%count.kv``` to ```put``` the keys and their counts joined on a tab character.  One problem is that ```%count.kv```  returns the data in no particular order, so let's add an option to sort the data with an option to use descending order.
 
 ```
 $ cat -n name-count2.pl6
