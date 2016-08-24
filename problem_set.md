@@ -11,6 +11,10 @@ $ ./greet.pl6 --excited --greeting="Hola" --name="Amigo"
 Hola, Amigo!
 ```
 
+# Sum and mean
+
+Create a script that reads in numbers from the command line and prints out their sum and mean.
+
 # Clean sequences
 
 Write a bash script to clean up some raw sequence.
