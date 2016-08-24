@@ -160,5 +160,67 @@ There are just two changes to this script.  First, I added a ```Bool``` constrai
 (Betty Wilma barney fred)
 > @names.sort(*.lc)
 (barney Betty fred Wilma)
+> @names.sort(*.chars)
+(fred Wilma Betty barney)
 ```
 
+A call to ```sort``` use an lexicographic sort where uppercase characters occur before lowercase (cf. the ASCII table).  Passing the code ```*.lc``` tells ```sort``` to call the lowercase method on each of the arguments before sorting, so we get a case-insensitive ordering.  Likewise, passing ```*.chars``` says to order by the number of characters in the strings.
+
+Now let's merge these scripts so that the user can choose whether to sort on the keys (default) or the counts either in ascending (default) or descending order:
+
+```
+$ cat -n name-count4.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	subset SortBy of Str where * ~~ /^keys?|values?$/;
+     4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
+     5 	    my %keys;
+     6 	    for $file.IO.lines -> $key {
+     7 	        %keys{ $key }++;
+     8 	    }
+     9
+    10 	    my @sorted = $sort-by ~~ /key/ ?? %keys.sort !! %keys.sort(*.value);
+    11 	    @sorted   .= reverse if $desc;
+    12
+    13 	    for @sorted -> $pair {
+    14 	        put join "\t", $pair.key, $pair.value;
+    15 	    }
+    16 	}
+$ ./name-count4.pl6 --sort-by=value --desc names.txt
+cat    	3
+dog    	2
+mouse  	1
+bird   	1
+```
+
+I've create a ```subset``` on line 3 to describe the allowed values for the ```$sort-by``` argument.  I've described it as a String that must match the regular expression:
+
+```
+/ ^ keys? | values? $ /
+1 2 3   4 5 6     7 8 9
+```
+
+1. beginning of regular expression
+2. start of the string
+3. the string "key"
+4. optional string "s"
+5. OR
+6. the string "value"
+7. optional string "s"
+8. the end of the string
+9. end of regular expression
+
+This allows both "key" or "keys," "value" or "values."  Line 10 is now using the ternary operator (```predicate ?? true-branch !! false-branch```) with a test on whether the ```$sort-by``` matches the string "key" (which will also match "keys").  If it does match, it sort as normal, otherwise it sorts on the values.  The rest is identical to before.
+
+As you might have guessed, I'm now going to show you a significantly shorter version:
+
+```
+$ cat -n name-count5.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Str $file! where *.IO.f) {
+     4 	    put $file.IO.lines.Bag.map(*.join("\t")).join("\n");
+     5 	}
+```
+
+As great as hashes are, a Bag (immutable) or a BagHash (mutable) is the better option for this task.  
