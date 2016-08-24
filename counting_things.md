@@ -119,3 +119,46 @@ bird   	1
 ```
 
 I added a "flag" called ```--desc``` set by default to ```False```.  At line 9, we sort the ```%count``` hash to populate an Array of Pair objects.  Remember that hashes are stored in an unordered manner, so it's necessary to put the Pairs into a container that will respect their ordering.  The only reason to put it into a Array is for line 10 where we mutate the Array *in place* by calling ```.= reverse``` on it if the ```$desc``` flag is ```True```.
+
+Now let's look at a version that sorts by the *count* of the keys:
+
+```
+$ cat -n name-count3.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Str $file! where *.IO.f, Bool :$desc=False) {
+     4 	    my %keys;
+     5 	    for $file.IO.lines -> $key {
+     6 	        %keys{ $key }++;
+     7 	    }
+     8
+     9 	    my @sorted = %keys.sort(*.value);
+    10 	    @sorted   .= reverse if $desc;
+    11
+    12 	    for @sorted -> $pair {
+    13 	        put join "\t", $pair.key, $pair.value;
+    14 	    }
+    15 	}
+ $ ./name-count3.pl6 names.txt
+bird   	1
+mouse  	1
+dog    	2
+cat    	3
+$ ./name-count3.pl6 --desc names.txt
+cat    	3
+dog    	2
+mouse  	1
+bird   	1
+```
+
+There are just two changes to this script.  First, I added a ```Bool``` constraint on the ```$desc``` to indicate that I want to treat this as a binary, on/off flag.  The other change is on line 9 where I pass to the ```sort``` call the *unary* operation ```*.value```.  Take this example:
+
+```
+> my @names = <fred barney Wilma Betty>
+[fred barney Wilma Betty]
+> @names.sort
+(Betty Wilma barney fred)
+> @names.sort(*.lc)
+(barney Betty fred Wilma)
+```
+
