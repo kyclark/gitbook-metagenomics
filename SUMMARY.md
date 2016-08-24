@@ -19,8 +19,8 @@
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
    * [Types](types.md)
+   * [Counting Things](counting_things.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
-   * [Counting Things](counting_things.md)
 * [HPC](hpc.md)
 
