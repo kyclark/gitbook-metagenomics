@@ -2,10 +2,6 @@
 
 Be sure to check out https://github.com:kyclark/abe487.git for the tests!
 
-# Clean sequences
-
-Write a bash script to clean up some raw sequence.
-
 # Hello!
 
 Alter the greeting script to accept the flag "--excited" that adds an exclamation point to the end of the greeting:
@@ -14,6 +10,14 @@ Alter the greeting script to accept the flag "--excited" that adds an exclamatio
 $ ./greet.pl6 --excited --greeting="Hola" --name="Amigo"
 Hola, Amigo!
 ```
+
+# Sum and mean
+
+Create a script that reads in numbers from the command line and prints out their sum and mean.
+
+# Clean sequences
+
+Write a bash script to clean up some raw sequence.
 
 # Create a FASTA file
 
