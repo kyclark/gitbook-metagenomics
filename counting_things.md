@@ -284,4 +284,63 @@ $ cat -n name-count7.pl6
      9 	} 
 ```
 
-Line 3 uses the Unicode version ```∈``` of the ```(elem)``` operator.  Perl handles Unicode natively for both code and data. 
+Line 3 uses the Unicode version ```∈``` of the ```(elem)``` operator.  Perl handles Unicode natively for both code and data!  The other change is at line 8 where I use chained method calls instead of functions to generate the output.
+
+Now let's move on to a version that sums the counts for various keys:
+
+```
+$ cat -n name-value-count1.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	subset SortBy of Str where * ∈ <key value keys values>.Bag;
+     4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
+     5 	    my %counts;
+     6 	    for $file.IO.lines -> $line {
+     7 	        my ($key, $value) = $line.split("\t");
+     8 	        %counts{ $key } += $value;
+     9 	    }
+    10
+    11 	    my @sorted = $sort-by ~~ /key/ ?? %counts.sort !! %counts.sort(*.value);
+    12 	    @sorted   .= reverse if $desc;
+    13
+    14 	    for @sorted -> $pair {
+    15 	        put join "\t", $pair.key, $pair.value;
+    16 	    }
+    17 	}
+```
+
+This is almost identical to one of our first versions, but we are calling ```$line.split``` to break the line on the tab character into the ```$key``` and ```$value```.  Since we're assiging them as a list, we need the parentheses around the ```my ()```.  At line 8, we're using the ```+=``` operator to add the ```$value``` to whatever was in ```$count{ $key }```.  If there was nothing there, the key is created and set to 0.  The rest of the script continues as before.
+
+Here is another version to consider:
+
+```
+$ cat -n name-value-count2.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	subset SortBy of Str where * ∈ <key value keys values>.Bag;
+     4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
+     5 	    my %counts;
+     6 	    for $file.IO.lines.map(*.split(/\s+/)) -> [$key, $value] {
+     7 	        %counts{ $key } += $value;
+     8 	    }
+     9
+    10 	    my @sorted = $sort-by ~~ /key/ ?? %counts.sort !! %counts.sort(*.value);
+    11 	    @sorted   .= reverse if $desc;
+    12
+    13 	    put @sorted.map(*.join("\t")).join("\n");
+    14 	}
+$ ./name-value-count2.pl6 --desc name-value.txt
+mouse  	4
+frog   	6
+dog    	10
+cat    	5
+bird   	1
+$ ./name-value-count2.pl6 --desc --sort-by=value name-value.txt
+dog    	10
+frog   	6
+cat    	5
+mouse  	4
+bird   	1
+ ```
+ 
+ On line 6, I'm using a regular expression in the ```split``` call to say I want to split on any number of whitespace characters.  This would break if we had a key like "grey wolf," so it's important to know your data.  I'm just showing you another way to specify the ```split```.  The other big change here is that the ```for``` has a signature after the ```-> [$key, $value]```.  Remember that curlies ```{}``` create code blocks, and code blocks can have signatures.  Here we're having Perl match the pattern ```[$key, $value]``` to say we're expecting something that looks like a two-element list and to put those values into the variables we named.
