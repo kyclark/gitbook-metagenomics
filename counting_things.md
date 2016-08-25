@@ -250,7 +250,17 @@ mouse::1
 
 The result of the ```map``` operation is a new List of Strings that we then want to ```join``` on newlines.
 
-Obviously this is a big of golf on my part.  It's not a script I would actually release or maintain, in part because it's not as functional as the previous one.  Here's is a more realistic program:
+Obviously this is a big of golf on my part.  It's not a script I would actually release or maintain, in part because it's not as functional as the previous one.  If you wanted to take it a bit further, we can get down to a "one-liner":
+
+```
+$ perl6 -e 'put $*IN.lines.Bag.map(*.join("\t")).join("\n")' < names.txt
+mouse  	1
+cat    	3
+bird   	1
+dog    	2
+```
+
+Here's is a more realistic program:
 
 ```
 $ cat -n name-count6.pl6
@@ -282,7 +292,7 @@ $ cat -n name-count7.pl6
      9 	} 
 ```
 
-Line 3 uses the Unicode version ```∈``` of the ```(elem)``` operator.  Perl handles Unicode natively for both code and data!  The other change is at line 8 where I use chained method calls instead of functions to generate the output.
+Line 3 uses the Unicode version ```∈``` of the ```(elem)``` operator.  Perl handles Unicode natively for both code and data!  I confess I show you this just because I think it looks cool, but I actually prefer the regular expression version.  The other change is at line 8 where I use chained method calls instead of functions to generate the output.
 
 Now let's move on to a version that sums the counts for various keys:
 
@@ -290,7 +300,7 @@ Now let's move on to a version that sums the counts for various keys:
 $ cat -n name-value-count1.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset SortBy of Str where * ∈ <key value keys values>.Bag;
+     3 	subset SortBy of Str where * ~~ /:i ^keys?|values?$/;
      4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
      5 	    my %counts;
      6 	    for $file.IO.lines -> $line {
@@ -307,7 +317,7 @@ $ cat -n name-value-count1.pl6
     17 	}
 ```
 
-This is almost identical to one of our first versions, but we are calling ```$line.split``` to break the line on the tab character into the ```$key``` and ```$value```.  Since we're assiging them as a list, we need the parentheses around the ```my ()```.  At line 8, we're using the ```+=``` operator to add the ```$value``` to whatever was in ```$count{ $key }```.  If there was nothing there, the key is created and set to 0.  The rest of the script continues as before.
+This is almost identical to one of our first versions.  I've gone back to the regular expression match for the ```SortBy``` because now I'm using the ```:i``` modifier to make the match case-insensitive.  At line 7, I'm calling ```$line.split``` to break the line on the tab character into the ```$key``` and ```$value```.  Since I'm assiging them as a list, I need the parentheses around the ```my ()```.  At line 8, I'm using the ```+=``` operator to add the ```$value``` to whatever was in ```$count{ $key }```.  If there was nothing there, the key is created and set to 0.  The rest of the script continues as before.
 
 Here is another version to consider:
 
@@ -315,7 +325,7 @@ Here is another version to consider:
 $ cat -n name-value-count2.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset SortBy of Str where * ∈ <key value keys values>.Bag;
+     3 	subset SortBy of Str where * ~~ /:i ^keys?|values?$/;
      4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
      5 	    my %counts;
      6 	    for $file.IO.lines.map(*.split(/\s+/)) -> [$key, $value] {
@@ -340,5 +350,5 @@ cat    	5
 mouse  	4
 bird   	1
  ```
- 
- On line 6, I'm using a regular expression in the ```split``` call to say I want to split on any number of whitespace characters.  This would break if we had a key like "grey wolf," so it's important to know your data.  I'm just showing you another way to specify the ```split```.  The other big change here is that the ```for``` has a signature after the ```-> [$key, $value]```.  Remember that curlies ```{}``` create code blocks, and code blocks can have signatures.  Here we're having Perl match the pattern ```[$key, $value]``` to say we're expecting something that looks like a two-element list and to put those values into the variables we named.
+
+On line 6, I'm using a regular expression in the ```split``` call to say I want to split on any number of whitespace characters.  This would break if we had a key like "grey wolf," so it's important to know your data.  I'm just showing you another way to specify the ```split```.  The other big change here is that the ```for``` has a signature after the ```-> [$key, $value]```.  Remember that curlies ```{}``` create code blocks, and code blocks can have signatures.  Here we're having Perl match the pattern ```[$key, $value]``` to say we're expecting something that looks like a two-element list and to put those values into the variables we named.
