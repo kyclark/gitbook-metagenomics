@@ -142,6 +142,7 @@ chickens.
 * Tab: hit the Tab key for command completion; hit it early and often!
 * **!!**: execute the last command again
 * **!$**: the last argument from your previous command line (think of the $ as the right anchor in a regex)
+* **!^**: the first argument from your previous command line (think of the ^ as the left anchor in a regex)
 * CTRL-R: reverse search of your history
 * Up/down cursor keys: go backwards/forwards in your history
 * CTRL-A, CTRL-E: jump to the start, end of the command line when in emacs mode (default)
