@@ -300,7 +300,7 @@ Now let's move on to a version that sums the counts for various keys:
 $ cat -n name-value-count1.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset SortBy of Str where * ~~ /:i ^keys?|values?$/;
+     3 	subset SortBy of Str where /:i ^keys?|values?$/;
      4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
      5 	    my %counts;
      6 	    for $file.IO.lines -> $line {
@@ -325,7 +325,7 @@ Here is another version to consider:
 $ cat -n name-value-count2.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset SortBy of Str where * ~~ /:i ^keys?|values?$/;
+     3 	subset SortBy of Str where /:i ^keys?|values?$/;
      4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
      5 	    my %counts;
      6 	    for $file.IO.lines.map(*.split(/\s+/)) -> [$key, $value] {
