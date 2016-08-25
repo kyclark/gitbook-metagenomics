@@ -170,7 +170,7 @@ Now let's merge these scripts so that the user can choose whether to sort on the
 $ cat -n name-count4.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset SortBy of Str where * ~~ /^keys?|values?$/;
+     3 	subset SortBy of Str where /^keys?|values?$/;
      4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
      5 	    my %keys;
      6 	    for $file.IO.lines -> $key {
