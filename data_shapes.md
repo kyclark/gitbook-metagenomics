@@ -6,7 +6,7 @@ Perl's language designers feel that the variables should stand out from the lang
 
 Time to fire up ```perl6``` and start typing.  The following show the result of typing the examples into the REPL.
 
-## Scalars $
+## Scalar $
 
 If you have just one of a thing like our greeting or name, then you put it into a "scalar" or singular variable.  These are prefixed with a ```$``` like ```$greeting``` and can hold only one value.  If you set it to a second value, the first value is forever lost unless you set it to be immutable using ```:=```.
 
@@ -22,7 +22,7 @@ Cannot assign to an immutable value
   in block <unit> at <unknown file> line 1
 ```
 
-## Arrays @
+## Array @
 
 When you have an undetermined number of somethings, they belong in an Array (mutable) or a List (immutable).  These are plurals, and they start with the ```@``` sign.  The items in a series are separated with commas or you can use the ```<>``` operator (<https://docs.perl6.org/language/quoting#index-entry-%3C_%3E_word_quote>).  Perl also supports infinite lists -- just don't try to print them.
 
