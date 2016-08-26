@@ -59,6 +59,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **sh**: shuh or "ess-ach"
 * **etc**: et-see
 * **usr**: user
+* **src**: source
 * **#**: hash
 * **$**: dollar
 * **!**: bang
