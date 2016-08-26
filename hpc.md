@@ -27,6 +27,12 @@ To make it easier to go back and forth between PBS and SLURM, I create aliases s
 
 ## UA HPC/PBS
 
+To schedule a job with a dependency chain, it's necessary to be on the correct login/head node for the type of job:
+
+* service0 - cluster scheduler
+* service1 - smp scheduler
+* service2 - htc scheduler
+
 ```
 alias qstat="/usr/local/bin/qstat_local"
 ME="kyclark"
