@@ -245,7 +245,17 @@ $ chmod ug+x myprog.sh
 
 Removing is done with a "-," so any combination of "[ugo][+-][rwx]" will usually get you what you want.
 
-Sometimes you may see instructions to "chmod 775" a file.  This is using octal notation where the three bits "rwx" correspond to the digits "421," so the first "7" is "4+2+1" which equals "r" whereas the "5" = "4+1" so "w".  Therefore "chmod 775" is the same as 
+Sometimes you may see instructions to "chmod 775" a file.  This is using octal notation where the three bits "rwx" correspond to the digits "421," so the first "7" is "4+2+1" which equals "rwx" whereas the "5" = "4+1" so only "rw":  
+
+```
+ user   group   other
+r w x   r w x   r w x
+4 2 1 | 4 2 1 | 4 2 1
++ + +   + + +   + - + 
+ = 7     = 7     = 5
+```
+
+Therefore "chmod 775" is the same as:
 
 ```
 $ chmod -rwx myfile
@@ -253,7 +263,17 @@ $ chmod ug+rwx myfile
 $ chmod o+rw myfile
 ```
 
-So you can see that it can be much faster to use the octal notation.
+When you create ssh keys or config files, you are instructed to ```chmod 600```:
+
+```
+ user   group   other
+r w x   r w x   r w x
+4 2 1 | 4 2 1 | 4 2 1
++ + -   - - -   - - - 
+ = 6     = 0     = 0
+```
+
+Which means that only you can read or write the file, and no one else can do anything with it.  So you can see that it can be much faster to use the octal notation.
 
 When you are trying to share data with your colleagues who are on the same system, you may put something into a shared location but they complain that they cannot read it or nothing is there.  The problem is most likely permissions.  The  "uask" setting on a system determines the default permissions, and it may be that the directory and/or files are readable only by you.  It may also be that you are not in a common group that you can use to grant permission, in which case you can either:
 
