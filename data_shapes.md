@@ -22,15 +22,21 @@ Cannot assign to an immutable value
   in block <unit> at <unknown file> line 1
 ```
 
-## Lists @
+## Arrays @
 
-When you have an undetermined number of somethings, they belong in a list (or array or sequence -- we'll figure all these out as we go along).  These are plurals, and they start with the ```@``` sign.  The items in the list are separate with commas.
+When you have an undetermined number of somethings, they belong in an Array (mutable) or a List (immutable).  These are plurals, and they start with the ```@``` sign.  The items in a series are separated with commas or you can use the ```<>``` operator (<https://docs.perl6.org/language/quoting#index-entry-%3C_%3E_word_quote>).  Perl also supports infinite lists -- just don't try to print them.
 
 ```
 > my @nums = 8, 1, 43;
 [8 1 43]
 > put @nums.join(', ');
 8, 1, 43
+> my @sizes = <small medium large>
+[small medium large]
+> my @x = 1..10
+[1 2 3 4 5 6 7 8 9 10]
+> my @positive = 1..*
+[...]
 ```
 
 ## Hash %
