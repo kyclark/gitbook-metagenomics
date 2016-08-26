@@ -325,7 +325,7 @@ Here is another version to consider:
 $ cat -n name-value-count2.pl6
      1 	#!/usr/bin/env perl6
      2
-     3 	subset SortBy of Str where /:i ^keys?|values?$/;
+     3 	subset SortBy of Str where  /:i ^ [key|value]s? $ /;
      4 	sub MAIN (Str $file! where *.IO.f, SortBy :$sort-by='key', Bool :$desc=False) {
      5 	    my %counts;
      6 	    for $file.IO.lines.map(*.split(/\s+/)) -> [$key, $value] {
@@ -351,4 +351,4 @@ mouse  	4
 bird   	1
  ```
 
-On line 6, I'm using a regular expression in the ```split``` call to say I want to split on any number of whitespace characters.  This would break if we had a key like "grey wolf," so it's important to know your data.  I'm just showing you another way to specify the ```split```.  The other big change here is that the ```for``` has a signature after the ```-> [$key, $value]```.  Remember that curlies ```{}``` create code blocks, and code blocks can have signatures.  Here we're having Perl match the pattern ```[$key, $value]``` to say we're expecting something that looks like a two-element list and to put those values into the variables we named.
+On line 3, I wrote the regex a little more succinctly to say "either 'key' or 'value' and then an optional 's'."  On line 6, I'm using a regular expression in the ```split``` call to say I want to split on any number of whitespace characters.  This would break if we had a key like "grey wolf," so it's important to know your data.  I'm just showing you another way to specify the ```split```.  The other big change here is that the ```for``` has a signature after the ```-> [$key, $value]```.  Remember that curlies ```{}``` create code blocks, and code blocks can have signatures.  Here we're having Perl match the pattern ```[$key, $value]``` to say we're expecting something that looks like a two-element list and to put those values into the variables we named.
