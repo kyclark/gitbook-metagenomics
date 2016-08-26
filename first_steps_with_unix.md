@@ -99,7 +99,7 @@ The PID is the "process ID" and the PPID is the "parent process ID."  In the abo
 > Don't use kill -9.  Don't bring out the combine harvester just to tidy up the flower pot.
 > cf. http://porkmail.org/era/unix/award.html#uuk9letter
 
-Along with CTRL-C, you should learn about CTRL-Z to put a process into the background.  This could be handy if, say, you were in an editor, you make a change to your code, you CTRL-Z to background the editor, you run the script to see if it worked, then you ```fg``` to bring it back to the foreground.  I would consider this a sub-optimal work environment, but it's fine if you were for some reason limited to a single terminal window.  
+Along with CTRL-C, you should learn about CTRL-Z to put a process into the background.  This could be handy if, say, you were in an editor, you make a change to your code, you CTRL-Z to background the editor, you run the script to see if it worked, then you ```fg``` to bring it back to the foreground or ```bg``` it to have it resume running in the background.  I would consider this a sub-optimal work environment, but it's fine if you were for some reason limited to a single terminal window.  
 
 Generally if you want a program to run in the background, you would launch it from the command line with an ampersand ("&") at the end:
 
