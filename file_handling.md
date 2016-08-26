@@ -65,3 +65,21 @@ This technique pushes the lines of the file directly into a the ```uc``` transfo
  
 > Golfing: Sometimes you may here about programmers (often Perl hackers) who like to "golf" their programs.  It's an attempt to create a program using the fewest keystrokes as possible, similar to the strategy in golf where the player tries to strike the ball as few times as possible to put it into the cup.  It's not a necessarily admirable quality to make one's code as terse as possible, but there is some truth to the notion that more code means more bugs.  There are incredibly powerful ideas built into every language, and learning how they can save you from writing code is worth the effort of writing fewer bugs.  If you understand ```map```, then you probably also understand why ```for``` loops and mutable variables are dangerous.  If you don't, then keep studying.
 
+# Reading compressed files
+
+Often it makes sense to keep data in a compressed format to save disk space.  If you need to read a gzipped file, here's a way to use a pipe (Proc https://docs.perl6.org/language/ipc#index-entry-Proc_object-proc):
+
+```
+$ cat -n read-gzip.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	sub MAIN (Str $file! where *.IO.f) {
+     4 	    my $fh = $file ~~ /\.gz$/
+     5 	           ?? run(«gunzip -c $file |», :out).out
+     6 	           !! open $file;
+     7
+     8 	    for $fh.lines -> $line {
+     9 	        put $line;
+    10 	    }
+    11 	}
+```
