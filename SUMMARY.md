@@ -22,5 +22,6 @@
    * [Counting Things](counting_things.md)
    * [Organizing with Makefiles](organizing_with_makefiles.md)
    * [Problem Set](problem_set.md)
+   * Parsing Structured Data
 * [HPC](hpc.md)
 
