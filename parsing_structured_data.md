@@ -103,3 +103,8 @@ $ cat -n pubmed2.pl6
 ```
 
 Now we don't have to worry about those tempfiles.  LWP will impersonate a web browser and ```get``` the URL for us, returning the JSON (or XML or HTML or whatever) to us.  The rest looks the same.
+
+## Problems
+
+1. Alter the above script to print a list of all the authors sorted by their names.
+2. Turn this into a script that takes a list of PubMed IDs either from the command line or a file and prints the titles and last authors for each.
