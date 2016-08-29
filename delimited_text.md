@@ -232,3 +232,87 @@ $ cat -n parser4.pl6
 
 This module does not handle comment lines.  If you needed that, you could either go back to your own module or you could look at the author's code and add to it.  Most author's will have a Github repository that you can fork and then submit a "pull request" (PR).  Also, you might just write the author and ask very nicely to add the feature you want.
 
+# GFF
+
+The "general feature format" (https://en.wikipedia.org/wiki/General_feature_format) is a tab-delimited specification for describing genomic features.  Version 3 of GFF specifies nine fields:
+
+1. sequence
+2. source
+3. feature
+4. start
+5. end
+6. score
+7. strand
+8. frame
+9. attributes
+
+Let's download a GFF file for yeast:
+
+```
+$ wget http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff
+$ head -20 saccharomyces_cerevisiae.gff
+##gff-version 3
+#date Sun Aug 28 19:50:04 2016
+#
+# Saccharomyces cerevisiae S288C genome (version=R64-2-1)
+#
+# Features from the 16 nuclear chromosomes labeled chrI to chrXVI,
+# plus the mitochondrial genome labeled chrmt.
+#
+# Created by Saccharomyces Genome Database (http://www.yeastgenome.org/)
+#
+# Weekly updates of this file are available for download from:
+# http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff
+#
+# Please send comments and suggestions to sgd-helpdesk@lists.stanford.edu
+#
+# SGD is funded as a National Human Genome Research Institute Biomedical Informatics Resource from
+# the U. S. National Institutes of Health to Stanford University.
+#
+chrI   	SGD    	chromosome     	1      	230218 	.      	.      	.      	ID=chrI;dbxref=NCBI:;Name=chrI
+chrI   	SGD    	telomere       	1      	801    	.      	-      	.      	ID=TEL01L;Name=TEL01L;Note=Telomeric%20region%20on%20the%20left%20arm%20of%20Chromosome%20I%3B%20composed%20of%20an%20X%20element%20core%20sequence%2C%20X%20element%20combinatorial%20repeats%2C%20and%20a%20short%20terminal%20stretch%20of%20telomeric%20repeats;display=Telomeric%20region%20on%20the%20left%20arm%20of%20Chromosome%20I;dbxref=SGD:S000028862
+```
+
+It's obvious that the lines beginning with "#" are comments and metadata.  After that, the data begins.  If we wanted to find out how many "chromosome" features exist and their names:
+
+```
+$ awk -F"\t" '$3 == "chromosome"' saccharomyces_cerevisiae.gff | wc -l
+      17
+$ awk -F"\t" '$3 == "chromosome" {print $1}' saccharomyces_cerevisiae.gff | cat -n
+     1 	chrI
+     2 	chrII
+     3 	chrIII
+     4 	chrIV
+     5 	chrV
+     6 	chrVI
+     7 	chrVII
+     8 	chrVIII
+     9 	chrIX
+    10 	chrX
+    11 	chrXI
+    12 	chrXII
+    13 	chrXIII
+    14 	chrXIV
+    15 	chrXV
+    16 	chrXVI
+    17 	chrmt
+```
+
+Let's look at the top 10 most numerous features in the yeast genome:
+
+```
+$ awk -F"\t" '{print $3}' saccharomyces_cerevisiae.gff | sort | uniq -c | sort -rn | head
+152010
+7058 CDS
+6600 mRNA
+6600 gene
+ 484 noncoding_exon
+ 383 long_terminal_repeat
+ 377 intron
+ 352 ARS
+ 299 tRNA_gene
+ 196 ARS_consensus_sequence
+```
+
+There's only so far we can get with ```awk```, though, before we need to get into Perl.  For instance, let's find two overlapping genes:
+
