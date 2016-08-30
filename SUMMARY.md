@@ -7,7 +7,7 @@
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
 * [Bash](bash.md)
-* [Make](organizing_with_makefiles.md)
+* [Make](make.md)
 * [Git basics](git_basics.md)
 * [Perl](programming.md)
    * [Why Perl 6?](first_steps_with_perl_6.md)
