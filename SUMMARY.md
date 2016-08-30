@@ -25,4 +25,5 @@
    * [Parsing Structured Data](parsing_structured_data.md)
 * [HPC](hpc.md)
    * [PBS](pbs.md)
+   * SLURM
 
