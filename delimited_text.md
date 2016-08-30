@@ -316,3 +316,51 @@ $ awk -F"\t" '{print $3}' saccharomyces_cerevisiae.gff | sort | uniq -c | sort -
 
 There's only so far we can get with ```awk```, though, before we need to get into Perl.  For instance, let's find two overlapping genes:
 
+```
+$ cat -n gff1.pl6
+     1 	#!/usr/bin/env perl6
+     2
+     3 	# http://downloads.yeastgenome.org/curation/chromosomal_feature/saccharomyces_cerevisiae.gff
+     4
+     5 	use URI::Encode;
+     6
+     7 	sub MAIN (Str $gff! where *.IO.f) {
+     8 	    my $fh = open $gff;
+     9
+    10 	    my %loc;
+    11 	    for $fh.lines -> $line {
+    12 	        next if $line ~~ / ^ '#' /; # comment line
+    13 	        my ($sequence, $source, $feature, $start, $end, $score,
+    14 	            $strand, $frame, $attributes) = $line.split(/\t/);
+    15
+    16 	        next unless ($feature.defined && $feature eq 'gene')
+    17 	                 && ($strand.defined  && $strand ~~ / ^ <[+-]> $/);
+    18
+    19 	        my %attr = $attributes.split(';').map(&uri_decode)
+    20 	                   .map(*.split('=')).map({ $^a.[0].lc => $^a.[1] });
+    21 	        my $name = %attr<name> || 'NA';
+    22
+    23 	        %loc{ $sequence }{ $strand }.push(
+    24 	            ($name, [+$start .. +$end]) # force numeric, important!
+    25 	        );
+    26 	    }
+    27 	    $fh.close;
+    28
+    29 	    for %loc.keys -> $chr {
+    30 	        my @forward-genes = %loc{ $chr }{'+'}.list;
+    31 	        my @reverse-genes = %loc{ $chr }{'-'}.list;
+    32 	        note sprintf "chr (%s) has %s forward genes, %s reverse genes\n",
+    33 	            $chr, @forward-genes.elems, @reverse-genes.elems;
+    34
+    35 	        for @forward-genes -> ($gene1, $pos1) {
+    36 	            for @reverse-genes -> ($gene2, $pos2) {
+    37 	                if so $pos1 (&) $pos2 {
+    38 	                    printf "%s [%s] (%s) => %s [%s] (%s)\n",
+    39 	                        $gene1, '+', $pos1[0,*-1].join('..'),
+    40 	                        $gene2, '-', $pos2[0,*-1].join('..');
+    41 	                }
+    42 	            }
+    43 	        }
+    44 	    }
+    45 	}
+```
