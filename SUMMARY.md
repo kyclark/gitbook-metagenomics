@@ -24,5 +24,5 @@
    * [Problem Set](problem_set.md)
    * [Parsing Structured Data](parsing_structured_data.md)
 * [HPC](hpc.md)
-   * PBS
+   * [PBS](pbs.md)
 
