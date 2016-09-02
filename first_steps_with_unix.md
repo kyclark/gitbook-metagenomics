@@ -32,6 +32,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **history**: look at past commands, cf. CTRL-R for searching your history directly from the command line
 * **head**: view the first few (10) lines of a file
 * **tail**: view the last (10) lines of a file
+* **comm**: find lines in common/unique in two sorted files
 * **top**: view the programs taking the most system resources (memory, I/O, time, CPUs, etc.), cf. "htop"
 * **ps**: view the currently running processes
 * **cut**: select columns from the output of a program
