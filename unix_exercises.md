@@ -439,7 +439,8 @@ If you type "make" in the directory, you will execute a small pipeline to do thi
 $ make
 find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa \) -exec rm {} \;
 grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | awk -F"|" '{print $2}' | sort > clustered-ids
-grep -e '^>' proteins.fa | sed "s/^>//" | cut -d '|' -f 1 | sort > protein-ids
+sed "s/|.*//" proteins.fa > proteins-clean.fa
+grep -e '^>' proteins-clean.fa | sed "s/^>//" | sort > protein-ids
 comm -23 protein-ids clustered-ids > unclustered-ids
 seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
 seqmagick info unclustered-proteins.fa
@@ -451,23 +452,172 @@ Let's break this down step-by-step to understand what is happening by looking at
 
 ```
 $ cat -n Makefile
-     1	all: clean clustered-ids protein-ids unclustered-ids unclustered-proteins info
+     1	all: clean info
      2
      3	clean:
-     4		find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa \) -exec rm {} \;
+     4		find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa -o -name proteins-clean.fa \) -exec rm {} \;
      5
      6	clustered-ids:
      7		grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids
      8
-     9	protein-ids:
-    10		grep -e '^>' proteins.fa | sed "s/^>//" | cut -d '|' -f 1 | sort > protein-ids
+     9	clean-protein-ids:
+    10		sed "s/|.*//" proteins.fa > proteins-clean.fa
     11
-    12	unclustered-ids:
-    13		comm -23 protein-ids clustered-ids > unclustered-ids
+    12	protein-ids: clean-protein-ids
+    13		grep -e '^>' proteins-clean.fa | sed "s/^>//" | sort > protein-ids
     14
-    15	unclustered-proteins:
-    16		seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+    15	unclustered-ids: clustered-ids protein-ids
+    16		comm -23 protein-ids clustered-ids > unclustered-ids
     17
-    18	info:
-    19		seqmagick info unclustered-proteins.fa
+    18	unclustered-proteins: unclustered-ids
+    19		seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+    20
+    21	info: unclustered-proteins
+    22		seqmagick info unclustered-proteins.fa
 ```
+
+The first defined target in a Makefile will be the default if none is supplied to ```make```, and it's typical to call this "all."  I set this target to simply be a combination of "clean" (to get rid of all the intermediate files -- I have to use this complex ```find``` command so as not to encounter a failure if I were to ```rm``` a file that does not exist) and "info."  Notice that most of the targets indicate a dependency, so executing "info" requires that "unclustered-proteins" be run which in turn needs "unclustered-ids" and so on such that the first action that must be run is "clustered-ids" which I took pains to list first after "clean."
+
+The first task in "clustered-ids" is to find those protein IDs in the "cdhit60.3+.clstr" file that were clustered by ```cd-hit```.  Let's look at that file:
+
+```
+$ head -5 cdhit60.3+.clstr
+>Cluster_5086
+0	358aa, >gi|317183610|gb|ADV... at 66.76%
+1	361aa, >gi|315661179|gb|ADU... at 70.36%
+2	118aa, >gi|375968555|gb|AFB... at 70.34%
+3	208aa, >gi|194307477|gb|ACF... at 61.54%
+```
+
+The format of the file is similar to a FASTA file where the ">" sign at the left-most column identifies a cluster with the following lines showing the IDs of the sequences in the cluster.  To extract just the clustered IDs, we cannot just do ```grep '>'``` as we'll get both the cluster IDs and the protein IDs.  
+
+```
+$ grep '>' cdhit60.3+.clstr | head -5
+>Cluster_5086
+0	358aa, >gi|317183610|gb|ADV... at 66.76%
+1	361aa, >gi|315661179|gb|ADU... at 70.36%
+2	118aa, >gi|375968555|gb|AFB... at 70.34%
+3	208aa, >gi|194307477|gb|ACF... at 61.54%
+```
+
+We'll need to use a regular expression (the ```-e``` for "extended" on most greps, but sometimes not required):
+
+```
+$ grep -e '^>' cdhit60.3+.clstr | head -5
+>Cluster_5086
+>Cluster_10030
+>Cluster_8374
+>Cluster_13356
+>Cluster_7732
+```
+
+and then invert that with "-v":
+
+```
+$ grep -v '^>' cdhit60.3+.clstr | head -5
+0	358aa, >gi|317183610|gb|ADV... at 66.76%
+1	361aa, >gi|315661179|gb|ADU... at 70.36%
+2	118aa, >gi|375968555|gb|AFB... at 70.34%
+3	208aa, >gi|194307477|gb|ACF... at 61.54%
+4	358aa, >gi|291292536|gb|ADD... at 68.99%
+```
+
+From this output, we'd like to extract the ">gi|317183610|gb|ADV..." bit, which is the third column when split on whitespace.  The tool ```awk``` is perfect for this, and whitespace is the default split point (as opposed to ```cut``` which uses tabs):
+
+```
+$ grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | head -5
+>gi|317183610|gb|ADV...
+>gi|315661179|gb|ADU...
+>gi|375968555|gb|AFB...
+>gi|194307477|gb|ACF...
+>gi|291292536|gb|ADD...
+```
+
+Now, what do the protein IDs look like that we need to match?
+
+```
+$ grep '>' proteins.fa | head -5
+>388548806
+>388548807
+>388548808
+>388548809
+>388548810
+```
+
+So we see that from "gi|317183610|gb|ADV..." we need to extract just the second field when splitting on the vertical bar.  Again, ```awk``` is perfect, but we need to tell it to split on something other than the default by using the "-F" flag:
+
+```
+$ grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | awk -F'|' '{print $2}' | head -5
+317183610
+315661179
+375968555
+194307477
+291292536
+```
+
+These are the protein IDs for those that were successfully clustered, so we just need to capture these to a file which we can do with a redirect ```>```.  Looking ahead, I know that these will need to be sorted for another tool to work, so I'll add that to the pipeline.  You'll notice that this is now the "clustered-ids" target.  Because the dollar sign is used by ```make``` to indicate variables, we need to escape them with another dollar sign to make them literals:
+
+```
+clustered-ids:
+	grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids
+```
+
+Now we need to extract the protein IDs which we can do with ```grep```, but we also need to remove the ">" sign.  Additionally, some of the IDs have characters other than digits that we will need to remove.  To demonstrate this, I'll use ```grep -P``` to indicate a Perl regular expression and combine with "-v" to invert it:
+
+```
+$ grep -e '^>' proteins.fa | sed "s/^>//" | grep -v -P '^\d+$' | head -5
+26788002|emb|CAD19173.1| putative RNA helicase, partial [Agaricus bisporus virus X]
+26788000|emb|CAD19172.1| putative RNA helicase, partial [Agaricus bisporus virus X]
+985757046|ref|YP_009222010.1| hypothetical protein [Alternaria brassicicola fusarivirus 1]
+985757045|ref|YP_009222011.1| hypothetical protein [Alternaria brassicicola fusarivirus 1]
+985757044|ref|YP_009222009.1| polyprotein [Alternaria brassicicola fusarivirus 1]
+```
+
+Let's break down that regex:
+
+```
+^ \d + $
+1 2  3 4
+```
+
+1. start of the line
+2. a digit (0-9)
+3. one or more
+4. end of the line
+
+Looking at the above output, we can see that it would be pretty easy to get rid of everything starting with the vertical bar.  Since that is not a part of the sequence, we should be safe using ```sed``` to clean up the proteins file:
+
+```
+clean-protein-ids:
+    sed "s/|.*//" proteins.fa > proteins-clean.fa
+```
+
+Also, I'll sort the output for use by a later step and redirect to a file, and this now becomes the "protein-ids" target:
+
+```
+protein-ids: clean-protein-ids
+    grep -e '^>' proteins-clean.fa | sed "s/^>//" | sort > protein-ids
+```
+
+To find the lines in "protein-ids" that are not in "clustered-ids," I can use the ```comm``` (common) command.  Notice that this target has two dependencies:
+
+```
+unclustered-ids: clustered-ids protein-ids
+    comm -23 protein-ids clustered-ids > unclustered-ids
+```
+
+To extract the actual sequences from the "proteins.fa" file using the IDs in "unclustered-ids," ```seqmagick convert``` program is a great choice:
+
+```
+unclustered-proteins: unclustered-ids
+    seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+```
+
+Lastly, we'd like to see confirmation that we got a reasonable output, so we can examine the resulting FASTA file with ```seqmagick info```:
+
+```
+info: unclustered-proteins
+    seqmagick info unclustered-proteins.fa
+```
+
+To create this pipeline, I worked out each step and then added it to the "Makefile."  In doing so, I completely documented my work while also creating a way to execute the entire workflow in one command, ```make```.  Huzzah for reproducibility!
