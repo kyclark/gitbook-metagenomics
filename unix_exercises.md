@@ -407,3 +407,67 @@ FALSE      5029     22601
 FALSE      5024     81329
 FALSE      5587     30751
 ```
+
+# Find unclustered protein sequences
+
+For this exercise, use the UA HPC and do the following setup:
+
+```
+$ mkdir ~/work/abe487/unclustered-proteins
+$ cd !$
+$ wget ftp://ftp.imicrobe.us/abe487/exercises/unclustered-proteins.tgz
+$ tar xvf unclustered-proteins.tgz
+$ cd unclustered-proteins
+```
+
+The "README" contains our instructions:
+
+```
+$ cat README
+# Find unclustered proteins
+
+The file "cdhit60.3+.clstr" contains all of the GI numbers for
+proteins that were clustered and put into hmm profiles.  The file
+"proteins.fa" contains all proteins (the header is only the GI
+number).  Extract the proteins from the "proteins.fa" file that were
+not clustered.
+```
+
+If you type "make" in the directory, you will execute a small pipeline to do this job:
+
+```
+$ make
+find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa \) -exec rm {} \;
+grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | awk -F"|" '{print $2}' | sort > clustered-ids
+grep -e '^>' proteins.fa | sed "s/^>//" | cut -d '|' -f 1 | sort > protein-ids
+comm -23 protein-ids clustered-ids > unclustered-ids
+seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+seqmagick info unclustered-proteins.fa
+name                    alignment    min_len   max_len   avg_len  num_seqs
+unclustered-proteins.fa FALSE              0      5747    281.53    143583
+```
+
+Let's break this down step-by-step to understand what is happening by looking at the contents of the "Makefile":
+
+```
+$ cat -n Makefile
+     1	all: clean clustered-ids protein-ids unclustered-ids unclustered-proteins info
+     2
+     3	clean:
+     4		find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa \) -exec rm {} \;
+     5
+     6	clustered-ids:
+     7		grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids
+     8
+     9	protein-ids:
+    10		grep -e '^>' proteins.fa | sed "s/^>//" | cut -d '|' -f 1 | sort > protein-ids
+    11
+    12	unclustered-ids:
+    13		comm -23 protein-ids clustered-ids > unclustered-ids
+    14
+    15	unclustered-proteins:
+    16		seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+    17
+    18	info:
+    19		seqmagick info unclustered-proteins.fa
+```
