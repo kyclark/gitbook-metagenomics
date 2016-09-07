@@ -379,3 +379,5 @@ The alternate path when I find no input files (line 81-83) is to report that fac
 
 The above is, I would say, a minimally competent bash script.  If you can understand everything in there, then you know enough to be dangerous and should move on to learning more powerful languages -- like Perl!
 
+# Exercises
+
