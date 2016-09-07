@@ -565,7 +565,7 @@ $ grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | awk -F'|' '{print $2}' | h
 
 ```
 clustered-ids:
-       	grep -ve '^>' cdhit60.3+.clstr | awk "{print  $$3}" | awk -F"|" '{print $$2}' | sort | uniq > clustered-ids.o
+       	grep -ve '^>' cdhit60.3+.clstr | awk '{print  $$3}' | awk -F"|" '{print $$2}' | sort | uniq > clustered-ids.o
 ```
 
 Now we need to extract the protein IDs which we can do with ```grep```, but we also need to remove the ">" sign.  Additionally, some of the IDs have characters other than digits that we will need to remove.  To demonstrate this, I'll use ```grep -P``` to indicate a Perl regular expression and combine with "-v" to invert it:
@@ -629,9 +629,6 @@ info: unclustered-proteins
 In the end, we need to verify that we have a reasonable answer.  Let's add the number of clustered and unclustered protein IDs and see if they total the original number of proteins:
 
 ```
-$ seqmagick info proteins.fa
-name        alignment    min_len   max_len   avg_len  num_seqs
-proteins.fa FALSE              0      7391    298.18    220520
 $ seqmagick info unclustered-proteins.fa
 name                    alignment    min_len   max_len   avg_len  num_seqs
 unclustered-proteins.fa FALSE              0      7391    293.74    204264
@@ -644,8 +641,11 @@ $ wc -l clustered-ids.o
 16257 clustered-ids.o
 $ wc -l unclustered-ids.o
 204263 unclustered-ids.o
-$ bc <<< 204263+16257
+$ bc <<< 16257+204263
 220520
+$ seqmagick info proteins.fa
+name        alignment    min_len   max_len   avg_len  num_seqs
+proteins.fa FALSE              0      7391    298.18    220520
 ```
 
 I can put that into a shell script:
