@@ -381,3 +381,5 @@ The above is, I would say, a minimally competent bash script.  If you can unders
 
 # Exercises
 
+Write a script that mimics "cat -n" for a given file.
+
