@@ -437,46 +437,70 @@ If you type "make" in the directory, you will execute a small pipeline to do thi
 
 ```
 $ make
-find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa \) -exec rm {} \;
-grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | awk -F"|" '{print $2}' | sort > clustered-ids
-sed "s/|.*//" proteins.fa > proteins-clean.fa
-grep -e '^>' proteins-clean.fa | sed "s/^>//" | sort > protein-ids
-comm -23 protein-ids clustered-ids > unclustered-ids
-seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+find . \( -name unclustered-proteins.fa -o -name clean-proteins.fa -o -name \*.o \) -exec rm {} \;
+grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | awk -F"|" '{print $2}' | sort > clustered-ids.o
+sed "s/|.*//" proteins.fa > clean-proteins.fa
+grep -e '^>' clean-proteins.fa | sed "s/^>//" | sort > protein-ids.o
+comm -23 protein-ids.o clustered-ids.o > unclustered-ids.o
+seqmagick convert --include-from-file unclustered-ids.o clean-proteins.fa unclustered-proteins.fa
 seqmagick info unclustered-proteins.fa
 name                    alignment    min_len   max_len   avg_len  num_seqs
-unclustered-proteins.fa FALSE              0      5747    281.53    143583
+unclustered-proteins.fa FALSE              0      7391    293.74    204264
 ```
 
 Let's break this down step-by-step to understand what is happening by looking at the contents of the "Makefile":
 
 ```
 $ cat -n Makefile
-     1	all: clean info
+     1 	all: clean info
      2
-     3	clean:
-     4		find . \( -name clustered-ids -o -name protein-ids -o -name unclustered-ids -o -name unclustered-proteins.fa -o -name proteins-clean.fa \) -exec rm {} \;
+     3 	clean:
+     4 		find . \( -name unclustered-proteins.fa -o -name clean-proteins.fa -o -name \*.o \) -exec rm {} \;
      5
-     6	clustered-ids:
-     7		grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids
+     6 	clustered-ids:
+     7 		grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids.o
      8
-     9	clean-protein-ids:
-    10		sed "s/|.*//" proteins.fa > proteins-clean.fa
+     9 	clean-proteins:
+    10 		sed "s/|.*//" proteins.fa > clean-proteins.fa
     11
-    12	protein-ids: clean-protein-ids
-    13		grep -e '^>' proteins-clean.fa | sed "s/^>//" | sort > protein-ids
+    12 	protein-ids: clean-proteins
+    13 		grep -e '^>' clean-proteins.fa | sed "s/^>//" | sort > protein-ids.o
     14
-    15	unclustered-ids: clustered-ids protein-ids
-    16		comm -23 protein-ids clustered-ids > unclustered-ids
+    15 	unclustered-ids: clustered-ids protein-ids
+    16 		comm -23 protein-ids.o clustered-ids.o > unclustered-ids.o
     17
-    18	unclustered-proteins: unclustered-ids
-    19		seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+    18 	unclustered-proteins: unclustered-ids
+    19 		seqmagick convert --include-from-file unclustered-ids.o clean-proteins.fa unclustered-proteins.fa
     20
-    21	info: unclustered-proteins
-    22		seqmagick info unclustered-proteins.fa
+    21 	info: unclustered-proteins
+    22 		seqmagick info unclustered-proteins.fa
+    23
+    24 	dist: clean
+    25 		(cd .. && tar czvf unclustered-proteins.tgz unclustered-proteins)
+    26
+    27 	check: unclustered-proteins
+    28 		./check.sh$2}' | sort > clustered-ids.o
+     8
+     9 	clean-proteins:
+    10 		sed "s/|.*//" proteins.fa > clean-proteins.fa
+    11
+    12 	protein-ids: clean-proteins
+    13 		grep -e '^>' clean-proteins.fa | sed "s/^>//" | sort > protein-ids.o
+    14
+    15 	unclustered-ids: clustered-ids protein-ids
+    16 		comm -23 protein-ids.o clustered-ids.o > unclustered-ids.o
+    17
+    18 	unclustered-proteins: unclustered-ids
+    19 		seqmagick convert --include-from-file unclustered-ids.o clean-proteins.fa unclustered-proteins.fa
+    20
+    21 	info: unclustered-proteins
+    22 		seqmagick info unclustered-proteins.fa
+    23
+    24 	dist: clean
+    25 		(cd .. && tar czvf unclustered-proteins.tgz unclustered-proteins)
 ```
 
-The first defined target in a Makefile will be the default if none is supplied to ```make```, and it's typical to call this "all."  I set this target to simply be a combination of "clean" (to get rid of all the intermediate files -- I have to use this complex ```find``` command so as not to encounter a failure if I were to ```rm``` a file that does not exist) and "info."  Notice that most of the targets indicate a dependency, so executing "info" requires that "unclustered-proteins" be run which in turn needs "unclustered-ids" and so on such that the first action that must be run is "clustered-ids" which I took pains to list first after "clean."
+The first defined target in a Makefile will be the default if none is supplied to ```make```, and it's typical to call this "all."  I set this target to simply be a combination of "clean" (to get rid of all the intermediate files -- I have to use this complex ```find``` command so as not to encounter a failure if I were to ```rm``` a file that does not exist) and "info."  Notice that most of the targets indicate a dependency, so executing "info" requires that "unclustered-proteins" be run which in turn needs "unclustered-ids" and so on such that the first action that must be run is "clustered-ids." 
 
 The first task in "clustered-ids" is to find those protein IDs in the "cdhit60.3+.clstr" file that were clustered by ```cd-hit```.  Let's look at that file:
 
@@ -533,7 +557,7 @@ $ grep -ve '^>' cdhit60.3+.clstr | awk '{print $3}' | head -5
 >gi|291292536|gb|ADD...
 ```
 
-Now, what do the protein IDs look like that we need to match?
+If we look at the IDs in the proteins file, we'll see they are integers:
 
 ```
 $ grep '>' proteins.fa | head -5
@@ -559,7 +583,7 @@ These are the protein IDs for those that were successfully clustered, so we just
 
 ```
 clustered-ids:
-	grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids
+       	grep -ve '^>' cdhit60.3+.clstr | awk '{print $$3}' | awk -F"|" '{print $$2}' | sort > clustered-ids.o
 ```
 
 Now we need to extract the protein IDs which we can do with ```grep```, but we also need to remove the ">" sign.  Additionally, some of the IDs have characters other than digits that we will need to remove.  To demonstrate this, I'll use ```grep -P``` to indicate a Perl regular expression and combine with "-v" to invert it:
@@ -595,22 +619,22 @@ clean-protein-ids:
 Also, I'll sort the output for use by a later step and redirect to a file, and this now becomes the "protein-ids" target:
 
 ```
-protein-ids: clean-protein-ids
-    grep -e '^>' proteins-clean.fa | sed "s/^>//" | sort > protein-ids
+protein-ids: clean-proteins
+       	grep -e '^>' clean-proteins.fa | sed "s/^>//" | sort > protein-ids.o
 ```
 
 To find the lines in "protein-ids" that are not in "clustered-ids," I can use the ```comm``` (common) command.  Notice that this target has two dependencies:
 
 ```
 unclustered-ids: clustered-ids protein-ids
-    comm -23 protein-ids clustered-ids > unclustered-ids
+       	comm -23 protein-ids.o clustered-ids.o > unclustered-ids.o
 ```
 
 To extract the actual sequences from the "proteins.fa" file using the IDs in "unclustered-ids," ```seqmagick convert``` program is a great choice:
 
 ```
 unclustered-proteins: unclustered-ids
-    seqmagick convert --include-from-file unclustered-ids proteins.fa unclustered-proteins.fa
+       	seqmagick convert --include-from-file unclustered-ids.o clean-proteins.fa unclustered-proteins.fa
 ```
 
 Lastly, we'd like to see confirmation that we got a reasonable output, so we can examine the resulting FASTA file with ```seqmagick info```:
@@ -620,4 +644,60 @@ info: unclustered-proteins
     seqmagick info unclustered-proteins.fa
 ```
 
-To create this pipeline, I worked out each step and then added it to the "Makefile."  In doing so, I completely documented my work while also creating a way to execute the entire workflow in one command, ```make```.  Huzzah for reproducibility!
+In the end, we need to verify that we have a reasonable answer.  Let's add the number of clustered and unclustered protein IDs and see if they total the original number of proteins:
+
+```
+$ seqmagick info proteins.fa
+name        alignment    min_len   max_len   avg_len  num_seqs
+proteins.fa FALSE              0      7391    298.18    220520
+```
+
+So we found 220,520 unclustered proteins sequences.  Is that the right number?
+
+```
+$ wc -l clustered-ids.o
+16257 clustered-ids.o
+$ wc -l unclustered-ids.o
+204263 unclustered-ids.o
+$ bc <<< 204263+16257
+220520
+```
+
+I can put that into a shell script:
+
+```
+$ cat -n check.sh
+     1 	#!/bin/bash
+     2
+     3 	set -u
+     4
+     5 	function lc() {
+     6 	  wc -l $1 | cut -d ' ' -f 1
+     7 	}
+     8
+     9 	echo $(lc clustered-ids.o)   > count-clustered.o
+    10 	echo $(lc unclustered-ids.o) > count-unclustered.o
+    11
+    12 	bc <<< "$(cat count-clustered.o)+$(cat count-unclustered.o)" > count.o
+    13
+    14 	grep -e '^>' proteins.fa | cut -d ' ' -f 1 | wc -l > proteins-count.o
+    15
+    16 	MYCOUNT=$(cat count.o)
+    17 	PROTCOUNT=$(cat proteins-count.o)
+    18
+    19 	if [[ "$MYCOUNT" -eq "$PROTCOUNT" ]]; then
+    20 	  echo "Counts match, all's good."
+    21 	else
+    22 	  echo "Not OK (MYCOUNT='$MYCOUNT', PROTCOUNT='$PROTCOUNT')";
+    23 	fi
+```
+
+And run it as a target:
+
+```
+$ make check
+...
+Counts match, all's good.
+```
+
+When I create this pipeline, I worked out each step and then added it to the "Makefile."  In doing so, I completely documented my work while also creating a way to execute the entire workflow in one command, ```make```.  Huzzah for reproducibility!
