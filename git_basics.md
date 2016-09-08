@@ -12,14 +12,20 @@ A binary called "git" should be installed on any HPC or Unix system you have.  G
 
 # Create a repo
 
-Using the Github web interface, create a new repository called "abe487."  It's best to have the repo initialized with a "README."  Copy the "Clone or Download" link and then on your machine do:
+Using the Github web interface, create a new repository called "abe487."  It's best to have the repo initialized with a "README."  Copy the "Clone or Download" link and then on your machine (laptop/HPC), clone your repository and the "metagenomics-book" repo:
 
 ```
 git clone <your repo>
-git clone git@github.com:kyclark/abe487.git kyclark
+git@github.com:kyclark/metagenomics-book.git
+cp -r metagenomics-book/problems <your repo>
 ```
 
-Now you can ```cp -r kyclark/problems <your repo>```.
+Notice that there is a subtle difference between these two commands:
+
+1. cp -r src dest
+2. cp -r src/ dest
+
+The first one will copy the "src" directory and then its contents to "dest" while the second one will copy *just the contents* of "src" to "dest."
 
 # Committing your work
 
@@ -39,3 +45,5 @@ $ git push
 ```
 
 The ```-m``` argument to ```commit``` is the commit message.  If you don't specify a message, you will be dropped into your $EDITOR to type one.  
+
+**If you cannot see your work the Github web interface, then I cannot check it out and grade it.**
