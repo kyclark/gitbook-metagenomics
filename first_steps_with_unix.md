@@ -24,6 +24,7 @@ I assume you are on a command line by now, so let's look at some commands.
 * **rm**: remove a file (or "rm -r" to remove a directory)
 * **cat**: concatenate files (cf. http://porkmail.org/era/unix/award.html)
 * **column**: arrange text into columns
+* **paste**: merge lines of files
 * **sort**: sort text or numbers
 * **uniq**: remove duplicates *from a sorted list*
 * **sed**: stream editor for altering text
