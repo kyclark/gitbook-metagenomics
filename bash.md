@@ -92,6 +92,61 @@ Hi there.
 Use exit() or Ctrl-D (i.e. EOF) to exit
 ```
 
+# set -u
+
+If you type ```echo $HOEM``` on the command line, you'll get no output or warning that you misspelled the ```$HOME``` variable unless you ```set -u```:
+
+```
+$ echo $HOEM
+
+$ set -u
+$ echo $HOEM
+-bash: HOEM: unbound variable
+```
+
+This command tells bash to complain when you variable that was never initialized to some value.  This is like putting on your helmet.  It's not a requirement (depending on which state you live in), but you absolutely should do this because there might come a day when you misspell a variable.  One serious problem is that you can still get errors like this:
+
+```
+$ cat -n set-u-bug1.sh
+     1	#!/bin/bash
+     2
+     3	set -u
+     4
+     5	if [[ $# -gt 0 ]]; then
+     6	  echo $THIS_IS_A_BUG; # never initialized
+     7	fi
+     8
+     9	echo "OK";
+$ ./set-u-bug1.sh
+OK
+$ ./set-u-bug1.sh foo
+./set-u-bug1.sh: line 6: THIS_IS_A_BUG: unbound variable
+```
+
+You can see that the first execution of the script ran just fine.  There is a bug on line 6, but bash didn't catch it because that line did not execute.  On the second run, the error occurred, and the script blew up.  
+
+Here's another pernicious error:
+
+```
+$ cat -n set-u-bug2.sh
+     1	#!/bin/bash
+     2
+     3	set -u
+     4
+     5	GREETING="Hi"
+     6	if [[ $# -gt 0 ]]; then
+     7	  GRETING=$1 # misspelled
+     8	fi
+     9
+    10	echo $GREETING
+$ ./set-u-bug2.sh
+Hi
+$ ./set-u-bug2.sh Hello
+Hi
+```
+
+We were foolishly hoping that ```set -u``` would prevent us from misspelling the ```$GREETING```, but at line 7 we simple created a new variable called ```$GRETING```.  Perhaps you were hoping for more help from your language?  This is why we try to limit how much bash we write.
+
 # Positional Arguments
 
 You've now seen that a "script" is just a series of commands that are interpreted from top to bottom by a program like bash or Python.  You can automate your workflows simply by putting them into a text file, making the script executable, and running it; however, this would mean that everything is "hard-coded."  That is, if you wrote a script to clean and trim "mouse-reads.fastq" into "mouse-reads.fasta," then you need to edit the script when you get a new "fungi-reads.fastq."  You need to let some parts of your script be "variable" depending on the input from the user, and that's where "arguments" to your script come into play.
@@ -117,8 +172,6 @@ Howdy, Ken
 ```
 
 I've used "cat -n" to number the lines so we can break this down.  Line 1 is our shebang to confirm that we have a bash script.  This is good because we can't be predict the user's shell -- they might be using csh, tcsh, zsh, bash, or even good olde sh (pronounced "shuh" or "ess-ach").  It's pretty much a given that any "shell" program is found in "/bin" where the most important commands are found.  As you get into other languages that can vary from system to system, you'll find those are *often* (but not always) installed into "/usr/local/bin," and so that's where I start to use "env" to find the program.
-
-Line 3 tells bash to complain if I try to use a variable that was never initialized to some value.  This is putting on your helmet.  It's not a requirement (depending on where you live), but you absolutely should do this because there might come a day when you misspell a variable.
 
 In lines 5 and 6, I'm assigning two new variables to the first and second arguments to the script.  Variables in bash are plain words like ```GREETING``` when you assign to them but have sigils ("$") when you use them (line 8).  Also, assignment to a variable requires *no spaces*, so this wouldn't work:
 
