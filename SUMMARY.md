@@ -24,6 +24,7 @@
    * [Problem Set](problem_set.md)
    * [Parsing Structured Data](parsing_structured_data.md)
    * [Parsing, Regular Expressions, Grammars](parsing,_regular_expressions,_grammars.md)
+   * Tests
 * [HPC](hpc.md)
    * [PBS](pbs.md)
    * [SLURM](slurm.md)
