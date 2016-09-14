@@ -42,7 +42,7 @@ $ make run
 
 # Find unclustered protein sequences
 
-A labmate of mine wanted help finding the sequences of proteins that failed to cluster.  Rather than writing the solution a shell script, I found myself writing a Makefile as it easily allowed me to re-run certain steps while I worked out the kinks in my logic.
+A labmate of mine wanted help finding the sequences of proteins that failed to cluster.  Rather than writing the solution as a shell script, I found myself writing a Makefile as it easily allowed me to re-run certain steps while I worked out the kinks in my logic.
 
 For this exercise, use the UA HPC and do the following setup:
 
@@ -286,14 +286,36 @@ I can put that into a shell script:
 
 ```
 $ cat -n check.sh
-¢
+     1	#!/bin/bash
+     2
+     3	set -u
+     4
+     5	function lc() {
+     6	  wc -l $1 | cut -d ' ' -f 1
+     7	}
+     8
+     9	echo $(lc clustered-ids.o)   > count-clustered.o
+    10	echo $(lc unclustered-ids.o) > count-unclustered.o
+    11
+    12	bc <<< "$(cat count-clustered.o)+$(cat count-unclustered.o)" > count.o
+    13
+    14	grep -e '^>' proteins.fa | cut -d ' ' -f 1 | wc -l > proteins-count.o
+    15
+    16	MYCOUNT=$(cat count.o)
+    17	PROTCOUNT=$(cat proteins-count.o)
+    18
+    19	if [[ "$MYCOUNT" -eq "$PROTCOUNT" ]]; then
+    20	  echo "Counts match, all's good."
+    21	else
+    22	  echo "Not OK (MYCOUNT='$MYCOUNT', PROTCOUNT='$PROTCOUNT')";
+    23	fi
 ```
 
 And run it as a target:
 
 ```
 $ make check
-...
+<...output elided...>
 Counts match, all's good.
 ```
 
