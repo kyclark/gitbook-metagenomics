@@ -2,7 +2,7 @@
 
 Perl has various containers for different shapes of data.  You can have one thing (a string of DNA), lots of things (a list of transcription factors), a key-value pair (metadata about a sample like species = 'H. sapiens,' age = 33, gender = 'male'), etc.  Perl would call these things "scalars," "lists," and "hashes," and these shapes are almost universal to all programming languages.  Perl has several other useful shapes like bags and sets, and we'll get to those later. 
 
-Perl's language designers feel that the variables should stand out from the language itself, and that the sigils (decorations on the front, cf. "https://en.wikipedia.org/wiki/Sigil_(computer_programming)") on the variables should give the reader an indication of the shape of the data.  Languages like Python, Ruby, Haskell, Java, make no visual distinction between their reserved words and variables.   
+Perl's language designers feel that the variables should stand out from the language itself, and that the sigils (decorations on the front, cf. <https://en.wikipedia.org/wiki/Sigil_(computer_programming)>) on the variables should give the reader an indication of the shape of the data.  Languages like Python, Ruby, Haskell, Java, make no visual distinction between their reserved words and variables.   
 
 Time to fire up ```perl6``` and start typing.  The following show the result of typing the examples into the REPL.
 
@@ -24,7 +24,7 @@ Cannot assign to an immutable value
 
 ## Array @
 
-When you have an undetermined number of somethings, they belong in an Array (mutable) or a List (immutable).  These are plurals, and they start with the ```@``` sign.  The items in a series are separated with commas or you can use the ```<>``` operator (<https://docs.perl6.org/language/quoting#index-entry-%3C_%3E_word_quote>).  Perl also supports infinite lists -- just don't try to print them.
+When you have an undetermined number of somethings, they belong in an Array (mutable) or a List (immutable).  These are plurals, and they start with the ```@``` sign.  The items in a series are separated with commas or you can use the ```<>``` operator (<https://docs.perl6.org/language/quoting>).  Perl also supports infinite lists -- just don't try to print them.
 
 ```
 > my @nums = 8, 1, 43;
@@ -37,6 +37,8 @@ When you have an undetermined number of somethings, they belong in an Array (mut
 [1 2 3 4 5 6 7 8 9 10]
 > my @positive = 1..*
 [...]
+> @positive[^10]
+(1 2 3 4 5 6 7 8 9 10)
 ```
 
 ## Hash %
