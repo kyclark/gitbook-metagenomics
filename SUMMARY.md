@@ -10,7 +10,7 @@
 * [Bash](bash.md)
 * [Make](make.md)
 * [Perl](programming.md)
-   * [Why Perl 6?](first_steps_with_perl_6.md)
+   * [Why Perl 6?](why_perl.md)
    * [Hello, World](hello,_world.md)
    * [Data Shapes](data_shapes.md)
    * [I Am Greet](i_am_greet.md)
