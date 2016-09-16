@@ -11,7 +11,7 @@
 * [Make](make.md)
 * [Perl](programming.md)
    * [Why Perl 6?](why_perl.md)
-   * [Hello, World](hello,_world.md)
+   * [Hello, World](hello_world.md)
    * [Data Shapes](data_shapes.md)
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
