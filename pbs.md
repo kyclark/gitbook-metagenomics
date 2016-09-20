@@ -231,3 +231,27 @@ $ cat -n ftp-get.sh
 ```
 
 To extract the files for the given compute node, we use the ```$PBS_ARRAY_INDEX``` variable created by PBS along with the ```$STEP_SIZE``` variable as arguments to a ```sed``` command, redirecting that output into a temporary file.  From there, the script proceeds as before only reading from the ```$TMP_FILES``` and removing it when the job is done.
+
+# Interactive job
+
+You can use ```qsub -I``` flag to be placed onto a compute node to run your job interactively.  This is a good way to debug your script in the actual runtime environment.  TACC has a nifty alias called ```idev``` that will fire up an interactive node for you to play with, so here is a PBS version to do the same.  Place this line in your "~/.bashrc" (be sure to "source" the file afterwards):
+
+```
+alias idev="qsub -I -N idev -W group_list=bhurwitz -q standard -l walltime=01:00:00 -l select=1:ncpus=1:mem=1gb"
+```
+
+Then from a login node (here "service2") I can type ```idev``` to get a compute node.  When I'm finished, I can CTRL-D or type "exit" or "logout" to go back to the login node:
+
+```
+$ hostname
+service2
+$ idev
+qsub: waiting for job 652560.service2 to start
+qsub: job 652560.service2 ready
+
+$ hostname
+htc50
+$ logout
+
+qsub: job 652560.service2 completed
+```
