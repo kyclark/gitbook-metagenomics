@@ -8,20 +8,7 @@ To interact PBS and SLURM, you must log in to the "head" node(s).  Often you wil
 
 The PBS command for submitting to the queue is ```qsub```.  Since this command takes many arguments, I usually write a small script to gather all the arguments and execute the command so it's documented how I ran the job.  Most of the time I call this "submit.sh" it basically does ```qsub $ARGS run.sh```.  To view your queue, use ```qstat -u $USER```.  Use ```va``` to view your allocation of compute hours.  The UA has three queues: high-priority, normal, and windfall.  If you exhaust your normal hours in a month, then your jobs must run under "windfall" (catch as catch can) until your hours are replenished.
 
-# SLURM
 
-SLURM's command for queue submission is ```sbatch```, and ```showq``` will show you your queue.  Compute nodes are shared by default.  You must request exclusive access if you need.  
-
-* hpc-consult@list.arizona.edu is the help account
-
-# TACC/Stampede
-
-* TACC is part of the XSEDE (xsede.org) project.  
-* TACC does not allow the use of job arrays on their clusters.  Instead, they have written their "parametric launcher" (https://www.tacc.utexas.edu/research-development/tacc-software/the-launcher).
-* Your three important directories are ```$HOME```, ```$WORK```, and ```$SCRATCH```, and they can be accessed with ```cd```, ```cdw```, and ```cds```, respectively.  
-* Compute nodes are not shared
-
-# Aliases
 
 To make it easier to go back and forth between PBS and SLURM, I create aliases so that I can execute the same command on both systems:
 
