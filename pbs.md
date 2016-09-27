@@ -9,7 +9,8 @@ Here are some important links:
 * http://rc.arizona.edu/hpc-htc/high-performance-computing-high-throughput-computing
 * http://rc.arizona.edu/hpc-htc/using-systems/pbs-example
 
-## UA HPC/PBS
+
+
 
 
 
