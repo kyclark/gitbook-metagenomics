@@ -8,10 +8,9 @@ To interact PBS and SLURM, you must log in to the "head" node(s).  Often you wil
 
 The PBS command for submitting to the queue is ```qsub```.  Since this command takes many arguments, I usually write a small script to gather all the arguments and execute the command so it's documented how I ran the job.  Most of the time I call this "submit.sh" it basically does ```qsub $ARGS run.sh```.  To view your queue, use ```qstat -u $USER```.  Use ```va``` to view your allocation of compute hours.  The UA has three queues: high-priority, normal, and windfall.  If you exhaust your normal hours in a month, then your jobs must run under "windfall" (catch as catch can) until your hours are replenished.
 
-
+# Handy aliases
 
 To make it easier to go back and forth between PBS and SLURM, I create aliases so that I can execute the same command on both systems:
-
 
 ```
 alias qstat="/usr/local/bin/qstat_local"
