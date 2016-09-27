@@ -1,6 +1,6 @@
 # HPC
 
-HPC is an acronym for "high-performance computing," and it generally means using a cluster of computers.  Our students have access to two clusters at the University of Arizona, and most anyone is welcome to use the clusters at TACC.  To use the cluster, it's necessary to submit a batch job along with a description of the resources you need (e.g., memory, number of CPUs, number of nodes) to a scheduler that will start your job when the resources become available.  We will discuss schedulers "PBS" used at UA and "SLURM" used at TACC.  In the Github repo, you will find an "hpc" directory that contains examples for submitting to each queue.
+HPC is an acronym for "high-performance computing," and it generally means using a cluster of computers.  Our students have access to several clusters (Ocelote, HPC, ICE) at the University of Arizona, and most anyone is welcome to use the clusters at TACC.  To use a cluster, it's necessary to submit a batch job along with a description of the resources you need (e.g., memory, number of CPUs, number of nodes) to a scheduler that will start your job when the resources become available.  We will discuss schedulers "PBS" used at UA and "SLURM" used at TACC.  In the Github repo, you will find an "hpc" directory that contains examples for submitting to each queue.
 
 To interact PBS and SLURM, you must log in to the "head" node(s).  Often you will be placed on a random nodes such as "login1."  YOU ARE NOT ALLOWED TO DO HEAVY LIFTING ON THE HEAD NODE.  For our class, you can write files, interact with the Perl RELP, run small scripts, etc., but you should never run BLAST or launch long-running jobs on these machines.  They are intended to be used to submit jobs to the queue.
 
@@ -25,13 +25,6 @@ SLURM's command for queue submission is ```sbatch```, and ```showq``` will show 
 
 To make it easier to go back and forth between PBS and SLURM, I create aliases so that I can execute the same command on both systems:
 
-## UA HPC/PBS
-
-To schedule a job with a dependency chain, it's necessary to be on the correct login/head node for the type of job:
-
-* service0 - cluster scheduler
-* service1 - smp scheduler
-* service2 - htc scheduler
 
 ```
 alias qstat="/usr/local/bin/qstat_local"
