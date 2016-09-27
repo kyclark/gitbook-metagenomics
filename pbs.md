@@ -5,6 +5,7 @@ The University of Arizona's HPC cluster uses the "PBS Pro" (portable batch syste
 Here are some important links:
 
 * hpc-consult@list.arizona.edu (email list for help)
+* https://confluence.arizona.edu/display/UAHPC/HPC+Documentation
 * http://rc.arizona.edu/hpc-htc/high-performance-computing-high-throughput-computing
 * http://rc.arizona.edu/hpc-htc/using-systems/pbs-example
 
