@@ -1,6 +1,6 @@
 # Add It Up
 
-Let's persue the ```MAIN``` signature and discussion of types a bit further with a program that will add two numbers:
+Let's pursue the ```MAIN``` signature and discussion of types a bit further with a program that will add two numbers:
 
 ```
 $ cat -n adder1.pl6
