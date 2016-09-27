@@ -9,6 +9,10 @@ Here are some important links:
 * http://rc.arizona.edu/hpc-htc/high-performance-computing-high-throughput-computing
 * http://rc.arizona.edu/hpc-htc/using-systems/pbs-example
 
+## UA HPC/PBS
+
+
+
 # Hello
 
 Here is a "hello" script:
@@ -256,3 +260,11 @@ $ logout
 
 qsub: job 652560.service2 completed
 ```
+
+# Dependency Chain
+
+To schedule a job with a dependency chain, it's necessary to be on the correct login/head node for the type of job:
+
+* service0 - cluster scheduler
+* service1 - smp scheduler
+* service2 - htc scheduler
