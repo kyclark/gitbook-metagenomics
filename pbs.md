@@ -116,7 +116,7 @@ $ cat -n submit.sh
     10 	if [[ -d $PBSDIR ]]; then
     11 	  rm -rf $DIR/*
     12 	else
-    13 	  mkdir $DIR;
+    13 	  mkdir $DIR
     14 	fi
     15
     16 	NUM_FILES=$(wc -l $FTP_LIST | cut -d ' ' -f 1)
