@@ -11,7 +11,6 @@ SLURM's command for queue submission is ```sbatch```, and ```showq``` will show 
 * Your three important directories are ```$HOME```, ```$WORK```, and ```$SCRATCH```, and they can be accessed with ```cd```, ```cdw```, and ```cds```, respectively.  
 * Compute nodes are not shared
 
-# Aliases
 
 # SLURM Hello
 
