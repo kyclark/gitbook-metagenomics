@@ -10,8 +10,27 @@ Here are some important links:
 * http://rc.arizona.edu/hpc-htc/using-systems/pbs-example
 
 
+# Allocations
 
+Your "allocation" is how much compute time you are allowed on the cluster.  Use the command ```va``` to view your allocation of compute hours, e.g.:
 
+```
+$ va
+kyclark current allocation (remaining/encumbered/total):
+---------------------------------------------
+Group           	standard             	qualified
+bhurwitz        	17215:23/00:00/108000:00	99310:56/72:00/100000:00
+bh_admin        	00:00/00:00/00:00	00:00/00:00/00:00
+bh_dev          	00:00/00:00/00:00	00:00/00:00/00:00
+gwatts          	12000:00/00:00/24000:00	00:00/00:00/00:00
+mbsulli         	228000:00/00:00/228000:00	00:00/00:00/00:00
+```
+
+The UA has three queues: high-priority, normal, and windfall. If you exhaust your normal hours in a month, then your jobs must run under "windfall" (catch as catch can) until your hours are replenished.
+
+# Job submission
+
+The PBS command for submitting to the queue is ```qsub```. Since this command takes many arguments, I usually write a small script to gather all the arguments and execute the command so it's documented how I ran the job. Most of the time I call this "submit.sh" it basically does ```qsub $ARGS run.sh```. To view your queue, use ```qstat -u $USER```. 
 
 
 # Hello
@@ -78,6 +97,7 @@ Hello from sunny "r1i3n10"!
 Your group bhurwitz has been charged 00:00:01 for 1 cpus.
 You previously had 42575:01:07.  You now have 42575:01:06 remaining for the queue clu_standard
 ```
+
 # FTP
 
 While Makefiles can be a great way to document for myself (and others) how I submitted and ran a job, I will often write a "submit.sh" script to check input, decide on resources, etc.  Here is a more complicated submission for retrieving data from an FTP server:
@@ -151,7 +171,7 @@ All of the "#PBS" directives in this script could also have been specified as op
 
 # Job Arrays
 
-Downloading files doens't usually take a long time, but for our purposes let's pretend each file would take upwards of 10 hours.  We are only allowed 24 hours on a compute node, so we think we can fetch at most two files for each job.  If we have 200 files, then we need 100 jobs which exceeds the polite and allowed number of jobs we can put into queue at any one time.  This is when we would use a job array to submit just one job that will be turned into the required 100 jobs to handle the 200 files:
+Downloading files doesn't usually take a long time, but for our purposes let's pretend each file would take upwards of 10 hours.  We are only allowed 24 hours on a compute node, so we think we can fetch at most two files for each job.  If we have 200 files, then we need 100 jobs which exceeds the polite and allowed number of jobs we can put into queue at any one time.  This is when we would use a job array to submit just one job that will be turned into the required 100 jobs to handle the 200 files:
 
 ```
 $ cat -n submit.sh
