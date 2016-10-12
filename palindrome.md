@@ -139,4 +139,80 @@ acca
 Ada
 ```
 
-It works and no longer emits single-letter words, but something that bothers me about the above code is that I'm breaking the DRY (Don't Repeat Yourself) code by executing ```lc``` twice.  What if I have that done to the words as they come from ```lines```?  We 
+It works and no longer emits single-letter words, but something that bothers me about the above code is that I'm breaking the DRY (Don't Repeat Yourself) code by executing ```lc``` twice.  What if I have that done to the words as they come from ```lines```?  We saw this a bit in the previous chapter with uppercasing a file using a ```map``` statement to apply a function (```lc```) to every member of a list (the words from ```lines```):
+
+```
+$ cat -n palindrome3.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file='/usr/share/dict/words') {
+     4	    die "$file not a file" unless $file.IO.f;
+     5
+     6	    for $file.IO.lines.map(*.lc) -> $word {
+     7	        next if $word.chars == 1;
+     8	        if $word eq $word.comb.reverse.join {
+     9	            put $word;
+    10	        }
+    11	    }
+    12	}
+```
+
+Let's look at some more examples of ```map```:
+
+```
+$ perl6
+> <We will, we will, rock you>.map(*.tc)
+(We Will, We Will, Rock You)
+> (1..10).map(* / 2)
+(0.5 1 1.5 2 2.5 3 3.5 4 4.5 5)
+> <My cat's breath smells like cat food>.map(*.chars)
+(2 5 6 6 4 3 4)
+> (1..10).map(*.is-prime)
+(False True True False True False True False False False)
+```
+
+The ```*``` is the list element at the time and can be called "whatever" or "the thing" or "the topic."  The ```*``` creates block automatically, but you could also write the block explicitly and use the regular ```$_``` for the topic variable.
+
+```
+> (1.4, 3.6, 8.1, 2.3).map({$_.floor})
+(1 3 8 2)
+> (1..10).map({$_**2})
+(1 4 9 16 25 36 49 64 81 100)
+```
+
+Just because, I want to shorten up the code a bit more by using ```grep``` to filter the words to those of a minimum length:
+
+```
+$ cat -n palindrome4.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file='/usr/share/dict/words') {
+     4	    die "$file not a file" unless $file.IO.f;
+     5
+     6	    for $file.IO.lines.grep(*.chars>1).map(*.lc) -> $word {
+     7	        if $word eq $word.comb.reverse.join {
+     8	            put $word;
+     9	        }
+    10	    }
+    11	}
+```
+
+Finally, I would like to keep track of the number of found words, so I'll add a counter and a ```printf``` statement to make pretty output:
+
+```
+$ cat -n palindrome5.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file='/usr/share/dict/words') {
+     4	    die "$file not a file" unless $file.IO.f;
+     5
+     6	    my $i = 0;
+     7	    for $file.IO.lines.grep(*.chars>1).map(*.lc) -> $word {
+     8	        if $word eq $word.comb.reverse.join {
+     9	            printf "%3d: %s\n", ++$i, $word;
+    10	        }
+    11	    }
+    12	}
+```
+
+The only tricky thing to point out here is the ```++$i``` which increments the variable *before* taking the value.  If I did ```$i++```, then it would first print "0" (the initial value) and after would bump it to "1."
