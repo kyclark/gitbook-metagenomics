@@ -16,6 +16,7 @@
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
+   * Palindrome
    * [Delimited text](delimited_text.md)
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
@@ -25,7 +26,6 @@
    * [Parsing Structured Data](parsing_structured_data.md)
    * [Parsing, Regular Expressions, Grammars](parsing,_regular_expressions,_grammars.md)
    * [Tests](tests.md)
-   * Palindrome
 * [HPC](hpc.md)
    * [PBS](pbs.md)
    * [SLURM](slurm.md)
