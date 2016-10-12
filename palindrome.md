@@ -1,4 +1,4 @@
-# Palindrome
+# I, Palindrome, I
 
 Here's a common example used to teach "strings," which in CS-talk means a list of characters.  We're going to write a program that finds all the palindromes (words spelled the same forwards and backwards) in a list of words.  By default, we're going to read the dictionary that's almost universally in the same place on every Unix system.  The user can provide a different word list, if they like.  Here's our first version:
 
@@ -216,3 +216,33 @@ $ cat -n palindrome5.pl6
 ```
 
 The only tricky thing to point out here is the ```++$i``` which increments the variable *before* taking the value.  If I did ```$i++```, then it would first print "0" (the initial value) and after would bump it to "1."
+
+What if we wanted to run this on any text file, not just a simple list of words?  
+
+```
+$ cat -n palindrome6.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file='/usr/share/dict/words') {
+     4	    die "$file not a file" unless $file.IO.f;
+     5
+     6	    my $i = 0;
+     7	    for $file.IO.lines -> $line {
+     8	        for $line.words.grep(*.chars>1).map(*.lc) -> $word {
+     9	            if $word eq $word.comb.reverse.join {
+    10	                printf "%3d: %s\n", ++$i, $word;
+    11	            }
+    12	        }
+    13	    }
+    14	}
+$ wget http://www.usconstitution.net/const.txt
+$ ./palindrome6.pl6 const.txt
+  1: ------------------------------
+  2: 11
+  3: noon
+  4: noon
+  5: noon
+  6: 22
+```
+
+Running that on the text of the US Constitution, we find only a few palindromes. 
