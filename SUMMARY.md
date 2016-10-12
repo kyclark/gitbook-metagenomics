@@ -15,7 +15,7 @@
    * [Data Shapes](data_shapes.md)
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
-   * Palindrome
+   * [Palindrome](palindrome.md)
    * [File handling](file_handling.md)
    * [Delimited text](delimited_text.md)
    * [DNA Profiling](dna_profiling.md)
