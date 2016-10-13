@@ -246,3 +246,5 @@ $ ./palindrome6.pl6 const.txt
 ```
 
 Running that on the text of the US Constitution, we find only a few palindromes. 
+
+In this last version, we'll check if a phrase provided on the command line is a palindrome.
