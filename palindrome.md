@@ -23,7 +23,7 @@ $ cat -n palindrome1.pl6
     14	}
 ```
 
-We will want to lowercase the words because "Mom" is not equal to "moM," so line 7 copies the ```$word``` into ```$lc```.  To find the reverse of the word, we  ```flip``` (https://docs.perl6.org/routine/flip) the word.  If the forward and reverse are the same, print the word.  (Be sure to use ```eq``` for string equivalence and not ```==``` for numerical.  Try ```===``` to understand the error you get.)
+We will want to lowercase the words because "Mom" is not equal to "moM," so line 7 copies the ```$word``` into ```$lc```.  To find the reverse of the word, we  ```flip``` it (https://docs.perl6.org/routine/flip).  If the forward and reverse are the same, print the word.  (Be sure to use ```eq``` for string equivalence and not ```==``` for numerical.  Try ```==``` to understand the error you get.)
 
 ```
 if $lc eq $rev {
