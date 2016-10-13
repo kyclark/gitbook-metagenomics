@@ -106,4 +106,4 @@ sub MAIN(Int :$num-guesses = 10, :$min-word-len=5, :$max-word-len=9) {
 }
 ```
 
-Let's 
+Let's break down the ```Puzzle``` first.
