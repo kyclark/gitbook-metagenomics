@@ -248,3 +248,39 @@ $ ./palindrome6.pl6 const.txt
 Running that on the text of the US Constitution, we find only a few palindromes. 
 
 In this last version, we'll check if a phrase provided on the command line is a palindrome.
+
+```
+$ ./palindrome7.pl6
+A man, a plan, a canal. Panama
+Yes
+$ ./palindrome7.pl6 "This is not a palindrome"
+This is not a palindrome
+No
+```
+
+To check phrases, we need to remove anything that's not a letter, and the easiest way to do that is with a regular expression:
+
+```
+$ cat -n palindrome7.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $phrase="A man, a plan, a canal. Panama") {
+     4	    my $forward = $phrase.lc.subst(/<-[a..z]>/, '', :g);
+     5	    printf "%s\n%s\n",
+     6	        $phrase,
+     7	        $forward eq $forward.comb.reverse.join ?? 'Yes' !! 'No';
+     8	}
+```
+
+On line 4, we take the lowercase version (```lc```) of the ```$phrase``` and substitute (```subst```) anything that fits the regular expression (https://docs.perl6.org/language/regexes) with the empty string (```''```).  The third argument ```:g``` is the "global" flag; without this, the substitution would only happen one time.  Remember that the ```:g``` is a shorthand for making a Pair (https://docs.perl6.org/type/Pair) of the key ```g``` (for "global") and the value "True."  We could have written it like this, too (but we don't because it's more typing):
+
+```
+my $forward = $phrase.lc.subst(/<-[a..z]>/, '', g => True);
+```
+
+On line 5, we're using ```printf``` to establish a template for printing the output to the user.  First we want to reiterate the given phrase, then we want to print "Yes" or "No" depending on the outcome of the comparison.  On line 7, we're using the ternary operator (<https://docs.perl6.org/routine/$QUESTION_MARK$QUESTION_MARK%20!!#(Operators)_infix_??_!!>) which is a condensed ```if-then-else``` statement.  Here is another way to write it:
+
+```
+my $answer  = do if $forward eq $forward.comb.reverse.join 
+                 {'Yes'} else {'No'};
+```
