@@ -91,7 +91,7 @@ Ada
 
 It works and no longer emits single-letter words, but there are couple of things that I don't like about this version.  First off, that "1" (the minimum length) qualifies as something often called a "magic number" in that it's not documented anywhere what it means.  It's almost always better to give it a name like ```$min```, so let's do that in the next version.  While we're at it, why not make it an optional parameter to the script so that the user can define it?
 
-Another thing that bothers me about the above code is that I'm breaking the DRY (Don't Repeat Yourself) code by executing ```lc``` twice.  By using ```map```, I can apply the ```lc``` function to the words as they come from ```lines```?  We saw this a bit in the previous chapter with uppercasing a file using a ```map``` statement to apply a function (```lc```) to every member of a list (the words from ```lines```):
+Another thing that bothers me about the above code is that I'm breaking the DRY (Don't Repeat Yourself) code by executing ```lc``` twice.  By using ```map```, I can apply the ```lc``` function to the words as they come from ```lines```:
 
 ```
 $ cat -n palindrome3.pl6
