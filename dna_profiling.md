@@ -68,19 +68,7 @@ $ cat -n dna3.pl6
     14 	}
 ```
 
-I wanted to get rid of checking both cases of the letters, so at line 6 I first ```lc``` (lowercase) ```$dna``` and then get the letters.  Notice that you can chain methods.  Here is how you can reverse a string:
-
-```
-> "Because I could not stop for Death".comb.reverse.join
-htaeD rof pots ton dluoc I esuaceB
-```
-
-> Protip: ```reverse``` is a list operation, so you have to convert the string into a list of letters, reverse those, then ```join``` them back together to create a new string.  If you wanted to reverse the words, then you would do this:
-
-```
-> "Because I could not stop for Death".words.reverse.join(' ')
-Death for stop not could I Because
-```
+I wanted to get rid of checking both cases of the letters, so at line 6 I first ```lc``` (lowercase) ```$dna``` and then get the letters.  Notice that you can chain methods.  
 
 Most languages have a "switch" or "case" (like for our options checking in bash) statement.  Perl's is called ```given``` (https://docs.perl6.org/language/control#given), it's like a giant if/elsif statement, only much, much better:
 
