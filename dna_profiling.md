@@ -207,7 +207,7 @@ $ ./dna8.pl6 foobar
 1 0 0 0
 ```
 
-At line 4, I'm going to set my ```$dna``` equal to either the contents of the ```$input``` (if it is a file) or the input itself.  I'm using a ternary operator (https://docs.perl6.org/language/operators#index-entry-Ternary_operator) that follow the pattern:
+At line 4, I'm going to set my ```$dna``` equal to either the contents of the ```$input``` (if it is a file) or the input itself.  I'm using a ternary operator (https://docs.perl6.org/language/operators#index-entry-Ternary_operator) that follows the pattern:
 
 ```
 result = conditional ?? true-branch !! false-branch
