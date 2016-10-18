@@ -137,21 +137,21 @@ $ cat -n dna5.pl6
 At line 4, I declare the hash ```%count``` that will hold key-value pairs where the keys will be the nucleotides and the values will be the number of times we saw them.  It's important (for this version) to initialize the counts or line 13 will complain if a given base does not have a value.  To get around that, we can use a ```map``` statement:
 
 ```
-$ cat -n dna6.pl6
-     1 	#!/usr/bin/env perl6
+$ cat -n dna7.pl6
+     1	#!/usr/bin/env perl6
      2
-     3 	sub MAIN (Str $dna!) {
-     4 	    my %count;
+     3	sub MAIN (Str $dna!) {
+     4	    my %count;
      5
-     6 	    for $dna.lc.comb {
-     7 	        when 'a' { %count<A>++ }
-     8 	        when 'c' { %count<C>++ }
-     9 	        when 'g' { %count<G>++ }
-    10 	        when 't' { %count<T>++ }
-    11 	    }
+     6	    for $dna.lc.comb {
+     7	        when 'a' { %count<A>++ }
+     8	        when 'c' { %count<C>++ }
+     9	        when 'g' { %count<G>++ }
+    10	        when 't' { %count<T>++ }
+    11	    }
     12
-    13 	    put join ' ', %count<A C G T>.map({ $_ // 0 });
-    14 	}
+    13	    put join ' ', %count<A C G T>.map({ $_ // 0 });
+    14	}
 ```
 
 This version has no initialization and waits until line 13 to determine if there is something that exists for a given base.  Let's examine this in the REPL:
@@ -179,27 +179,26 @@ What the above shows is that we get a List back when we ask for multiple keys fr
 Here's a version that introduces a new type called a "Bag" (https://docs.perl6.org/type/Bag):
 
 ```
-$ cat -n dna7.pl6
-     1 	#!/usr/bin/env perl6
+$ cat -n dna8.pl6
+     1	!/usr/bin/env perl6
      2
-     3 	sub MAIN (Str $dna!) {
-     4 	    my $bag = $dna.lc.comb.Bag;
-     5
-     6 	    put join ' ', $bag<a c g t>
-     7 	}
+     3	sub MAIN (Str $dna!) {
+     4	    my $bag = $dna.lc.comb.Bag;
+     5	    put join ' ', $bag<a c g t>;
+     6	}
  ```
  
 Next, I'd like to create a version that can handle input from a file as well as a string:
 
 ```
-$ cat -n dna8.pl6
-     1 	#!/usr/bin/env perl6
+$ cat -n dna9.pl6
+     1	#!/usr/bin/env perl6
      2
-     3 	sub MAIN (Str $input!) {
-     4 	    my $dna = $input.IO.e ?? $input.IO.slurp !! $input;
-     5 	    my $bag = $dna.lc.comb.Bag;
-     6 	    put join ' ', $bag<a c g t>
-     7 	}
+     3	sub MAIN (Str $input!) {
+     4	    my $dna = $input.IO.f ?? $input.IO.slurp !! $input;
+     5	    my $bag = $dna.lc.comb.Bag;
+     6	    put join ' ', $bag<a c g t>
+     7	}
  $ echo AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC > dna
 $ ./dna8.pl6 dna
 20 12 17 21
@@ -213,7 +212,7 @@ At line 4, I'm going to set my ```$dna``` equal to either the contents of the ``
 result = conditional ?? true-branch !! false-branch
 ```
 
-In my case, the conditional is to the the ```$input``` as an ```IO``` object and test the ```e``` (exists, https://docs.perl6.org/type/IO$COLON$COLONPath#File_test_operators).  If it is ```True```, then execute the ```slurp``` method on the IO object; otherwise, just use the ```$input```.  Notice that the Bag returns "0" for any missing elements, so no initialization was required.
+In my case, the conditional is to the the ```$input``` as an ```IO``` object and test the ```f``` ("file", https://docs.perl6.org/type/IO$COLON$COLONPath#File_test_operators).  If it is ```True```, then execute the ```slurp``` method on the IO object; otherwise, just use the ```$input```.  Notice that the Bag returns "0" for any missing elements, so no initialization was required.
 
 The advantage to using the "bag" solution is that we can easily expand the script to also count, for instance, "N"s which are unknown base calls or the bases in RNA or proteins:
 
@@ -259,61 +258,81 @@ Y      	60
 
 # Handling FASTA
 
-It's most likely you'll encounter sequence data in some standard format that includes information about the sequences (metadata, or data about the data).  Usually we see FASTA format, and it's not necessarily easy to parse; therefore, we're going to reach for a tool someone else built to do this for us.  Let's try out the BioInfo (https://github.com/MattOates/BioInfo) and BioPerl6 libraries.  To install:
+It's most likely you'll encounter sequence data in some standard format that includes information about the sequences (metadata, or data about the data).  Usually we see FASTA format, and it's not necessarily easy to parse; therefore, we're going to reach for a tool someone else built to do this for us.  Let's try out the BioInfo (https://github.com/MattOates/BioInfo) and BioPerl6 (https://github.com/cjfields/bioperl6) libraries.  To install:
 
 ```
 $ panda install BioInfo
 $ panda install BioPerl6
 ```
 
-And here is how we can incorporate it into our code:
+And here is how we can incorporate it into our code.  First the version with BioInfo:
 
 ```
-$ cat -n fasta-stat.pl6
-     1 	#!/usr/bin/env perl6
+$ cat -n fasta-stat1.pl6
+     1	#!/usr/bin/env perl6
      2
-     3 	use v6;
-     4 	use BioInfo::Parser::FASTA;
-     5 	use BioInfo::IO::FileParser;
-     6
-     7 	sub MAIN (Str $file!) {
-     8 	    die "Not a file ($file)" unless $file.IO.f;
-     9
-    10 	    my $seq_file = BioInfo::IO::FileParser.new(
-    11 	        file     => $file,
-    12 	        parser   => BioInfo::Parser::FASTA
-    13 	    );
-    14
-    15 	    while (my $seq = $seq_file.get()) {
-    16 	        say $seq.id;
-    17 	    }
-    18 	}
-[saguaro@~/work/abe487/book/perl6/dna]$ ./fasta-stat.pl6 mouse.fa | head -3
-HWI-ST885:65:C07WUACXX:2:1101:1361:2112
-HWI-ST885:65:C07WUACXX:2:1101:1476:2173
-HWI-ST885:65:C07WUACXX:2:1101:1443:2177
+     3	use BioInfo::Parser::FASTA;
+     4	use BioInfo::IO::FileParser;
+     5
+     6	sub MAIN (Str $file!) {
+     7	    die "Not a file ($file)" unless $file.IO.f;
+     8
+     9	    my $seq_file = BioInfo::IO::FileParser.new(
+    10	        file     => $file,
+    11	        parser   => BioInfo::Parser::FASTA
+    12	    );
+    13
+    14	    my @bases = <A C G T>;
+    15	    my %count;
+    16	    while (my $seq = $seq_file.get()) {
+    17	        my $b = $seq.sequence.uc.comb.Bag;
+    18
+    19	        for @bases -> $base {
+    20	            %count{ $base } += $b{ $base }
+    21	        }
+    22	    }
+    23
+    24	    for @bases -> $base {
+    25	        printf "%10d %s\n", %count{ $base }, $base;
+    26	    }
+    27	}
+$ ./fasta-stat1.pl6 mouse.fa
+     12168 A
+      8944 C
+     11990 T
+      9059 G
 ```
 
 And here is a version using BioPerl6:
 
 ```
 $ cat -n fasta-stat2.pl6
-     1 	#!/usr/bin/env perl6
+     1	#!/usr/bin/env perl6
      2
-     3 	use v6;
-     4 	use Bio::SeqIO;
-     5
-     6 	sub MAIN (Str $file!) {
-     7 	    die "Not a file ($file)" unless $file.IO.f;
-     8
-     9 	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
-    10
-    11 	    while (my $seq = $seqIO.next-Seq) {
-    12 	        say $seq.seq;
-    13 	    }
-    14 	}
-$ ./fasta-stat2.pl6 mouse.fa | head -3
-TTTGATACTCCTATTAAGTAAAAGTTTTTAGGGTCTGTATAAAACGAAGCCTGAGCATACCCTCTTGCTGTAT
-TGTGCTCCCGATGCTTTTATCGCAGCCTCCATCAAGTCATTTGAGCGGAATTTGCCTGTTCCTACAAATAGGCGGGAGCTG
-GAAAACGAAAACGGAGAGTTAGCCCTTATAGTTCCAGAAAAAGAAATGGATGCAGGAGCGG
+     3	use Bio::SeqIO;
+     4
+     5	sub MAIN (Str $file!) {
+     6	    die "Not a file ($file)" unless $file.IO.f;
+     7
+     8	    my $seqIO = Bio::SeqIO.new(format => 'fasta', file => $file);
+     9
+    10	    my @bases = <A C G T>;
+    11	    my %count;
+    12	    while (my $seq = $seqIO.next-Seq) {
+    13	        my $b = $seq.seq.uc.comb.Bag;
+    14
+    15	        for @bases -> $base {
+    16	            %count{ $base } += $b{ $base }
+    17	        }
+    18	    }
+    19
+    20	    for @bases -> $base {
+    21	        printf "%10d %s\n", %count{ $base }, $base;
+    22	    }
+    23	}
+$ ./fasta-stat2.pl6 mouse.fa
+     12168 A
+      8944 C
+      9059 G
+     11990 T
 ```
