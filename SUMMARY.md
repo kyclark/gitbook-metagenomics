@@ -27,7 +27,7 @@
    * [OOP](oop.md)
    * [Tests](tests.md)
    * [Problem Set](problem_set.md)
-   * Web Development with Perl 5
+   * [Web Development with Perl 5](web_development_with_perl_5.md)
 * [HPC](hpc.md)
    * [PBS](pbs.md)
    * [SLURM](slurm.md)
