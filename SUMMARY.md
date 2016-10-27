@@ -20,7 +20,7 @@
    * [Delimited text](delimited_text.md)
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
-   * [Regular Expression and Types](types.md)
+   * [Regular Expression and Types](regular_expressions_and_types.md)
    * [Counting Things](counting_things.md)
    * [Parsing Structured Data](parsing_structured_data.md)
    * [Parsing, Regular Expressions, Grammars](parsing,_regular_expressions,_grammars.md)
