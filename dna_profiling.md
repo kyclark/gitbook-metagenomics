@@ -97,21 +97,21 @@ Notice the change at line 15 where I make a temporary (anonymous) list from the 
 What's fun is that ```for``` can act like ```given``` and use smart matching on ```$_``` AKA "the topic" (or "thing" or "it").  Here's a shorter version:
 
 ```
-$ cat dna5.pl6
-#!/usr/bin/env perl6
-
-sub MAIN (Str $dna!) {
-    my ($num-A, $num-C, $num-G, $num-T) = 0, 0, 0, 0;
-
-    for $dna.lc.comb {
-        when 'a' { $num-A++ }
-        when 'c' { $num-C++ }
-        when 'g' { $num-G++ }
-        when 't' { $num-T++ }
-    }
-
-    put ($num-A, $num-C, $num-G, $num-T).join(' ');
-}
+$ cat -n dna5.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $dna!) {
+     4	    my ($num-A, $num-C, $num-G, $num-T) = 0, 0, 0, 0;
+     5
+     6	    for $dna.lc.comb {
+     7	        when 'a' { $num-A++ }
+     8	        when 'c' { $num-C++ }
+     9	        when 'g' { $num-G++ }
+    10	        when 't' { $num-T++ }
+    11	    }
+    12
+    13	    put ($num-A, $num-C, $num-G, $num-T).join(' ');
+    14	}
 ```
 
 Now I'm going to show you a version where we use a hash instead of a bunch of scalars:
@@ -180,7 +180,7 @@ Here's a version that introduces a new type called a "Bag" (https://docs.perl6.o
 
 ```
 $ cat -n dna8.pl6
-     1	!/usr/bin/env perl6
+     1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna!) {
      4	    my $bag = $dna.lc.comb.Bag;
