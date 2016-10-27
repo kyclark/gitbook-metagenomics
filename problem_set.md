@@ -1,4 +1,4 @@
-# Problem Set
+# Problem Sets
 
 Be sure to check out https://github.com:kyclark/abe487.git for the tests!
 
