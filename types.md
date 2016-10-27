@@ -146,3 +146,5 @@ Looks like Protein
 $ ./seq-type4.pl6 2112
 Unknown sequence type
 ```
+
+After you get the feel of using regexes, you can take them further into writing grammars.  After you get the hang of using types, you can take them further into creating objects which package up data and methods, e.g., a DNA object that can produce it's reverse complement or an RNA object that can find its ORFs and translate its coding regions into amino acids.
