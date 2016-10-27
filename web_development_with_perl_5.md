@@ -1,6 +1,6 @@
 # Web Development with Perl 5
 
-As of fall 2016, I still do all my web development in Perl 5 because the ecology of modules is so mature.  Here I will describe how I typically go about creating a website.  For example, I will reference a small project I built for an affordable housing non-profit in Tucson (https://github.com/kyclark/metagenomics-book/tree/master/web).
+As of fall 2016, I still do all my web development in Perl 5 because the ecology of modules is so mature.  Here I will describe how I typically go about creating a website.  For example, I will reference a small project I built for an affordable housing non-profit in Tucson (https://github.com/kyclark/metagenomics-book/tree/master/web).  You can instantiate the entire website and database from the Github repo.
 
 # Data Model
 
