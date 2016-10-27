@@ -1,4 +1,4 @@
-# Types
+# Types and Regular Expressions
 
 In the last chapter, I introduced a "subset" where you can create a new type in Perl.  I want to extend that and introduce multi methods.  First, let's look at a simple case where you might want to detect the type of sequence you have.  To do this, I'm also going to show you regular expressions (AKA "regexes" https://docs.perl6.org/language/regexes), a sub-language inside of Perl for describing patterns:
 
@@ -95,3 +95,20 @@ False
 ```
 
 This makes your code both readable and self-documenting.
+
+# Regexes
+
+There is quite a bit more to say about regular expressions.  Maybe let's just play in the REPL:
+
+```
+$ perl6
+To exit type 'exit' or '^D'
+> 1234 ~~ /\d/
+｢1｣
+> 1234 ~~ /\d+/
+｢1234｣
+> 'foobar' ~~ /oo/
+｢oo｣
+> 'foooobar' ~~ /o+/
+｢oooo｣
+```
