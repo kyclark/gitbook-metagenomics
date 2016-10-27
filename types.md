@@ -1,6 +1,46 @@
 # Types and Regular Expressions
 
-In the last chapter, I introduced a "subset" where you can create a new type in Perl.  I want to extend that and introduce multi methods.  First, let's look at a simple case where you might want to detect the type of sequence you have.  To do this, I'm also going to show you regular expressions (AKA "regexes" https://docs.perl6.org/language/regexes), a sub-language inside of Perl for describing patterns:
+Regular expressions (https://docs.perl6.org/language/regexes) constitute a sub-language within Perl.  There have been many changes from Perl 5's regex syntax, but the principles remain the same.  
+
+Let's play in the REPL:
+
+```
+$ perl6
+To exit type 'exit' or '^D'
+> 1234 ~~ /\d/
+｢1｣
+> 1234 ~~ /\d+/
+｢1234｣
+> 1234 ~~ Int
+True
+> 'foobar' ~~ /oo/
+｢oo｣
+> 'foooobar' ~~ /o+/
+｢oooo｣
+```
+
+Here's a more complicated regex for detecting US-style phone numbers:
+
+```
+> my $re = /'('? \d ** 3 ')'? <[\s*-]>? \d ** 3 <[\s*-]>? \d ** 4 /
+> /'('? \d ** 3 ')'? <[\s*-]>? \d ** 3 <[\s*-]>? \d ** 4 /
+> my @phones = "(520) 321 9087", "520 321 9087", "520-321-9087", "5203219087", "(520)321-9087"
+[(520) 321 9087 520 321 9087 520-321-9087 5203219087 (520)321-9087]
+> for @phones -> $phone { say $phone ~~ $re }
+True
+True
+True
+True
+True
+> all(@phones) ~~ $re
+True
+```
+
+The last method uses a Junction (https://docs.perl6.org/type/Junction) to compare all the phone numbers at once.
+
+The subject of regexes is far too deep to cover here.  For now, just know that, if you can describe the pattern of text you are searching for, then you can probably write a regex to match it.  I want to use regexes as a bridge to talking about creating your own types and something called "multiple dispatch."
+
+In the last chapter, I introduced a "subset" where you can create a new type in Perl.  First, let's look at a simple case where you might want to detect the type of sequence you have.
 
 ```
 $ cat -n seq-type1.pl6
@@ -61,54 +101,48 @@ $ cat -n seq-type2.pl6
     10 	}
 ```
 
-But here is where it really gets interesting.  Perl can do pattern matching on the signatures of functions!
+Now let's move our regular expressions into types.  There are many reasons for doing this, not the least of which is that they are then documented and represented in just one place in your code.  Suppose that you initially defined the DNA pattern as just "ACGT" and used it several places in a script.  Later you realize you want to add "N" or maybe even the full IUPAC table (http://www.bioinformatics.org/sms/iupac.html).  If you fail to update the regex in every place in your code, you've introduced a very subtle bug that you may spend hours fixing -- or worse, you may never find!  See the difference with this code:
 
 ```
 $ cat -n seq-type3.pl6
-     1 	#!/usr/bin/env perl6
+     1	#!/usr/bin/env perl6
      2
-     3 	subset DNA     of Str where * ~~ /^ :i <[ACTGN]>+ $/;
-     4 	subset RNA     of Str where * ~~ /^ :i <[ACUGN]>+ $/;
-     5 	subset Protein of Str where * ~~ /^ :i <[A..Z]>+  $/;
+     3	subset DNA     of Str where * ~~ /^ :i <[ACTGN]>+ $/;
+     4	subset RNA     of Str where * ~~ /^ :i <[ACUGN]>+ $/;
+     5	subset Protein of Str where * ~~ /^ :i <[A..Z]>+  $/;
      6
-     7 	multi MAIN (DNA     $input!) { put "Looks like DNA" }
-     8 	multi MAIN (RNA     $input!) { put "Looks like RNA" }
-     9 	multi MAIN (Protein $input!) { put "Looks like Protein" }
-    10 	multi MAIN (Str     $input!) { put "Unknown sequence type" }
-$ ./seq-type3.pl6 ACGT
+     7	sub MAIN (Str $input!) {
+     8	    given $input {
+     9	        when DNA     { put "Looks like DNA" }
+    10	        when RNA     { put "Looks like RNA" }
+    11	        when Protein { put "Looks like protein" }
+    12	        default      { put "Unknown sequence type" }
+    13	    }
+    14	}
+```
+
+Now whenever you need the DNA pattern, you just reach for your ```DNA``` type.  You could even define common regexes/patterns in a single module (file) that you import into your scripts so that you only ever define (and fix) them in one place.
+
+Now for that "multiple dispatch" I mentioned earlier.  Perl can do pattern matching on the signatures of functions.  We can use the ```multi``` keyword instead of ```sub``` to indicate to Perl that we intend to define ```MAIN``` in different ways:
+
+```
+$ cat -n seq-type4.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	subset DNA     of Str where * ~~ /^ :i <[ACTGN]>+ $/;
+     4	subset RNA     of Str where * ~~ /^ :i <[ACUGN]>+ $/;
+     5	subset Protein of Str where * ~~ /^ :i <[A..Z]>+  $/;
+     6
+     7	multi MAIN (DNA     $input!) { put "Looks like DNA" }
+     8	multi MAIN (RNA     $input!) { put "Looks like RNA" }
+     9	multi MAIN (Protein $input!) { put "Looks like Protein" }
+    10	multi MAIN (Str     $input!) { put "Unknown sequence type" }
+$ ./seq-type4.pl6 ACGT
 Looks like DNA
-$ ./seq-type3.pl6 ACGU
+$ ./seq-type4.pl6 ACGU
 Looks like RNA
-$ ./seq-type3.pl6 EEDS
+$ ./seq-type4.pl6 EEDS
 Looks like Protein
-$ ./seq-type3.pl6 2112
+$ ./seq-type4.pl6 2112
 Unknown sequence type
-```
-
-Once you've established types like this, you can use them in your code:
-
-```
-> 'ACGT' ~~ DNA
-True
-> 'ACGT' ~~ RNA
-False
-```
-
-This makes your code both readable and self-documenting.
-
-# Regexes
-
-There is quite a bit more to say about regular expressions.  Maybe let's just play in the REPL:
-
-```
-$ perl6
-To exit type 'exit' or '^D'
-> 1234 ~~ /\d/
-｢1｣
-> 1234 ~~ /\d+/
-｢1234｣
-> 'foobar' ~~ /oo/
-｢oo｣
-> 'foooobar' ~~ /o+/
-｢oooo｣
 ```
