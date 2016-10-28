@@ -124,7 +124,7 @@ $ cat -n seq-type3.pl6
 Now I'll show you how to move our regular expressions into types.  
 
 ```
-$ cat -n seq-type3.pl6
+$ cat -n seq-type4.pl6
      1	#!/usr/bin/env perl6
      2
      3	subset DNA     of Str where * ~~ /^ :i <[ACTGN]>+ $/;
@@ -135,9 +135,9 @@ $ cat -n seq-type3.pl6
      8	    given $input {
      9	        when DNA     { put "Looks like DNA" }
     10	        when RNA     { put "Looks like RNA" }
-    11	        when Protein { put "Looks like protein" }
+    11	        when Protein { put "Looks like protein"; }
     12	        default      { put "Unknown sequence type" }
-    13	    }
+    13	   }
     14	}
 ```
 
@@ -146,7 +146,7 @@ Now whenever you need the DNA pattern, you just reach for your ```DNA``` type.  
 Now for that "multiple dispatch" I mentioned earlier.  Perl can do pattern matching on the signatures of functions.  We can use the ```multi``` keyword instead of ```sub``` to indicate to Perl that we intend to define ```MAIN``` in different ways:
 
 ```
-$ cat -n seq-type4.pl6
+$ $ cat -n seq-type5.pl6
      1	#!/usr/bin/env perl6
      2
      3	subset DNA     of Str where * ~~ /^ :i <[ACTGN]>+ $/;
@@ -157,13 +157,13 @@ $ cat -n seq-type4.pl6
      8	multi MAIN (RNA     $input!) { put "Looks like RNA" }
      9	multi MAIN (Protein $input!) { put "Looks like Protein" }
     10	multi MAIN (Str     $input!) { put "Unknown sequence type" }
-$ ./seq-type4.pl6 ACGT
+$ ./seq-type5.pl6 ACGT
 Looks like DNA
-$ ./seq-type4.pl6 ACGU
+$ ./seq-type5.pl6 ACGU
 Looks like RNA
-$ ./seq-type4.pl6 EEDS
+$ ./seq-type5.pl6 EEDS
 Looks like Protein
-$ ./seq-type4.pl6 2112
+$ ./seq-type5.pl6 2112
 Unknown sequence type
 ```
 
