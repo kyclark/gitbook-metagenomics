@@ -328,7 +328,7 @@ $ cat -n insult.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Int :$n=1) {
-     4	    my @adjectives = qw{scurvy old filthy scurry lascivious
+     4	    my @adjectives = qw{scurvy old filthy scurilous lascivious
      5	        foolish rascaly gross rotten corrupt foul loathsome irksome
      6	        heedless unmannered whoreson cullionly false filthsome
      7	        toad-spotted caterwauling wall-eyed insatiate vile peevish
