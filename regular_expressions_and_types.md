@@ -94,14 +94,34 @@ $ cat -n seq-type2.pl6
      3 	sub MAIN (Str $input!) {
      4 	    given $input {
      5 	        when /^ :i <[ACTGN]>+ $/ { put "Looks like DNA" }
-     6 	        when /^ :i <[ACUGN]>+ $/ { put "Looks like RNA" }
+     6 	        when /^ :i <[ACUGN]>+ $/ { put "Looks like RNA" }k
      7 	        when /^ :i <[A..Z]>+  $/ { put "Looks like protein";
      8 	        default { put "Unknown sequence type" }
      9 	   }
     10 	}
 ```
 
-Now let's move our regular expressions into types.  There are many reasons for doing this, not the least of which is that they are then documented and represented in just one place in your code.  Suppose that you initially defined the DNA pattern as just "ACGT" and used it several places in a script.  Later you realize you want to add "N" or maybe even the full IUPAC table (http://www.bioinformatics.org/sms/iupac.html).  If you fail to update the regex in every place in your code, you've introduced a very subtle bug that you may spend hours fixing -- or worse, you may never find!  See the difference with this code:
+It would be much nicer to isolate and document our regexes so they are reusable.  We can store them in scalar variables that have sensible names.  There are many reasons for doing this, not the least of which is that they are then documented and represented in just one place in your code.  Suppose that you initially defined the DNA pattern as just "ACGT" and used it several places in a script.  Later you realize you want to add "N" or maybe even the full IUPAC table (http://www.bioinformatics.org/sms/iupac.html).  If you fail to update the regex in every place in your code, you've introduced a very subtle bug that you may spend hours fixing -- or worse, you may never find!  
+
+```
+$ cat -n seq-type3.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $input!) {
+     4	    my $dna     = /^ :i <[ACTGN]>+ $/;
+     5	    my $rna     = /^ :i <[ACUGN]>+ $/;
+     6	    my $protein = /^ :i <[A..Z]>+  $/;
+     7
+     8	    given $input {
+     9	        when $dna     { put "Looks like DNA" }
+    10	        when $rna     { put "Looks like RNA" }
+    11	        when $protein { put "Looks like protein"; }
+    12	        default       { put "Unknown sequence type" }
+    13	   }
+    14	}
+```
+
+Now I'll show you how to move our regular expressions into types.  
 
 ```
 $ cat -n seq-type3.pl6
