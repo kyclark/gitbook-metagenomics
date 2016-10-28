@@ -13,12 +13,12 @@
    * [Why Perl 6?](why_perl.md)
    * [Hello, World](hello_world.md)
    * [Data Shapes](data_shapes.md)
+   * Lists
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
    * [Palindrome](palindrome.md)
    * [Delimited text](delimited_text.md)
-   * Lists
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
    * [Regular Expression and Types](regular_expressions_and_types.md)
