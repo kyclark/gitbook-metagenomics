@@ -28,6 +28,7 @@
    * [Tests](tests.md)
    * [Web Development with Perl 5](web_development_with_perl_5.md)
    * [Problem Sets](problem_sets.md)
+   * Lists
 * [HPC](hpc.md)
    * [PBS](pbs.md)
    * [SLURM](slurm.md)
