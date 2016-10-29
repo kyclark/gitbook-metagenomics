@@ -385,14 +385,18 @@ I can classify my ```@dogs``` based on the length of their names using that same
 {4 => [Lulu], 5 => [Chaps Logan Patch], 6 => [Patton Bowzer]}
 ```
 
-Again its a matter of whether you want to use the ```{$_}``` or the ```*``` syntax.  The first one uses curly brackets, and we usually have the ```$_``` as the topic.  Here I've actually left it out and am just calling ```.chars``` on the default variable.  In the second version, I'm using ```*``` to automatically create block scope and just using it directly as the topic.
-
-Lists can also be composed of Pairs.  Here I'll redeclare my ```@dogs``` with their sexes and ```classify``` them:
+Lists can also be composed of Pairs (https://docs.perl6.org/type/Pair).  Here I'll redeclare my ```@dogs``` with their names as the "key" and thier sex as the "value."  Then I can ```classify``` them on their ```value```:
 
 ```
 > my @dogs = Chaps => 'male', Patton => 'male', Bowzer => 'male', Logan => 'male', Lulu => 'female', Patch => 'male'
 [Chaps => male Patton => male Bowzer => male Logan => male Lulu => female Patch => male]
+> @dogs.classify(-> $dog {$dog.value})
+{female => [Lulu => female], male => [Chaps => male Patton => male Bowzer => male Logan => male Patch => male]}
 > @dogs.classify({$^dog.value})
+{female => [Lulu => female], male => [Chaps => male Patton => male Bowzer => male Logan => male Patch => male]}
+> @dogs.classify({.value})
+{female => [Lulu => female], male => [Chaps => male Patton => male Bowzer => male Logan => male Patch => male]}
+> @dogs.classify(*.value)
 {female => [Lulu => female], male => [Chaps => male Patton => male Bowzer => male Logan => male Patch => male]}
 ```
 
