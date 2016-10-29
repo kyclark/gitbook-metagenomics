@@ -374,12 +374,14 @@ It might help to see that one in the REPL:
 
 So you're seeing that Lists can be inside of other Lists as well as inside of Hashes and other data structures.
 
-I can classify my ```@dogs``` based on the length of their names using two different syntaxes:
+I can classify my ```@dogs``` based on the length of their names using that same syntax variations we saw for ```map```:
 
 ```
 > @dogs.classify({.chars})
 {4 => [Lulu], 5 => [Chaps Logan Patch], 6 => [Patton Bowzer]}
 > @dogs.classify(*.chars)
+{4 => [Lulu], 5 => [Chaps Logan Patch], 6 => [Patton Bowzer]}
+> @dogs.classify(&chars)
 {4 => [Lulu], 5 => [Chaps Logan Patch], 6 => [Patton Bowzer]}
 ```
 
