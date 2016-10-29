@@ -56,16 +56,82 @@ I can find just the length of each dog's name by using ```map``` to apply a the 
 ```
 > @dogs.map(*.chars)
 (5 6 6 5 4 5)
+> @dogs.map(&chars)
+(5 6 6 5 4 5)
 ```
 
-And then create a list of lists that has each name and the length:
+The first version is using the ```chars``` _method_ called on each list object while the second version is applying the ```chars``` _function_ to each element (https://docs.perl6.org/routine/chars).  The leading ampersand ```&``` is passing the ```chars``` function as a reference.  Note that you cannot call it like so:
+
+```
+> @dogs.map(chars)
+===SORRY!=== Error while compiling:
+Calling chars() will never work with proto signature ($)
+------> @dogs.map(⏏chars)
+```
+
+The ```map``` function is something I'd really like you to understand, so let's break it down a bit.  I can get the same answer (sort of) with a ```for``` loop:
+
+```
+> for @dogs -> $dog { say $dog.chars }
+5
+6
+6
+5
+4
+5
+```
+
+And I can capture the numbers by using ```do```:
+
+```
+> my @chars = do for @dogs -> $dog { $dog.chars }
+[5 6 6 5 4 5]
+```
+
+Or, more briefly:
+
+```
+> my @chars = do for @dogs { .chars }
+[5 6 6 5 4 5]
+```
+
+So the ```map``` _function_ just turns that around a bit:
+
+```
+> my @chars = map { .chars }, @dogs
+[5 6 6 5 4 5]
+```
+
+And the ```map``` _method_ (of a List) turns that around:
+
+```
+> my @chars = @dogs.map({ .chars })
+[5 6 6 5 4 5]
+> my @chars = @dogs.map(*.chars)
+[5 6 6 5 4 5]
+> my @chars = @dogs.map: *.chars
+[5 6 6 5 4 5]
+```
+
+You see there is more than one way to write a map.  We'll break this down later.
+
+The elements in a List are not limited to scalars.  Using ```map```, I create a List of other Lists that combines each dog's name and the length of the name using the ```Z``` "zip" operator (https://docs.perl6.org/routine/Z):
 
 ```
 > @dogs Z @dogs.map(*.chars)
 ((Chaps 5) (Patton 6) (Bowzer 6) (Logan 5) (Lulu 4) (Patch 5))
 ```
 
-I can find the total number of characters in all the dog names:
+Does that makes sense?  Zip takes two lists and combines them element-by-element, stopping on the shorter list:
+
+```
+> 1..10 Z 'a'..'z'
+((1 a) (2 b) (3 c) (4 d) (5 e) (6 f) (7 g) (8 h) (9 i) (10 j))
+> 1..* Z 'Bowzer'.comb
+((1 B) (2 o) (3 w) (4 z) (5 e) (6 r))
+```
+
+Lastly, I'll show you how ```sum``` (https://docs.perl6.org/routine/sum) total number of characters in all the dog names:
 
 ```
 > @dogs.map(*.chars).sum
@@ -210,7 +276,7 @@ $ ./gc1.pl6 AACTAG
 AACTAG has 2
 ```
 
-The argument to ```grep``` is a block of code that will be executed for each member of the list.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is say "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
+Like ```map```, ```grep``` takes a block of code that will be executed for each member of the list.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is say "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
 
 ```
 $ cat -n gc2.pl6
