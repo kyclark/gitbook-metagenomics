@@ -276,7 +276,7 @@ $ ./gc1.pl6 AACTAG
 AACTAG has 2
 ```
 
-Like ```map```, ```grep``` takes a block of code that will be executed for each member of the list.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is say "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
+Like ```map```, ```grep``` takes a block of code that will be executed for each member of the list.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is asking "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
 
 ```
 $ cat -n gc2.pl6
@@ -288,6 +288,15 @@ $ cat -n gc2.pl6
      6	}
 $ ./gc2.pl6 AACTAG
 AACTAG has 2
+```
+
+Another way to write the ```|``` Junction is with ```any```.  The ```so``` routine (https://docs.perl6.org/routine/so) collapses the various Booleans down to a single value.
+
+```
+> so 'G' eq 'G' | 'C'
+True
+> so 'G' eq any(<G C>)
+True
 ```
 
 It's extremely common to use regular expressions (https://docs.perl6.org/type/Regex) to filter lists.  We'll cover these more later, but here I'm using a character class to represent either "G or C":
