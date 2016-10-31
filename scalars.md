@@ -48,7 +48,7 @@ for $fh.lines { .say }
 
 # Bool
 
-Boolean types (https://docs.perl6.org/type/Bool, named for mathematician George Boole) are your typical ```True``` and ```False``` values, but be warned that they are a type of Enum (<https://docs.perl6.org/language/typesystem#index-entry-Enumeration-_Enums-_enum>), not a truely separate type.
+Boolean types (https://docs.perl6.org/type/Bool, named for mathematician George Boole) are your typical ```True``` and ```False``` values, but be warned that they are a type of Enum (<https://docs.perl6.org/language/typesystem#index-entry-Enumeration-_Enums-_enum>)`, not a truely separate type.
 
 ```
 > if True { put "true" } else { put "false" }
