@@ -1,54 +1,90 @@
 # Hashes
 
-Hashes basically Arrays of Pairs.  They are also known as dictionaries or maps.  The key in a Hash is always, so we map a string can map strings to strings:
+Hashes basically Arrays of Pairs.  They are also known as dictionaries or maps.  The key in a Hash is always, so we map a string can map strings (keys) to strings or numbers (values):
 
 ```
-> my %dna = A => 'C', T => 'G';
-{A => C, T => G}
-> %dna<A>
-C
+> my %dog = name => 'Patch', age => 4, color => 'white', weight => '31 lbs'
+{age => 4, color => white, name => Patch, weight => 31 lbs}
 ```
 
-Or strings to numbers:
+If I ask for one key, I get one value:
 
 ```
-> my %nums = e => 2.71828, pi => 3.145927
-{e => 2.71828, pi => 3.145927}
+> %dog<name>
+Patch
 ```
 
-Although note that ```e``` and ```pi``` are built-in:
+I can also ask for more than one key, and I will get a list:
 
 ```
-> e
-2.71828182845905
-> pi
-3.14159265358979
+> %dog<age color>
+(4 white)
 ```
 
-We can even map strings to lists such as this amino acid to codon table:
+I can ask for all the keys and values using the ```kv``` method:
 
 ```
-my %aa =·
-Isoleucine    => <ATT ATC ATA>,·
-Leucine       => <CTT CTC CTA CTG TTA TTG>,·
-Valine        => <GTT GTC GTA GTG>,·
-Phenylalanine => <TTT TTC>,
-Methionine    => <ATG>,
-Cysteine      => <TGT TGC>,
-Alanine       => <GCT GCC GCA GCG>,
-Glycine       => <GGT GGC GGA GGG>,
-Proline       => <CCT CCC CCA CCG>,
-Threonine     => <ACT ACC ACA ACG>,
-Serine        => <TCT, TCC, TCA, TCG, AGT, AGC>,
-Tyrosine      => <TAT TAC>,
-Tryptophan    => <TGG>,
-Glutamine     => <CAA CAG>,
-Asparagine    => <AAT AAC>,
-Histidine     => <CAT CAC>,
-Glutamic_acid => <GAA GAG>,
-Aspartic_acid => <GAT GAC>,
-Lysine        => <AAA AAG>,
-Arginine      => <CGT CGC CGA CGG AGA AGG>,
-Stop          => <TAA TAG TGA>;
-put "Lysine = %aa<Lysine>";
+> %dog.kv
+(color white name Patch age 4 weight 31 lbs)
+> %dog.pairs
+(color => white name => Patch age => 4 weight => 31 lbs)
+> say join ", ", %dog.map(*.kv.join(": "))
+color: white, name: Patch, age: 4, weight: 31 lbs
+> %dog.pairs.map(*.kv.join(": ")).join(", ")
+color: white, name: Patch, age: 4, weight: 31 lbs
+```
+
+I can store more than one thing for a value by using lists as in this amino-acid-to-codons table:
+
+```
+$ cat -n aa.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	my %aa = Isoleucine    => <ATT ATC ATA>,
+     4	         Leucine       => <CTT CTC CTA CTG TTA TTG>,
+     5	         Valine        => <GTT GTC GTA GTG>,
+     6	         Phenylalanine => <TTT TTC>,
+     7	         Methionine    => <ATG>,
+     8	         Cysteine      => <TGT TGC>,
+     9	         Alanine       => <GCT GCC GCA GCG>,
+    10	         Glycine       => <GGT GGC GGA GGG>,
+    11	         Proline       => <CCT CCC CCA CCG>,
+    12	         Threonine     => <ACT ACC ACA ACG>,
+    13	         Serine        => <TCT, TCC, TCA, TCG, AGT, AGC>,
+    14	         Tyrosine      => <TAT TAC>,
+    15	         Tryptophan    => <TGG>,
+    16	         Glutamine     => <CAA CAG>,
+    17	         Asparagine    => <AAT AAC>,
+    18	         Histidine     => <CAT CAC>,
+    19	         Glutamic_acid => <GAA GAG>,
+    20	         Aspartic_acid => <GAT GAC>,
+    21	         Lysine        => <AAA AAG>,
+    22	         Arginine      => <CGT CGC CGA CGG AGA AGG>,
+    23	         Stop          => <TAA TAG TGA>;
+    24
+    25	for %aa.keys.sort -> $key {
+    26	    printf "%-15s = %s\n", $key, %aa{ $key }.join(", ");
+    27	}
+$ ./aa.pl6
+Alanine         = GCA, GCC, GCG, GCT
+Arginine        = AGA, AGG, CGA, CGC, CGG, CGT
+Asparagine      = AAC, AAT
+Aspartic_acid   = GAC, GAT
+Cysteine        = TGC, TGT
+Glutamic_acid   = GAA, GAG
+Glutamine       = CAA, CAG
+Glycine         = GGA, GGC, GGG, GGT
+Histidine       = CAC, CAT
+Isoleucine      = ATA, ATC, ATT
+Leucine         = CTA, CTC, CTG, CTT, TTA, TTG
+Lysine          = AAA, AAG
+Methionine      = ATG
+Phenylalanine   = TTC, TTT
+Proline         = CCA, CCC, CCG, CCT
+Serine          = AGC, AGT,, TCA,, TCC,, TCG,, TCT,
+Stop            = TAA, TAG, TGA
+Threonine       = ACA, ACC, ACG, ACT
+Tryptophan      = TGG
+Tyrosine        = TAC, TAT
+Valine          = GTA, GTC, GTG, GTT
 ```
