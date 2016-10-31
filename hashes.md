@@ -1,6 +1,6 @@
 # Hashes
 
-Hashes are key-value pairs, also known as dictionaries or maps.  They can map strings to strings:
+Hashes basically Arrays of Pairs.  They are also known as dictionaries or maps.  The key in a Hash is always, so we map a string can map strings to strings:
 
 ```
 > my %dna = A => 'C', T => 'G';
@@ -9,7 +9,23 @@ Hashes are key-value pairs, also known as dictionaries or maps.  They can map st
 C
 ```
 
-Notice that the 
+Or strings to numbers:
+
+```
+> my %nums = e => 2.71828, pi => 3.145927
+{e => 2.71828, pi => 3.145927}
+```
+
+Although note that ```e``` and ```pi``` are built-in:
+
+```
+> e
+2.71828182845905
+> pi
+3.14159265358979
+```
+
+We can even map strings to lists such as this amino acid to codon table:
 
 ```
 my %aa =·
