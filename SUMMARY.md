@@ -15,7 +15,7 @@
    * [Data Shapes](data_shapes.md)
    * [Scalars](scalars.md)
    * [Arrays](arrays.md)
-   * Hashes
+   * [Hashes](hashes.md)
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
