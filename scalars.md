@@ -59,6 +59,21 @@ True
 True
 ```
 
+# Pair
+
+A Pair (https://docs.perl6.org/type/Pair) is a combination of a key and a value.
+
+```
+> my $bp = A => 'C';
+A => C
+> $bp.key
+A
+> $bp.value
+C
+> $bp.kv
+(A C)
+```
+
 # Proc
 
 A "Proc" (process, https://docs.perl6.org/type/Proc) is the result of running a command outside of Perl such as "pwd":
