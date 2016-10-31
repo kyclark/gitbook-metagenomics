@@ -15,12 +15,12 @@
    * [Data Shapes](data_shapes.md)
    * [Scalars](scalars.md)
    * [Arrays](arrays.md)
+   * Hashes
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
    * [Palindrome](palindrome.md)
    * [Delimited text](delimited_text.md)
-   * Hashes
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
    * [Regular Expression and Types](regular_expressions_and_types.md)
