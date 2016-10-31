@@ -1,10 +1,10 @@
-# Lists
+# Arrays
 
-Lists are ordered collections of things.  Order is important, because later we'll talk about hashes and bags that are unordered.  Lists have lots of handy functions.  Let's explore.  
+Arrays are ordered collections of things.  Order is important, because later we'll talk about hashes and bags that are unordered.  Arrays have lots of handy functions.  Let's explore.  
 
 # Length, Order
 
-How long is that list?  Here's a list of the main dogs in my life from when I was a kid to now:
+How long is that array?  Here's a list of the main dogs in my life from when I was a kid to now:
 
 ```
 > my @dogs = <Chaps Patton Bowzer Logan Lulu Patch>
@@ -19,7 +19,7 @@ How long is that list?  Here's a list of the main dogs in my life from when I wa
 6
 ```
 
-The ```elems``` methods returns the number of elements and is the most obvious way to find it.  Putting a ```+``` plus sign in front coerces the list into a numerical context which returns the length of the list as does calling the ```Int``` and ```Numeric``` methods.
+The ```elems``` methods returns the number of elements and is the most obvious way to find it.  Putting a ```+``` plus sign in front coerces the array into a numerical context which returns the length of the array as does calling the ```Int``` and ```Numeric``` methods.
 
 If I want my dogs going from current to first, I can ```reverse``` them:
 
@@ -102,7 +102,7 @@ So the ```map``` _function_ just turns that around a bit:
 [5 6 6 5 4 5]
 ```
 
-And the ```map``` _method_ (of a List) turns that around:
+And the ```map``` _method_ (of an Array) turns that around again to look more like the ```for``` version:
 
 ```
 > my @chars = @dogs.map({ .chars })
@@ -115,7 +115,7 @@ And the ```map``` _method_ (of a List) turns that around:
 
 You see there is more than one way to write a map.  We'll break this down later.
 
-The elements in a List are not limited to scalars.  Using ```map```, I create a List of other Lists that combines each dog's name and the length of the name using the ```Z``` "zip" operator (https://docs.perl6.org/routine/Z):
+The elements in a Array are not limited to scalars.  Using ```map```, I create a Array of lists that each combines a dog's name with its length using the ```Z``` "zip" operator (https://docs.perl6.org/routine/Z):
 
 ```
 > @dogs Z @dogs.map(*.chars)
@@ -140,7 +140,7 @@ Lastly, I'll show you how ```sum``` (https://docs.perl6.org/routine/sum) total n
 
 # Iterating
 
-One of the most common list operations is to iterate over the members while keeping track of the position.  Here's a script that breaks a string (here maybe some DNA) into a list using the ```comb``` method and prints the position and the letter:
+One of the most common array operations is to iterate over the members while keeping track of the position.  Here's a script that breaks a string (here maybe some DNA) into a list using the ```comb``` method and prints the position and the letter:
 
 ```
 $ cat -n iterate1.pl6
@@ -162,7 +162,7 @@ $ cat -n iterate1.pl6
 6: G
 ```
 
-This is so common that Lists have shorter ways to do this:
+This is so common that Arrays have shorter ways to do this:
 
 ```
 $ cat -n iterate2.pl6
@@ -182,9 +182,9 @@ $ ./iterate2.pl6 AACTAG
 6: G
 ```
 
-Positions in Perl Lists and Strings start at 0, so I have to add 1 to ```$k```.  Notice that I can run code _inside a string_ by putting ```{}``` curly braces around it.  
+Positions in Perl Arrays and Strings start at 0, so I have to add 1 to ```$k```.  Notice that I can run code _inside a string_ by putting ```{}``` curly braces around it.  
 
-I don't have to give the pointy block signature (```-> $k, $v```) bit.  I can use ```$^k``` and ```$^v``` (or ```$^a``` and ```$^b``` or whatever) to refer to the first and second arguments (in sorted Unicode order) to the block (https://docs.perl6.org/language/variables#index-entry-%24%5E):
+I don't have to give the pointy block signature ```-> $k, $v``` bit.  I can use ```$^k``` and ```$^v``` (or ```$^a``` and ```$^b``` or whatever) to refer to the first and second arguments (in sorted Unicode order) to the block (https://docs.perl6.org/language/variables#index-entry-%24%5E):
 
 ```
 $ cat -n iterate3.pl6
@@ -202,7 +202,7 @@ $ ./iterate3.pl6 AACTAG
 5: G
 ```
 
-Here's a version using ```pairs``` to get a Pair (https://docs.perl6.org/type/Pair) with the index (position) as the "key" and the letter as the "value":
+Here's a version using ```pairs``` to get a List of Pair types (https://docs.perl6.org/type/Pair) with the index (position) as the "key" and the letter as the "value":
 
 ```
 $ cat -n iterate4.pl6
@@ -262,7 +262,7 @@ $ ./iterate6.pl6 AACTAG
 
 # Filtering
 
-Often you want to choose or remove certain members of a list.  For that, ```grep``` is probably the way to go.  Let's find only the Gs and Cs in a string (https://en.wikipedia.org/wiki/GC-content).  Note that I uppercase (```uc```) the ```$dna``` first so that I only have to check for one case of letters:
+Often you want to choose or remove certain members of an array.  For that, ```grep``` is probably the way to go.  Let's find only the Gs and Cs in a string (https://en.wikipedia.org/wiki/GC-content).  Note that I uppercase (```uc```) the ```$dna``` first so that I only have to check for one case of letters:
 
 ```
 $ cat -n gc1.pl6
@@ -276,7 +276,7 @@ $ ./gc1.pl6 AACTAG
 AACTAG has 2
 ```
 
-Like ```map```, ```grep``` takes a block of code that will be executed for each member of the list.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is asking "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
+Like ```map```, ```grep``` takes a block of code that will be executed for each member of the array.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is asking "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
 
 ```
 $ cat -n gc2.pl6
@@ -293,8 +293,12 @@ AACTAG has 2
 Another way to write the ```|``` Junction is with ```any```.  The ```so``` routine (https://docs.perl6.org/routine/so) collapses the various Booleans down to a single value.
 
 ```
+> 'G' eq 'G' | 'C'
+any(True, False)
 > so 'G' eq 'G' | 'C'
 True
+> 'G' eq any(<G C>)
+any(True, False)
 > so 'G' eq any(<G C>)
 True
 ```
@@ -322,7 +326,7 @@ Here's how you can find the prime numbers between 1 and 10:
 
 # Classification
 
-We can group lists elements based on predicates we supply.  Here is how we can split up the numbers 1 through 10 based on whether they are or are not even divisible by 2:
+We can group elements based on predicates we supply.  Here is how we can split up the numbers 1 through 10 based on whether they are or are not even divisible by 2:
 
 ```
 > 2 %% 2
@@ -347,7 +351,7 @@ $ ./gc4.pl6 AACTAG
 AACTAG has 2
 ```
 
-Although it's not really intuitive to use "True" or "False," so let's provide our own String value for the name of the bucket we want:
+In my opinion, it's not intuitive to use "True" or "False," so let's provide our own String value for the name of the bucket we want:
 
 ```
 $ cat -n gc5.pl6
@@ -372,7 +376,7 @@ It might help to see that one in the REPL:
 
 ```classify``` takes a code block and uses the resulting string to put the element into a bucket.  Here I've used the same regular expression ```/<[GC]>/``` to return the string "GC" if it's a match or "Other" if it's not.  The combination of the ```?? !!``` is the "ternary" operator that we'll talk about more later.  The resulting Hash has a key called "GC" and its value is a list containing the "G" and "C" found in the string.
 
-So you're seeing that Lists can be inside of other Lists as well as inside of Hashes and other data structures.
+So you're seeing that lists can be inside of other Lists as well as inside of Hashes and other data structures.
 
 I can classify my ```@dogs``` based on the length of their names using that same syntax variations we saw for ```map```:
 
@@ -426,7 +430,7 @@ $ cat -n insult.pl6
     18	        @adjectives.pick(3), @nouns.pick for ^$n;
     19	}
 $ ./insult.pl6 -n=5
-You foul, dishonest, old whore!
+You foul, dishonest, old recreant!
 You irksome, gross, false degenerate!
 You old, dishonest, toad-spotted jack!
 You ruinous, unmannered, foolish slave!
