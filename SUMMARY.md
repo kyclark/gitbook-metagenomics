@@ -1,12 +1,12 @@
 # Summary
 
 * [Introduction](README.md)
-   * IRC
 * [Unix](unix_basics.md)
    * [Getting access to systems](getting_access_to_systems.md)
    * [First steps with Unix](first_steps_with_unix.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
+* IRC
 * [Git basics](git_basics.md)
 * [Bash](bash.md)
 * [Make](make.md)
