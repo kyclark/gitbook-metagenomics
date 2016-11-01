@@ -45,14 +45,31 @@ but then to concantenate it (via ```~```) to the other string, the sum of ```42 
 (Str)
 ```
 
-If you don't want these automatic conversions, then you can declare that your variables can only containt a certain Type (https://docs.perl6.org/type.html), which are basically what we're covering here:
+You can declare that your variables can only contain a certain Type (https://docs.perl6.org/type.html):
 
 ```
 > my Int $x = "42"
 Type check failed in assignment to $x; expected Int but got Str ("42")
   in block <unit> at <unknown file> line 1
+> my Str $x = 42;
+Type check failed in assignment to $x; expected Str but got Int (42)
+  in block <unit> at <unknown file> line 1
 ```
 
+But Perl will still coerce values according to how you use them:
+
+```
+> my Str $x = "42";
+42
+> say $x.WHAT
+(Str)
+> say $x.Int.WHAT
+(Int)
+> say (+$x).WHAT
+(Int)
+> put "$x + 1 = " ~ $x + 1
+42 + 1 = 43
+```
 # Date, DateTime
 
 The ```Date``` (https://docs.perl6.org/type/Date) and ```DateTime``` (https://docs.perl6.org/type/DateTime) types are pretty much what you'd expect:
