@@ -8,7 +8,7 @@
    * [Unix exercises](unix_exercises.md)
 * [Git basics](git_basics.md)
 * [Bash](bash.md)
-* IRC
+* [IRC](irc.md)
 * [Make](make.md)
 * [Perl](programming.md)
    * [Why Perl 6?](why_perl.md)
