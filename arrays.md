@@ -191,15 +191,15 @@ $ cat -n iterate3.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna) {
-     4	    for $dna.comb.kv { say join ": ", $^k, $^v }
+     4	    for $dna.comb.kv { say join ": ", $^k + 1, $^v }
      5	}
 $ ./iterate3.pl6 AACTAG
-0: A
 1: A
-2: C
-3: T
-4: A
-5: G
+2: A
+3: C
+4: T
+5: A
+6: G
 ```
 
 Here's a version using ```pairs``` to get a List of Pair types (https://docs.perl6.org/type/Pair) with the index (position) as the "key" and the letter as the "value":
@@ -262,32 +262,54 @@ $ ./iterate6.pl6 AACTAG
 
 # Filtering
 
-Often you want to choose or remove certain members of an array.  For that, ```grep``` is probably the way to go.  Let's find only the Gs and Cs in a string (https://en.wikipedia.org/wiki/GC-content).  Note that I uppercase (```uc```) the ```$dna``` first so that I only have to check for one case of letters:
+Often you want to choose or remove certain members of an array.  Let's find only the Gs and Cs in a string (https://en.wikipedia.org/wiki/GC-content).  Note that I uppercase (```uc```) the ```$dna``` first so that I only have to check for one case of letters:
 
 ```
 $ cat -n gc1.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna) {
-     4	    my @gc = $dna.uc.comb.grep({$_ eq 'G' || $_ eq 'C'});
-     5	    say "$dna has {@gc.elems}";
-     6	}
+     4	    my @gc;
+     5	    for $dna.uc.comb -> $base {
+     6	        @gc.push($base) if $base eq 'G' || $base eq 'C';
+     7	    }
+     8	    say "$dna has {@gc.elems}";
+     9	}
 $ ./gc1.pl6 AACTAG
 AACTAG has 2
 ```
 
-Like ```map```, ```grep``` takes a block of code that will be executed for each member of the array.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is asking "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets.  Here I'll also use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
+But ```grep``` is a much shorter way to find all the elements matching a given condition.  Like ```map```, ```grep``` takes a block of code that will be executed for each member of the array.  Any elements for which the block evaluates to "True-ish" are allowed through.  The ```$_``` (topic, thing, "it") variable has the current element, so the code is asking "if the thing is a 'G' or if the thing is a 'C'".  One can use the ```*``` to represent "it" and eschew the curly brackets:
+
+```
+> grep {$_ > 5}, 1..10
+(6 7 8 9 10)
+> grep * > 5, 1..10
+(6 7 8 9 10)
+```
+
+Here's the GC filter written with ```grep```:
 
 ```
 $ cat -n gc2.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna) {
+     4	    my @gc = $dna.uc.comb.grep({$_ eq 'G' || $_ eq 'C'});
+     5	    say "$dna has {@gc.elems}";
+     6	}
+```
+
+Here I'll use a Junction (https://docs.perl6.org/type/Junction) to compare to "G or C" in one go:
+
+```
+$ cat -n gc3.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $dna) {
      4	    my @gc = $dna.uc.comb.grep(* eq 'G' | 'C');
      5	    say "$dna has {@gc.elems}";
      6	}
-$ ./gc2.pl6 AACTAG
-AACTAG has 2
 ```
 
 Another way to write the ```|``` Junction is with ```any```.  The ```so``` routine (https://docs.perl6.org/routine/so) collapses the various Booleans down to a single value.
@@ -306,15 +328,13 @@ True
 It's extremely common to use regular expressions (https://docs.perl6.org/type/Regex) to filter lists.  We'll cover these more later, but here I'm using a character class to represent either "G or C":
 
 ```
-$ cat -n gc3.pl6
+$ cat -n gc4.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna) {
      4	    my @gc = $dna.uc.comb.grep(/<[GC]>/);
      5	    say "$dna has {@gc.elems}";
      6	}
-$ ./gc3.pl6 AACTAG
-AACTAG has 2
 ```
 
 Here's how you can find the prime numbers between 1 and 10:
@@ -340,29 +360,25 @@ False
 Going back to our G-C counter, we can group each base into whether it is or isn't a "G" or a "C":
 
 ```
-$ cat -n gc4.pl6
+$ cat -n gc5.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna) {
      4	    my %hash = $dna.uc.comb.categorize({?/<[GC]>/});
      5	    say "$dna has {%hash<True>.elems}";
      6	}
-$ ./gc4.pl6 AACTAG
-AACTAG has 2
 ```
 
 In my opinion, it's not intuitive to use "True" or "False," so let's provide our own String value for the name of the bucket we want:
 
 ```
-$ cat -n gc5.pl6
+$ cat -n gc6.pl6
      1	#!/usr/bin/env perl6
      2
      3	sub MAIN (Str $dna) {
      4	    my %hash = $dna.uc.comb.categorize({ /<[GC]>/ ?? 'GC' !! 'Other' });
      5	    say "$dna has {%hash<GC>.elems}";
      6	}
-$ ./gc4.pl6 AACTAG
-AACTAG has 2
 ```
 
 It might help to see that one in the REPL:
