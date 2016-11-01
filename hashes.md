@@ -126,3 +126,63 @@ What is your quest? I seek the Holy Grail.
 What is your favorite color? Blue.  No yel--
 AAAAAAAAAAaaaaaaaaa!
 ```
+
+Sometimes you need to see if a key is defined in a hash, and for that you use the adverb ```:exists```:
+
+```
+$ cat -n gashlycrumb.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	# Text by Edward Gorey
+     4
+     5	my %alphabet = q:to/END/.lines.map(-> $line { $line.substr(0,1) => $line });
+     6	A is for Amy who fell down the stairs.
+     7	B is for Basil assaulted by bears.
+     8	C is for Clara who wasted away.
+     9	D is for Desmond thrown out of a sleigh.
+    10	E is for Ernest who choked on a peach.
+    11	F is for Fanny sucked dry by a leech.
+    12	G is for George smothered under a rug.
+    13	H is for Hector done in by a thug.
+    14	I is for Ida who drowned in a lake.
+    15	J is for James who took lye by mistake.
+    16	K is for Kate who was struck with an axe.
+    17	L is for Leo who choked on some tacks.
+    18	M is for Maud who was swept out to sea.
+    19	N is for Neville who died of ennui.
+    20	O is for Olive run through with an awl.
+    21	P is for Prue trampled flat in a brawl.
+    22	Q is for Quentin who sank on a mire.
+    23	R is for Rhoda consumed by a fire.
+    24	S is for Susan who perished of fits.
+    25	T is for Titus who flew into bits.
+    26	U is for Una who slipped down a drain.
+    27	V is for Victor squashed under a train.
+    28	W is for Winnie embedded in ice.
+    29	X is for Xerxes devoured by mice.
+    30	Y is for Yorick whose head was bashed in.
+    31	Z is for Zillah who drank too much gin.
+    32	END
+    33
+    34	loop {
+    35	    my $letter = uc prompt "Letter [0 to quit]? ";
+    36
+    37	    if $letter eq '0' {
+    38	        put "Bye.";
+    39	        exit;
+    40	    }
+    41	    elsif %alphabet{ $letter }:exists {
+    42	        put %alphabet{ $letter };
+    43	    }
+    44	    else {
+    45	        put "I'm sorry, I don't know that letter ($letter).";
+    46	    }
+    47	}
+$ ./gashlycrumb.pl6
+Letter [0 to quit]? j
+J is for James who took lye by mistake.
+Letter [0 to quit]? 9
+I'm sorry, I don't know that letter (9).
+Letter [0 to quit]? 0
+Bye.
+```
