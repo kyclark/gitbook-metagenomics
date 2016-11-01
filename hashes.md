@@ -1,6 +1,6 @@
 # Hashes
 
-Hashes (https://docs.perl6.org/type/Hash) basically Arrays of Pairs (https://docs.perl6.org/type/Pair).  They are also known as dictionaries or maps.  The key in a Hash is always, so we map a string can map strings (keys) to strings or numbers (values):
+Hashes (https://docs.perl6.org/type/Hash) basically Arrays of Pairs (https://docs.perl6.org/type/Pair).  They are also known as dictionaries or maps.  The key in a Hash is usually a string, and the value can be pretty much anything.  The order of the Pairs is not preserved in creation order:
 
 ```
 > my %dog = name => 'Patch', age => 4, color => 'white', weight => '31 lbs'
@@ -32,6 +32,15 @@ I can ask for all the keys and values using the ```kv``` method:
 color: white, name: Patch, age: 4, weight: 31 lbs
 > %dog.pairs.map(*.kv.join(": ")).join(", ")
 color: white, name: Patch, age: 4, weight: 31 lbs
+```
+
+If I want the keys back in a particular order, I either have to ask for them explicitly or ```sort``` them:
+
+```
+> %dog.keys
+(color name age weight)
+> %dog.keys.sort
+(age color name weight)
 ```
 
 I can store more than one thing for a value by using lists as in this amino-acid-to-codons table:
