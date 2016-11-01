@@ -6,9 +6,9 @@
    * [First steps with Unix](first_steps_with_unix.md)
    * [Installing software](installing_software.md)
    * [Unix exercises](unix_exercises.md)
-* IRC
 * [Git basics](git_basics.md)
 * [Bash](bash.md)
+* IRC
 * [Make](make.md)
 * [Perl](programming.md)
    * [Why Perl 6?](why_perl.md)
