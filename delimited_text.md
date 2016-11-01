@@ -3,21 +3,18 @@
 One of the most common text file formats is records separated by newlines ("\n" or "\r\n" on Windows) where the fields of the records are delimited by commas ("comma-separated values" or "CSV") or tabs ("tab-delimited").  Here is an example that will extract a field from a delimited text file showing "[t]he leading causes of death by sex and ethnicity in New York City in since 2007" (https://data.cityofnewyork.us/api/views/jb7j-dtam/rows.csv?accessType=DOWNLOAD).
 
 ```
-$ cat -n simple1.pl6
-     1 	#!/usr/bin/env perl6
+$ cat -n parser1.pl6
+     1	#!/usr/bin/env perl6
      2
-     3 	use v6;
-     4
-     5 	sub MAIN (Str $file!, Int :$n=0, Str :$sep=',') {
-     6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    for $file.IO.lines -> $line {
-     9 	        my @fields = $line.split($sep);
-    10 	        put @fields[$n];
-    11 	    }
-    12 	}
-$ ./simple1.pl6 causes.csv | head -3
-Year
+     3	sub MAIN (Str $file!, Int :$n=0, Str :$sep=',') {
+     4	    die "Not a file ($file)" unless $file.IO.f;
+     5
+     6	    for $file.IO.lines -> $line {
+     7	        my @fields = $line.split($sep);
+     8	        put @fields[$n];
+     9	    }
+    10	}
+$ ./parser1.pl6 causes.csv | head -3Year
 2010
 2010
 ```
@@ -29,56 +26,49 @@ $ head -1 causes.csv
 Year,Ethnicity,Sex,Cause of Death,Count,Percent
 ```
 
-Here's a version that merges the headers on the first line with each data record to create a hash:
+Here's a version that merges the headers on the first line with each data record to create a hash so that we can extract a named field:
 
 ```
 $ cat -n parser2.pl6
-     1 	#!/usr/bin/env perl6
+     1	#!/usr/bin/env perl6
      2
-     3 	use v6;
-     4
-     5 	sub MAIN (Str $file!, Str :$sep=',', Int :$limit=0) {
-     6 	    die "Not a file ($file)" unless $file.IO.f;
-     7
-     8 	    my $fh = open $file;
-     9 	    my @fields = $fh.get.split($sep);
-    10
-    11 	    my @data;
-    12 	    for $fh.lines -> $line {
-    13 	        my @values = $line.split($sep);
-    14 	        my %record;
-    15 	        for 0..^@fields.elems -> $i {
-    16 	            my $key = @fields[$i];
-    17 	            my $val = @values[$i];
-    18 	            %record{ $key } = $val;
-    19 	        }
-    20 	        @data.push(%record);
-    21
-    22 	        last if $limit > 0 && @data.elems > $limit;
-    23 	    }
-    24
-    25 	    say @data;
-    26 	}
-$ ./parser2.pl6 --limit=1 causes.csv
-[(Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => HUMAN IMMUNODEFICIENCY VIRUS DISEASE Count => 297 Percent => 5) (Year => 2010 Ethnicity => NON-HISPANIC BLACK Sex => MALE Cause of Death => INFLUENZA AND PNEUMONIA Count => 201 Percent => 3)]
+     3	sub MAIN (Str $file!, Str :$field!, Str :$sep=',', Int :$limit=0) {
+     4	    die "Not a file ($file)" unless $file.IO.f;
+     5
+     6	    my $fh     = open $file;
+     7	    my @fields = $fh.get.split($sep);
+     8
+     9	    unless one(@fields) eq $field {
+    10	        die "No $field in $file";
+    11	    }
+    12
+    13	    my $i = 0;
+    14	    for $fh.lines -> $line {
+    15	        $i++;
+    16	        my @values = $line.split($sep);
+    17	        my %record;
+    18	        for 0..^@fields.elems -> $i {
+    19	            my $key = @fields[$i];
+    20	            my $val = @values[$i];
+    21	            %record{ $key } = $val;
+    22	        }
+    23
+    24	        put %record{ $field } // "";
+    25
+    26	        last if $limit > 0 && $i == $limit;
+    27	    }
+    28	}
+$ ./parser2.pl6 --field='Year' --limit=3 causes.csv
+2010
+2010
+2010
 ```
 
-In this version, I ```open``` the file (line 8) to get a "filehandle" (often abbreviated "fh") which is a way to get access to the contents of the file.  I did this so that I could call the ```get``` method (https://docs.perl6.org/type/IO$COLON$COLONHandle#method_get) to retrieve just the first line which I expect to have the field names.  That returns a string which I then call ```split``` using the ```$sep``` (separator) argument (which defaults to a comma).
+In this version, I ```open``` the file (line 6) to get a "filehandle" (often abbreviated "fh") which is a way to get access to the contents of the file.  I did this so that I could call the ```get``` method (https://docs.perl6.org/type/IO$COLON$COLONHandle#method_get) to retrieve just the first line which I expect to have the field names.  That returns a string which I then call ```split``` using the ```$sep``` (separator) argument (which defaults to a comma).
 
-At lines 10-11, I initialize two variables that I will need inside the ```for``` loop.  Consider that I'm about to go picking apples.  Before I go to the orchard, I need to get a basket to carry the apples back out.  The ```@data``` is array is my basket.  
+Lines 15-20 are probably a little confusing, so let's break it down.  I want to create a key-value structure that associates the headers in the first line to the fields in each record, so I declare ```my %record``` at line 15.  Then I want to step through the *numbered positions* of the ```@fields``` so that I can pair them up with their ```@values```.  List-type structures in Perl start numbering at 0, so I start my ```for``` loop there.  Then I use the ```..^``` operator to construct a Range (https://docs.perl6.org/type/Range) that goes up to *but not including* the number of elements in ```@fields```.  It's the hat ```^``` that says to the Range constructor to stop one less than the thing it's next to.  You can also put it on the left or both (or neither).  We have to stop before the *number* of elements in ```@fields``` because of the 0-based numbering -- that is, if there are 3 ```@fields```, then they are in positions 0, 1, and 2.  So that explains the loading of the ```$i``` variable (NB: "i" is a very common "integer" variable.  If a second value is needed, then it's common to move on to "j," "k," etc.)  
 
-Lines 14-19 are probably a little confusing, so let's break it down.  I want to create a key-value structure that associates the headers in the first line to the fields in each record, so I declare ```my %record``` at line 14.  Then I want to step through the *numbered positions* of the ```@fields``` so that I can pair them up with their ```@values```.  List-type structures in Perl start numbering at 0, so I start my ```for``` loop with that.  Then I use the ```..^``` operator to construct a Range (https://docs.perl6.org/type/Range) that goes up to *but not including* the number of elements in ```@fields```.  It's the hat ```^``` that says to the Range constructor to stop one less than the thing it's next to.  You can also put it on the left or both (or neither).  We have to stop before the *number* of elements in ```@fields``` because of the 0-based numbering -- that is, if there are 3 ```@fields```, then they are in positions 0, 1, and 2.  So that explains the loading of the ```$i``` variable (NB: "i" is a very common "integer" variable.  If a second value is needed, then it's common to move on to "j," "k," etc.)  
-
-Assume for a moment that our data looks like this:
-
-```
-# position =  0    1                2
-my @fields = <name rank             serial_number>;
-my @values = <Gene "Staff Sargeant" 1656401>;
-
-```
-
-A lines 16-17, I get the key and value from the appropriate place in the parallel arrays.  So when ```$i``` is 0, I get ```$key="name"``` and ```$value="Gene"```.  For 1, it will be ```$key="rank"``` and ```$value="Staff Sargeant"```, and for 2 ```$key="serial_number"``` and ```$value="1656401"```.  I can then set ```%record{ $key } = $value```.  The hash grows as we add key/values pairs.  It might help to see it in the REPL:
+To explore this, pretend I'm making a hash like this:
 
 ```
 > my %record;
@@ -97,7 +87,25 @@ Staff Sargeant
 {name => Gene, rank => Staff Sargeant, serial_number => 1656401}
 ```
 
-If we had all the information to start, we could just create the whole hash like so:
+Instead of manually naming each key and value, I can use two arrays for ```:
+
+```
+# position =   0    1                2
+my @keys   =  <name rank             serial_number>;
+my @values = <<Gene "Staff Sargeant" 1656401>>;
+> for 0..^@keys.elems -> $i { say "$i: @fields[$i]" }
+0: name
+1: rank
+2: serial_number
+> my %data
+{}
+> for 0..^@keys.elems -> $i { %data{ @keys[$i] } = @values[$i] }
+(Any)
+> %data
+{name => Gene, rank => Staff Sargeant, serial_number => 1656401}
+```
+
+The result is the same whether we set the fields individually or all-at-once like so:
 
 ```
 > my %record = name => "Gene", rank => "Staff Sargeant", serial_number => "1656401";
@@ -105,9 +113,7 @@ If we had all the information to start, we could just create the whole hash like
 {name => Gene, rank => Staff Sargeant, serial_number => 1656401}
 ```
 
-After we've created our ```%record```, we can add it to our basket with ```@data.push(%record)```.
-
-At line 22, I handle the "--limit" option I added so that I could stop processing on the first record.  Here I'm using ```last``` to exit the loop if I have a positive value for ```$limit``` (the default is 0) and the number of elements in my ```@data``` are equal to the limit. 
+At line 24, I handle the "--limit" option I added so that I could stop processing on the first record.  Here I'm using ```last``` to exit the loop if I have a positive value for ```$limit``` (the default is 0) and the number of records I've seen. 
 
 At line 25, I've introduced the ```say``` function so you can look at the data that was collected.  The function ```dd``` (data dump) will also show you the structure:
 
