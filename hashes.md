@@ -88,3 +88,32 @@ Tryptophan      = TGG
 Tyrosine        = TAC, TAT
 Valine          = GTA, GTC, GTG, GTT
 ```
+
+You can set the keys and values all-at-once like above or one-at-a-time:
+
+```
+$ cat -n bridge-of-death.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	my %answers;
+     4	for "name", "quest", "favorite color" -> $key {
+     5	    %answers{ $key } = prompt "What is your $key? ";
+     6	}
+     7
+     8	if %answers{"favorite color"} eq "Blue" {
+     9	    put "Right.  Off you go.";
+    10	}
+    11	else {
+    12	    put "AAAAAAAAAAaaaaaaaaa!"
+    13	}
+$ ./bridge-of-death.pl6
+What is your name? My name is Sir Launcelot of Camelot
+What is your quest? To seek the Holy Grail
+What is your favorite color? Blue
+Right.  Off you go.
+$ ./bridge-of-death.pl6
+What is your name? Sir Galahad of Camelot.
+What is your quest? I seek the Holy Grail.
+What is your favorite color? Blue.  No yel--
+AAAAAAAAAAaaaaaaaaa!
+```
