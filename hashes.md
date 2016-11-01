@@ -1,6 +1,6 @@
 # Hashes
 
-Hashes basically Arrays of Pairs.  They are also known as dictionaries or maps.  The key in a Hash is always, so we map a string can map strings (keys) to strings or numbers (values):
+Hashes (https://docs.perl6.org/type/Hash) basically Arrays of Pairs (https://docs.perl6.org/type/Pair).  They are also known as dictionaries or maps.  The key in a Hash is always, so we map a string can map strings (keys) to strings or numbers (values):
 
 ```
 > my %dog = name => 'Patch', age => 4, color => 'white', weight => '31 lbs'
