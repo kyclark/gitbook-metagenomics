@@ -65,6 +65,49 @@ This technique pushes the lines of the file directly into a the ```uc``` transfo
  
 > Golfing: Sometimes you may here about programmers (often Perl hackers) who like to "golf" their programs.  It's an attempt to create a program using the fewest keystrokes as possible, similar to the strategy in golf where the player tries to strike the ball as few times as possible to put it into the cup.  It's not a necessarily admirable quality to make one's code as terse as possible, but there is some truth to the notion that more code means more bugs.  There are incredibly powerful ideas built into every language, and learning how they can save you from writing code is worth the effort of writing fewer bugs.  If you understand ```map```, then you probably also understand why ```for``` loops and mutable variables are dangerous.  If you don't, then keep studying.
 
+# Movie file reader
+
+One thing that filmmakers still like to do is have computers spit out messages one-character-at-a-time as if they were arriving like telegrams. If you would like to read a file like this, I present the movie-file-reader. First, an explicit, long-hand version:
+
+```
+$ cat -n reader1.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file) {
+     4	    for $file.IO.lines(:chomp(False)) -> $line {
+     5	        for $line.comb -> $letter {
+     6	            print $letter;
+     7	            my $pause = do given $letter {
+     8	                when /<[.!?]>/ { .50 }
+     9	                when /<[,;]>/  { .20 }
+    10	                default        { .05 }
+    11	            }
+    12	            sleep $pause;
+    13	        }
+    14	    }
+    15	}
+```
+
+So I'm reading the given $file line-by-line, telling Perl not to "chomp" each line (remove the newline for whatever value constitutes that, which, BTW, you can set with "nl-in").  (Another way to write that is ```:!chomp```.)  I "print" the letter, not "put" because I don't want a newline after it. Then I need to pause with the "sleep" because computers move way faster than the human eye. To figure out how long to sleep, I want to inspect the character for punctuation that either ends a sentence or introduces a pause. I use ```"<[]>"``` to create a character class that includes a period, exclamation point, and question mark or one that includes a comma or semi-colon. The ```do given``` lets me return the value of the "given" statement, effectively turning it into a "given" operator.
+
+I always bounce my ideas off #perl6 on IRC, and Zoffix suggested this much shorter version:
+
+```
+$ cat -n reader2.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file) {
+     4	    for $file.IO.comb {
+     5	        .print;
+     6	        sleep  /<[.!?]>/ ?? .30
+     7	            !! /<[,;]>/  ?? .10
+     8	            !!              .05;
+     9	    }
+    10	}
+```
+
+Here we're reading the file character-by-character into the default ```$_``` topic variable upon which we can call the ```.print``` method. Then we sleep (perchance to dream) using a stacked ternary operator to find how long. Much shorter, but more cryptic to the uninitiated. I like both versions because they both work and they allow the programmer varying levels of expressiveness and efficiency.
+
 # Reading compressed files
 
 Often it makes sense to keep data in a compressed format to save disk space.  If you need to read a gzipped file, here's a way to use a pipe (Proc https://docs.perl6.org/language/ipc#index-entry-Proc_object-proc):
