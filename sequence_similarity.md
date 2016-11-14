@@ -292,9 +292,10 @@ We've seen before how we can use ```comb``` to explode a string into a list of c
 
 # Non-sequence data
 
-You can use k-mers to determine the similarity of non-sequence data.  This program will process all the given files in a pair-wise, all-versus-all fashion to determine if any two files are more similar than the overall similarity of all the files as figured with two-sided Student's t-test.  Notice that I can use Unicode characters like "μ" (mu) and "x̄" (bar-X) as variable names:
+You can use k-mers to determine the similarity of non-sequence data.  This program will process all the given files in a pair-wise, all-versus-all fashion to determine if any two files are more similar than the overall similarity of all the files as figured with two-sided Student's t-test.  Notice that I can use Unicode characters like "μ" (mu) as variable names:
 
 ```
+$ cat -n kmer-counter.pl6
      1	#!/usr/bin/env perl6
      2	
      3	subset PosInt of Int where * > 0;
@@ -309,23 +310,23 @@ You can use k-mers to determine the similarity of non-sequence data.  This progr
     12	        my $s1    = $bag1.Set;
     13	        my $s2    = $bag2.Set;
     14	        my @union = ($s1 (&) $s2).keys;
-    15	        my $count = (map { $bag1{ $_ } }, @union)
+    15	        my $sum   = (map { $bag1{ $_ } }, @union)
     16	                  + (map { $bag2{ $_ } }, @union);
-    17	        %counts{"$i-$j"} = $count;
+    17	        %counts{"$i-$j"} = $sum;
     18	    }
     19	
     20	    my @n  = %counts.values;
     21	    my $μ  = mean @n;
     22	    my $sd = std-dev @n;
     23	    my $d  = $sd/(@n.elems).sqrt;
-    24	    for %counts.kv -> $pair, $x̄ {
+    24	    for %counts.kv -> $pair, $sum {
     25	        # https://en.wikipedia.org/wiki/Student%27s_t-test
-    26	        my $t = ($x̄ - $μ) / $d;
+    26	        my $t = ($sum - $μ) / $d;
     27	        if $t.abs > $max-sd {
     28	            my ($i, $j) = $pair.split('-');
     29	            my $f1 = @files[$i-1].IO.basename;
     30	            my $f2 = @files[$j-1].IO.basename;
-    31	            put "$pair ($x̄) = $t [$f1, $f2]";
+    31	            put "$pair ($sum) = $t [$f1, $f2]";
     32	        }
     33	    }
     34	}
