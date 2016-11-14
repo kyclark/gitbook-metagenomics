@@ -67,7 +67,7 @@ This technique pushes the lines of the file directly into a the ```uc``` transfo
 
 # Movie file reader
 
-One thing that filmmakers still like to do is have computers spit out messages one-character-at-a-time as if they were arriving like telegrams. If you would like to read a file like this, I present the movie-file-reader. First, an explicit, long-hand version:
+It seems to me that, even in movies set in the future, filmmakers still like to have computers spit out messages one-character-at-a-time as if they were arriving like telegrams. If you would like to read a file like this, I present the "movie file reader." First, an explicit, long-hand version:
 
 ```
 $ cat -n reader1.pl6
@@ -88,7 +88,7 @@ $ cat -n reader1.pl6
     15	}
 ```
 
-So I'm reading the given $file line-by-line, telling Perl not to "chomp" each line (remove the newline for whatever value constitutes that, which, BTW, you can set with "nl-in").  (Another way to write that is ```:!chomp```.)  I "print" the letter, not "put" because I don't want a newline after it. Then I need to pause with the "sleep" because computers move way faster than the human eye. To figure out how long to sleep, I want to inspect the character for punctuation that either ends a sentence or introduces a pause. I use ```"<[]>"``` to create a character class that includes a period, exclamation point, and question mark or one that includes a comma or semi-colon. The ```do given``` lets me return the value of the "given" statement, effectively turning it into a "given" operator.
+So I'm reading the given $file line-by-line, telling Perl not to "chomp" each line (remove the newline for whatever value constitutes that, which, BTW, you can set with ```nl-in```).  Another way to write that is ```:!chomp```.  I ```print``` the letter, not ```put``` because I don't want a newline after it. Then I need to pause with the ```sleep``` because computers move way faster than the human eye. To figure out how long to sleep, I want to inspect the character for punctuation that either ends a sentence or introduces a pause. I use ```<[]>``` to create a character class that includes a period, exclamation point, and question mark or one that includes a comma or semi-colon. The ```do given``` lets me return the value of the ```given``` statement, effectively turning it into a ```given``` operator.
 
 I always bounce my ideas off #perl6 on IRC, and Zoffix suggested this much shorter version:
 
@@ -106,7 +106,7 @@ $ cat -n reader2.pl6
     10	}
 ```
 
-Here we're reading the file character-by-character into the default ```$_``` topic variable upon which we can call the ```.print``` method. Then we sleep (perchance to dream) using a stacked ternary operator to find how long. Much shorter, but more cryptic to the uninitiated. I like both versions because they both work and they allow the programmer varying levels of expressiveness and efficiency.
+Here we're reading the file character-by-character into the default ```$_``` topic variable upon which we can call the ```.print``` method. Then we ```sleep``` (perchance to dream) using a stacked ternary operator to find how long. Much shorter, but more cryptic to the uninitiated. I like both versions because they both work and they allow the programmer varying levels of expressiveness and efficiency.
 
 # Reading compressed files
 
