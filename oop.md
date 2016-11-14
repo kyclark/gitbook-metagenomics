@@ -106,4 +106,92 @@ sub MAIN(Int :$num-guesses = 10, :$min-word-len=5, :$max-word-len=9) {
 }
 ```
 
-Let's break down the ```Puzzle``` first.
+The ```Puzzle``` holds the current state of the game.  It knows the word which is being guessed, which letters have been guessed so far (and therefore how many guesses have been made), and which letters have been found.  When we ```loop``` through the game, we just need to ask the ```Puzzle``` for information like if the game is over either because too many guesses were made or because the puzzle has been solved.  The game could be written entirely without objects, but objects give us a way to wrap up state -- how things change through time -- with methods -- how to change things, how to ask about change.
+
+# Bouncy Balls
+
+Here's a simple game that bounces balls inside a box in your terminal.  When two balls collide, they explode with a Unicode star "★" and disappear from the board:
+
+```
+     1	#!/usr/bin/env perl6
+     2	
+     3	subset PosInt of Int where * > 0;
+     4	
+     5	class Ball {
+     6	    has Int $.rows;
+     7	    has Int $.cols;
+     8	    has Int $.row is rw = (2..^$!rows).pick;
+     9	    has Int $.col is rw = (2..^$!cols).pick;
+    10	    has Int $.horz-dir is rw = (1, -1).pick;
+    11	    has Int $.vert-dir is rw = (1, -1).pick;
+    12	
+    13	    method Str { join ',', $!row, $!col }
+    14	
+    15	    method pos { ($.row, $.col) }
+    16	
+    17	    method move {
+    18	        $!col += $!horz-dir;
+    19	        $!row += $!vert-dir;
+    20	        $!horz-dir *= -1 if $!col <= 1 || $!col >= $!cols;
+    21	        $!vert-dir *= -1 if $!row <= 1 || $!row >= $.rows;
+    22	    }
+    23	}
+    24	
+    25	my $DOT           = "\x25A0"; # ■
+    26	my $STAR          = "\x2605"; # ★
+    27	my $SMILEY-FACE   = "\x263A"; # ☺
+    28	my ($ROWS, $COLS) = qx/stty size/.words;
+    29	
+    30	sub MAIN (
+    31	    PosInt :$rows=$ROWS - 4,
+    32	    PosInt :$cols=$COLS - 2,
+    33	    PosInt :$balls=10,
+    34	    Numeric :$refresh=.075,
+    35	    Bool :$smiley=False,
+    36	) {
+    37	    print "\e[2J";
+    38	    my Str $bar    = '+' ~ '-' x $cols ~ '+';
+    39	    my $icon       = $smiley ?? $SMILEY-FACE !! $DOT;
+    40	    my Ball @balls = Ball.new(:$rows, :$cols) xx $balls;
+    41	
+    42	    loop {
+    43	        .move for @balls;
+    44	
+    45	        my $positions = (@balls».Str).Bag;
+    46	
+    47	        my %row;
+    48	        for $positions.list -> (:$key, :$value) {
+    49	            my ($row, $col) = $key.split(',');
+    50	            %row{ $row }.append: $col => $value;
+    51	        }
+    52	
+    53	        print "\e[H";
+    54	        my $screen = "$bar\n";
+    55	
+    56	        for 1..$rows -> $this-row {
+    57	            my $line = '|' ~ " " x $cols;
+    58	            if %row{ $this-row }:exists {
+    59	                for %row{ $this-row }.list -> (:$key, :$value) {
+    60	                    $line.substr-rw($key, 1) = $value == 1 ?? $icon !! $STAR;
+    61	                }
+    62	            }
+    63	
+    64	            $screen ~= "$line|\n";
+    65	        }
+    66	
+    67	        $screen ~= $bar;
+    68	        put $screen;
+    69	        sleep $refresh;
+    70	        my @collisions = $positions.grep(*.value > 1).map(*.key);
+    71	        @balls = @balls.grep(none(@collisions) eq *.Str);
+    72	    }
+    73	}
+```
+
+While it's not a requirement to use objects for this game, they do allow me to wrap up the state of each ball into a little package that I can interact with by saying ```move``` to get the ball to figure: 
+
+1. know its current location
+2. know its current direction (up/down, left/right)
+3. reverse its course if it encounters a boundary
+
+Once I've ```move```d all the balls, I can get all their positions and draw them to the screen.  I need to know if more than one ball occupies any location, so I ```Bag``` them up to get counts.  If a position has more than one ball, I use the star icon to indicate the collision and remove the offenders from the ```@balls``` array.
