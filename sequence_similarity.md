@@ -373,7 +373,7 @@ Here is the result of running this program on the homework submissions for a cla
 The amount of similarity is fairly high, which is not unexpected from running this on Perl code; however, a few of these are really too high to be explained by chance.  The extremely high ones can be isolated:
 
 ```
-$ ./similarity.pl6 --max-sd=16 ~/homework/*.pl6
+$ ./kmer-counter.pl6 --max-sd=16 ~/homework/*.pl6
 3-7 (208) = 18.6149285622408 [s03.pl6, s07.pl6]
 3-10 (208) = 18.6149285622408 [s03.pl6, s10.pl6]
 7-10 (198) = 16.7509504018028 [s07.pl6, s10.pl6]
