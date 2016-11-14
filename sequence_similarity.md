@@ -165,6 +165,35 @@ It's important to remember that a ```map``` will always return the same number o
 
 So the "list" argument to ```map``` in line 12 is the range ```0..^$n```.  Each number in turn goes into the code block as the "topic" ```$_``` where it is used in the ```substr``` call to extract the k-mer which are then returned as a new list to the ```join``` which then puts a newline between them before the call to ```put```.
 
+I'll present one more version that puts the kmers into an array using ```gather/take``` (https://docs.perl6.org/language/control#gather/take):
+
+```
+$ cat -n kmer4.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $input!, Int :$k=10) {
+     4	    my $seq   = $input.IO.f ?? $input.IO.slurp.chomp !! $input;
+     5	    my $n     = $seq.chars - $k + 1;
+     6	    my @kmers = gather for 0..^$n -> $i {
+     7	        take $seq.substr($i, $k);
+     8	    }
+     9
+    10	    dd @kmers;
+    11	}
+```
+
+The ```dd``` is the built-in "data dumper" that shows you a textual representation of a data structure:
+
+```
+$ ./kmer4.pl6 input.txt
+Array @kmers = ["AGCTTTTCAT", "GCTTTTCATT",
+"CTTTTCATTC", "TTTTCATTCT", "TTTCATTCTG",
+"TTCATTCTGA", "TCATTCTGAC", "CATTCTGACT",
+"ATTCTGACTG", "TTCTGACTGC", "TCTGACTGCA",
+"CTGACTGCAA", "TGACTGCAAC", "GACTGCAACG",
+"ACTGCAACGG", "CTGCAACGGG"]
+```
+
 # Kmers from FASTA
 
 Now let's combine our parsing of FASTA with extraction of k-mers:
@@ -260,3 +289,93 @@ CGT
 ```
 
 We've seen before how we can use ```comb``` to explode a string into a list of characters.  Next we call ```rotor``` to break the string into sublists of 3 elements each, but for k-mers we want ```rotor``` to back up two (*k* - 1) steps before making the next list, so we pass the Pair (3 => -2).  We then pass each sublist into a ```map``` where we use the ```*``` to mean "whatever" or "the thing" and call the ```join``` method (with no argument) to create a string.  That list of strings then gets ```join```ed on newlines to print all the k-mers in the sequence.
+
+# Non-sequence data
+
+You can use k-mers to determine the similarity of non-sequence data.  This program will process all the given files in a pair-wise, all-versus-all fashion to determine if any two files are more similar than the overall similarity of all the files as figured with two-sided Student's t-test.  Notice that I can use Unicode characters like "μ" (mu) and "x̄" (bar-X) as variable names:
+
+```
+     1	#!/usr/bin/env perl6
+     2	
+     3	subset PosInt of Int where * > 0;
+     4	
+     5	sub MAIN (PosInt :$k=5, PosInt :$max-sd=5, *@files) {
+     6	    die "No files" unless @files;
+     7	    my @bags = map { find-kmers(+$k, $_) }, @files;
+     8	    my %counts;
+     9	    for (1..@bags.elems).combinations(2) -> ($i, $j) {
+    10	        my $bag1  = @bags[$i-1];
+    11	        my $bag2  = @bags[$j-1];
+    12	        my $s1    = $bag1.Set;
+    13	        my $s2    = $bag2.Set;
+    14	        my @union = ($s1 (&) $s2).keys;
+    15	        my $count = (map { $bag1{ $_ } }, @union)
+    16	                  + (map { $bag2{ $_ } }, @union);
+    17	        %counts{"$i-$j"} = $count;
+    18	    }
+    19	
+    20	    my @n  = %counts.values;
+    21	    my $μ  = mean @n;
+    22	    my $sd = std-dev @n;
+    23	    my $d  = $sd/(@n.elems).sqrt;
+    24	    for %counts.kv -> $pair, $x̄ {
+    25	        # https://en.wikipedia.org/wiki/Student%27s_t-test
+    26	        my $t = ($x̄ - $μ) / $d;
+    27	        if $t.abs > $max-sd {
+    28	            my ($i, $j) = $pair.split('-');
+    29	            my $f1 = @files[$i-1].IO.basename;
+    30	            my $f2 = @files[$j-1].IO.basename;
+    31	            put "$pair ($x̄) = $t [$f1, $f2]";
+    32	        }
+    33	    }
+    34	}
+    35	
+    36	sub find-kmers (Int $k, Str $file) {
+    37	    my $text = $file.IO.lines.lc.join(' ')
+    38	               .subst(/:i <-[a..z\s]>/, '', :g).subst(/\s+/, ' ');
+    39	    $text.comb.rotor($k => -1 * ($k - 1)).map(*.join).Bag;
+    40	}
+    41	
+    42	sub mean (*@n) { @n.sum / @n.elems }
+    43	
+    44	sub std-dev (*@n) {
+    45	    # https://en.wikipedia.org/wiki/Standard_deviation
+    46	    my $mean = mean(@n);
+    47	    my @dev  = map { ($_ - $mean)² }, @n;
+    48	    my $var  = @dev.sum / @dev.elems;
+    49	    return $var.sqrt;
+    50	}
+```
+
+Here is the result of running this program on the homework submissions for a class of mine:
+
+```
+1-9 (74) = -6.36237878762838 [s01.pl6, s09.pl6]
+1-4 (60) = -8.97194821224158 [s01.pl6, s04.pl6]
+5-6 (136) = 5.19428580708723 [s05.pl6, s06.pl6]
+3-7 (208) = 18.6149285622408 [s03.pl6, s07.pl6]
+2-4 (76) = -5.98958315554078 [s02.pl6, s04.pl6]
+6-8 (142) = 6.31267270335003 [s06.pl6, s08.pl6]
+4-10 (74) = -6.36237878762838 [s04.pl6, s10.pl6]
+7-8 (178) = 13.0229940809268 [s07.pl6, s08.pl6]
+3-10 (208) = 18.6149285622408 [s03.pl6, s10.pl6]
+3-8 (142) = 6.31267270335003 [s03.pl6, s08.pl6]
+6-9 (78) = -5.61678752345318 [s06.pl6, s09.pl6]
+4-5 (66) = -7.85356131597878 [s04.pl6, s05.pl6]
+7-10 (198) = 16.7509504018028 [s07.pl6, s10.pl6]
+4-6 (68) = -7.48076568389118 [s04.pl6, s06.pl6]
+4-9 (72) = -6.73517441971598 [s04.pl6, s09.pl6]
+5-8 (148) = 7.43105959961283 [s05.pl6, s08.pl6]
+2-9 (80) = -5.24399189136558 [s02.pl6, s09.pl6]
+```
+
+The amount of similarity is fairly high, which is not unexpected from running this on Perl code; however, a few of these are really too high to be explained by chance.  The extremely high ones can be isolated:
+
+```
+$ ./similarity.pl6 --max-sd=16 ~/homework/*.pl6
+3-7 (208) = 18.6149285622408 [s03.pl6, s07.pl6]
+3-10 (208) = 18.6149285622408 [s03.pl6, s10.pl6]
+7-10 (198) = 16.7509504018028 [s07.pl6, s10.pl6]
+```
+
+And, indeed, I found that "s03.pl6" was submitted with minor changes by two other students as "s07.pl6" and "s10.pl6" (names changed to protect the innocent, of course).
