@@ -55,7 +55,7 @@ $ cat -n hamming.pl6
      9	}
 $ ./hamming.pl6 AACTAG CAAGAA
 Hamming distance from 'AACTAG' to 'CAAGAA': 4
-````
+```
 
 # OOPs, I did it again
 
@@ -70,9 +70,11 @@ $ cat -n dna1.pl6
      5	sub MAIN (Str $seq) {
      6	    my $dna = DNA.new(value => $seq);
      7	    dd $dna;
-     8	}
-$ ./dna1.pl6 AACTAG
-DNA $dna = "AACTAG"
+     8	    printf "%s is %s characters long.\n", $dna, $dna.chars;
+     9	}
+$ ./dna1.pl6 GAAGACT
+DNA $dna = "GAAGACT"
+GAAGACT is 7 characters long.
 ```
 
 Remember that our ```subset DNA``` was derived from ```Str```, so here we are inheriting from the ```Str``` class for our ```DNA``` module because it really is just a string.  By subclassing ```Str```, we get all the native String methods for free!  
@@ -344,7 +346,7 @@ The main idea behind both modules and objects is to hide complexity from the use
 
 # Hangman
 
-You may find you want to create a more complex type that can encapsulate complex data and novel methods.  To demonstrate, let's create a "Puzzle" object for playing "Hangman."  Here's how a game looks when won:
+I think lots of examples are the way to teach, and probably you're tired of just thinking about DNA by now.  So let's create a "Puzzle" object for playing "Hangman."  Here's how a game looks when won:
 
 ```
 $ ./hangman.pl6
