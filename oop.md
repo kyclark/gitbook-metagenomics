@@ -6,6 +6,64 @@ As we've learned, Perl has types like ```(Int)``` and ```(Str)```, and you can e
 subset File of Str where *.IO.f;
 ```
 
+# DNA
+
+Let's say we'd like to have an object to represent DNA sequences.  It's as simple as creating a ```class``` where we say that is ```has Str $.seq```:
+
+```
+$ cat -n dna1.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class DNA {
+     4	    has Str $.seq;
+     5	}
+     6
+     7	sub MAIN (Str $seq) {
+     8	    my $dna = DNA.new(seq => $seq);
+     9	    dd $dna;
+    10	}
+```
+
+The ```has``` keyword will create accessor/mutator methods called ```seq``` for us to get (access) or change (mutate, if we so allow) the sequence.  By default, object attributes are read-only, so we'd have to explicitly say ```is rw``` to declare that it is read-write.
+
+Here's what we get:
+
+```
+$ ./dna1.pl6 CAT
+DNA $dna = DNA.new(seq => "CAT")
+$ ./dna1.pl6 foo
+DNA $dna = DNA.new(seq => "foo")
+```
+
+Well, that's a problem.  The string "foo" is clearly not a DNA sequence, so we should have some way to detect that and let the user know.  We've already used regular expressions for exactly this:
+
+```
+$ cat -n dna2.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class DNA {
+     4	    has Str $.seq;
+     5	}
+     6
+     7	sub MAIN (Str $seq) {
+     8	    if so $seq.uc ~~ /^ <[ACGTN]>+ $/ {
+     9	        my $dna = DNA.new(seq => $seq);
+    10	        dd $dna;
+    11	    }
+    12	    else {
+    13	        put "Not a DNA sequence.";
+    14	    }
+    15	}
+$ ./dna2.pl6 CAT
+DNA $dna = DNA.new(seq => "CAT")
+$ ./dna2.pl6 foo
+Not a DNA sequence.
+```
+
+OK, that works, but it's not a clean solution because the checking of the input really ought to happen inside the object.  Eventually we'll isolate the ```class``` part to make it reusable every place we want to represent DNA.  
+
+# Hangman
+
 You may find you want to create a more complex type that can encapsulate complex data and novel methods.  To demonstrate, let's create a "Puzzle" object for playing "Hangman."  Here's how a game looks when won:
 
 ```
