@@ -1,30 +1,339 @@
+# Sharing code with modules and objects
+
+As you write more code, you will find yourself solving some problems repeatedly.  Your first instinct might be to copy and paste the needed code, but it is far better to put it into a module or object to make it easier to re-use it.  For one thing, if you find a bug, you'll want to change it just once and not have to remember all the places you pasted it.  Eventually you may find you've solved a problem that many other people have or, vice versa, others have solved your problem.  Modules are the way to package and share code.
+
+# Modules
+
+Here's an example a simple module that has some code/type/functions that we've seen before:
+
+```
+$ cat -n DNA.pm6
+     1	unit module DNA;
+     2
+     3	subset DNA of Str is export where /^ :i <[ACGTN]>+ $/;
+     4
+     5	sub revcom (DNA $seq) is export {
+     6	    $seq.trans(<A C G T a c g t> => <T G C A t g c a>).flip;
+     7	}
+     8
+     9	sub hamming (DNA $s1, DNA $s2) is export {
+    10	    ($s1.chars - $s2.chars).abs +
+    11	    ($s1.comb Z $s2.comb).grep({ $^a[0] ne $^a[1] });
+    12	}
+```
+
+I created a file called "DNA.pm6" ("pm" == "Perl module") with a ```unit module DNA``` line to establish for Perl that this is the "DNA" module.  Inside it, I have defined a ```subset``` type called "DNA" that allows me to easily reuse my regular expression.  I also have two functions that are generally useful, ```revcom``` to compute the reverse complement of a string of DNA, and ```hamming``` to compute the number of point variations between two pieces of DNA.  Notice the ```is export``` statement that allows the "DNA" module to allow the code to be used in another program like so:
+
+```
+$ cat -n module1.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA;
+     5
+     6	sub MAIN (DNA $seq) {
+     7	    put "$seq revcom is {revcom($seq)}";
+     8	}
+$ ./module1.pl6 AACTAGAN
+AACTAGAN revcom is NTCTAGTT
+```
+
+The "DNA.pm6" and this script live in the same directory.  For the same security reason as why your ```$PATH``` does not normally include your current working directory, Perl does automatically include "." in your library path.  You either need to put your module somewhere in your ```$PERL6LIB``` path, or you need to ```use lib '.'```.  After that, then you can ```use DNA``` to bring in the "DNA" module exported code.
+
+Here is how you might bring in the ```hamming``` function:
+
+```
+$ cat -n hamming.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA;
+     5
+     6	sub MAIN (DNA $seq1, DNA $seq2) {
+     7	    printf "Hamming distance from '%s' to '%s': %s\n",
+     8	        $seq1, $seq2, hamming($seq1, $seq2);
+     9	}
+$ ./hamming.pl6 AACTAG CAAGAA
+Hamming distance from 'AACTAG' to 'CAAGAA': 4
+````
+
 # OOPs, I did it again
 
-As we've learned, Perl has types like ```(Int)``` and ```(Str)```, and you can easily create your own types like a ```(File)``` with ```subset```:
-
-```
-subset File of Str where *.IO.f;
-```
-
-# DNA
-
-Let's say we'd like to have an object to represent DNA sequences.  It's as simple as creating a ```class``` where we say that is ```has Str $.seq```:
+Objects are another way to package up code.  The TLA (three-letter acronym) "OOP" stands for "object-oriented programming," and it was perhaps the most popular programming paradigm of the 90s.  It's a way to couple data/state with functions that act on that data.  Let's take our code from the "DNA" module and turn it into an object.  We'll start really simply:
 
 ```
 $ cat -n dna1.pl6
      1	#!/usr/bin/env perl6
      2
-     3	class DNA {
-     4	    has Str $.seq;
-     5	}
-     6
-     7	sub MAIN (Str $seq) {
-     8	    my $dna = DNA.new(seq => $seq);
-     9	    dd $dna;
-    10	}
+     3	class DNA is Str {}
+     4
+     5	sub MAIN (Str $seq) {
+     6	    my $dna = DNA.new(value => $seq);
+     7	    dd $dna;
+     8	}
+$ ./dna1.pl6 AACTAG
+DNA $dna = "AACTAG"
 ```
 
-The ```has``` keyword will create accessor/mutator methods called ```seq``` for us to get (access) or change (mutate, if we so allow) the sequence.  By default, object attributes are read-only, so we'd have to explicitly say ```is rw``` to declare that it is read-write.
+Remember that our ```subset DNA``` was derived from ```Str```, so here we are inheriting from the ```Str``` class for our ```DNA``` module because it really is just a string.  By subclassing ```Str```, we get all the native String methods for free!  
+
+There's at least one big problem with this object:
+
+```
+$ ./dna1.pl6 foo
+DNA $dna = "foo"
+```
+
+That's not a valid string of DNA, so we need to fix that:
+
+```
+$ cat -n dna2.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class DNA is Str {}
+     4
+     5	sub MAIN (Str $seq) {
+     6	    if so $seq.uc ~~ /^ <[ACGTN]>+ $/ {
+     7	        my $dna = DNA.new(value => $seq);
+     8	        dd $dna;
+     9	    }
+    10	    else {
+    11	        put "'$seq' not a DNA sequence.";
+    12	    }
+    13	}
+$ ./dna2.pl6 GACTAG
+DNA $dna = "GACTAG"
+$ ./dna2.pl6 foo
+'foo' not a DNA sequence.
+```
+
+OK, that works, but it's really a bad implementation because the code to check whether the string is valid DNA belongs in the object like so:
+
+```
+$ cat -n dna3.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class DNA is Str {
+     4	    multi method ACCEPTS (Str $seq) {
+     5	        return $seq ~~ /^ :i <[ACGTN]>+ $/;
+     6	    }
+     7	}
+     8
+     9	sub MAIN (Str $seq) {
+    10	    if $seq ~~ DNA {
+    11	        my $dna = DNA.new(value => $seq);
+    12	        dd $dna;
+    13	    }
+    14	    else {
+    15	        put "'$seq' not a DNA sequence.";
+    16	    }
+    17	}
+$ ./dna3.pl6 GGACT
+DNA $dna = "GGACT"
+$ ./dna3.pl6 foo
+'foo' not a DNA sequence.
+```
+
+Now I can pattern-match on the ```DNA``` class because I implemented the ```ACCEPTS``` (https://docs.perl6.org/routine/ACCEPTS) method.  I used the ```multi``` keyword BECAUSE...?  
+
+There is still a big problem with this version, though, because check of the data is still happening outside the object.  We need to override the default ```new``` method to make sure we are getting valid data:
+
+```
+$ cat -n dna4.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class DNA is Str {
+     4	    multi method ACCEPTS (Str $seq) {
+     5	        return $seq.uc ~~ /^ :i <[ACGTN]>+ $/;
+     6	    }
+     7
+     8	    method new (*%args) {
+     9	        my $value = %args<value>.Str;
+    10	        if $value !~~ DNA {
+    11	            fail "'$value' not a DNA sequence.";
+    12	        }
+    13	        self.bless(|%args);
+    14	    }
+    15	}
+    16
+    17	sub MAIN (Str $seq) {
+    18	    try {
+    19	        my $dna = DNA.new(value => $seq);
+    20	        dd $dna;
+    21	        CATCH {
+    22	            default { .Str.say }
+    23	        }
+    24	    }
+    25	}
+$ ./dna4.pl6 GGACTA
+DNA $dna = "GGACTA"
+$ ./dna4.pl6 foo
+'foo' not a DNA sequence.
+```
+
+Now it is impossible to create a ```DNA``` object with invalid input because the ```new``` method will ```fail``` if the string does not match our regex.  You'll notice a new keyword ```self``` in the ```new``` function -- that references the object itself and is not preceded by a ```$``` (WHY?). Because of the ```fail```, I have introduced a ```try``` block in the calling code where the ```CATCH``` block is executed on any exceptions.
+
+I'd like to be able to create my DNA object by just passing the string and not the Pair ```value => $seq```.  I can change the way the ```new``` constructor works:
+
+```
+$ cat -n dna5.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class DNA is Str {
+     4	    multi method ACCEPTS (Str $seq) {
+     5	        return $seq.uc ~~ /^ <[ACGTN]>+ $/;
+     6	    }
+     7
+     8	    method new (Str $str) {
+     9	        if $str.uc !~~ DNA {
+    10	            fail "'$str' not a DNA sequence.";
+    11	        }
+    12
+    13	        self.bless(value => $str);
+    14	    }
+    15	}
+    16
+    17	sub MAIN (Str $str) {
+    18	    try {
+    19	        my $dna = DNA.new($str);
+    20	        dd $dna;
+    21
+    22	        CATCH {
+    23	            default { .Str.say }
+    24	        }
+    25	    }
+    26	}
+$ ./dna5.pl6 GAAACT
+DNA $dna = "GAAACT"
+$ ./dna5.pl6 foo
+'foo' not a DNA sequence.
+```
+
+Now let's move our ```DNA``` class into a separate file like our earlier module, both to reduce the size of our program and to allow us to reuse it in another program:
+
+```
+$ cat -n DNA1.pm6
+     1	class DNA is Str {
+     2	    multi method ACCEPTS (Str $seq) {
+     3	        return $seq.uc ~~ /^ <[ACGTN]>+ $/;
+     4	    }
+     5
+     6	    method new (Str $str) {
+     7	        if $str.uc !~~ DNA {
+     8	            fail "'$str' not a DNA sequence.";
+     9	        }
+    10
+    11	        self.bless(value => $str);
+    12	    }
+    13	}
+$ cat -n dna6.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA1;
+     5
+     6	sub MAIN (Str $str) {
+     7	    try {
+     8	        my $dna = DNA.new($str);
+     9	        dd $dna;
+    10
+    11	        CATCH {
+    12	            default { .Str.say }
+    13	        }
+    14	    }
+    15	}
+$ ./dna6.pl6 GAACTG
+DNA $dna = "GAACTG"
+$ ./dna6.pl6 foo
+'foo' not a DNA sequence.
+```
+
+Let's add some more functionality to our ```DNA``` class such as our ```revcom``` and ```hamming``` methods, a method to tell us the length of the DNA, and an attribute to let us know if we have a the forward or reverse strand.  While we're at it, let's have both of our ```new``` methods to allow users to create a ```DNA``` object either with a single argument or a Pair.
+
+```
+$ cat -n DNA2.pm6
+     1	enum Direction <Forward Reverse>;
+     2
+     3	class DNA is Str {
+     4	    has Direction $.direction = Forward;
+     5
+     6	    multi method ACCEPTS (Str $seq) {
+     7	        return $seq ~~ /^ :i <[ACGTN]>+ $/;
+     8	    }
+     9
+    10	    # e.g., DNA.new($seq1);
+    11	    multi method new (Str $seq) {
+    12	        if $seq !~~ DNA {
+    13	            fail "'$seq' not a DNA sequence.";
+    14	        }
+    15	        self.bless(value => $seq);
+    16	    }
+    17
+    18	    # e.g., DNA.new(value => $seq1);
+    19	    multi method new (*%args) {
+    20	        my $value = %args<value>.Str;
+    21	        if $value !~~ DNA {
+    22	            fail "'$value' not a DNA sequence.";
+    23	        }
+    24	        self.bless(|%args);
+    25	    }
+    26
+    27	    method revcom {
+    28	        self.trans(<A C G T a c g t> => <T G C A t g c a>).flip;
+    29	    }
+    30
+    31	    method length { self.chars }
+    32
+    33	    method hamming (DNA $other) {
+    34	        return (self.chars - $other.chars).abs +
+    35	               (self.comb Z $other.comb).grep({ $^a[0] ne $^a[1] });
+    36	    }
+    37	}
+```
+
+I created an ```enum``` type for the ```Direction``` that consists of the two values, ```Forward``` and ```Reverse```.  This is a type like we've seen before, and it allows me to constrain the new attribute ```direction``` to only those two values.  The constructor for that constraint:
+
+```
+has Direction $.direction = Forward;
+```
+
+Says that the class has a scalar value called ```direction``` that is of the type ```Direction``` and which has a default value of ```Forward```.  The ```has``` keyword will create accessor/mutator methods called ```direction``` for us to get (access) or change (mutate, if we so allow) the direction.  By default, object attributes are read-only, so we'd have to explicitly say ```is rw``` to declare that it is read-write.  Here read-only is the correct way to go because it is not something we should allow to be changed.
+
+Here is how you can use the code:
+
+```
+$ cat -n dna7.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA2;
+     5
+     6	sub MAIN (Str $str) {
+     7	    try {
+     8	        my $i    = 0;
+     9	        my $temp = "%s: %s has the direction '%s' and length '%s'.\n";
+    10
+    11	        my $dna1 = DNA.new($str);
+    12	        printf $temp, ++$i, $dna1, $dna1.direction, $dna1.length;
+    13
+    14	        my $dna2 = DNA.new(value => $str, direction => Forward);
+    15	        printf $temp, ++$i, $dna2, $dna2.direction, $dna2.length;
+    16
+    17	        my $dna3 = DNA.new(value => $str, direction => Direction.pick);
+    18	        printf $temp, ++$i, $dna3, $dna3.direction, $dna3.length;
+    19
+    20	        CATCH {
+    21	            default { .Str.say }
+    22	        }
+    23	    }
+    24	}
+$ ./dna7.pl6 GATAGA
+1: GATAGA has the direction 'Forward' and length '6'.
+2: GATAGA has the direction 'Forward' and length '6'.
+3: GATAGA has the direction 'Reverse' and length '6'.
+$ ./dna7.pl6 foo
+'foo' not a DNA sequence.
+```
 
 Here's what we get:
 
@@ -34,33 +343,6 @@ DNA $dna = DNA.new(seq => "CAT")
 $ ./dna1.pl6 foo
 DNA $dna = DNA.new(seq => "foo")
 ```
-
-Well, that's a problem.  The string "foo" is clearly not a DNA sequence, so we should have some way to detect that and let the user know.  We've already used regular expressions for exactly this:
-
-```
-$ cat -n dna2.pl6
-     1	#!/usr/bin/env perl6
-     2
-     3	class DNA {
-     4	    has Str $.seq;
-     5	}
-     6
-     7	sub MAIN (Str $seq) {
-     8	    if so $seq.uc ~~ /^ <[ACGTN]>+ $/ {
-     9	        my $dna = DNA.new(seq => $seq);
-    10	        dd $dna;
-    11	    }
-    12	    else {
-    13	        put "Not a DNA sequence.";
-    14	    }
-    15	}
-$ ./dna2.pl6 CAT
-DNA $dna = DNA.new(seq => "CAT")
-$ ./dna2.pl6 foo
-Not a DNA sequence.
-```
-
-OK, that works, but it's not a clean solution because the checking of the input really ought to happen inside the object.  Eventually we'll isolate the ```class``` part to make it reusable every place we want to represent DNA.  
 
 # Hangman
 
