@@ -1,10 +1,9 @@
 # OOPs, I did it again
 
-As we've learned, Perl has types like ```(Int)``` and ```(Str)```, and you can easily create your own types with ```subset```:
+As we've learned, Perl has types like ```(Int)``` and ```(Str)```, and you can easily create your own types like a ```(File)``` with ```subset```:
 
 ```
 subset File of Str where *.IO.f;
-subset DNA of Str where /^ <[ACGTN]>+ $/;
 ```
 
 # DNA
