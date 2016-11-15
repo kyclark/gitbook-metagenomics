@@ -326,7 +326,12 @@ $ cat -n dna7.pl6
     21	            default { .Str.say }
     22	        }
     23	    }
-    24	}
+    24	}    
+```
+
+Notice at line 11 I create the ```DNA``` object with a single argument and no ```direction,``` but at line 14 I use two Pairs to define the ```value``` and ```direction```, while at line 17 I define the ```value``` and randomly pick a ```Direction```.  Here's what it looks like when it runs:
+
+```
 $ ./dna7.pl6 GATAGA
 1: GATAGA has the direction 'Forward' and length '6'.
 2: GATAGA has the direction 'Forward' and length '6'.
@@ -335,14 +340,7 @@ $ ./dna7.pl6 foo
 'foo' not a DNA sequence.
 ```
 
-Here's what we get:
-
-```
-$ ./dna1.pl6 CAT
-DNA $dna = DNA.new(seq => "CAT")
-$ ./dna1.pl6 foo
-DNA $dna = DNA.new(seq => "foo")
-```
+The main idea behind both modules and objects is to hide complexity from the user (even if the user is just you).  You package up everything belonging to DNA or whatever into a file or module or object, and the code that uses it doesn't have to worry about how the algorigthms or objects or whatever is implemented.  
 
 # Hangman
 
