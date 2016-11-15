@@ -342,6 +342,64 @@ $ ./dna7.pl6 foo
 'foo' not a DNA sequence.
 ```
 
+Here is how we could call our ```hamming``` and ```revcom``` functions:
+
+```
+$ cat -n hamming.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA2;
+     5
+     6	sub MAIN (Str $seq1, Str $seq2) {
+     7	    try {
+     8	        my $dna1 = DNA.new($seq1);
+     9	        my $dna2 = DNA.new($seq2);
+    10	        put "Hamming distance from '$dna1' to '$dna2': ", $dna1.hamming($dna2);
+    11	        CATCH { default { .Str.say } }
+    12	    }
+    13	}
+$ ./hamming.pl6 GGATC GGCCC
+Hamming distance from 'GGATC' to 'GGCCC': 2
+$ cat -n revcom.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA2;
+     5
+     6	sub MAIN (Str $str) {
+     7	    try {
+     8	        my $dna = DNA.new($str);
+     9	        printf "Input : %s\nRevcom: %s\n", $dna, $dna.revcom;
+    10	        CATCH { default { .Str.say } }
+    11	    }
+    12	}
+[saguaro@~/work/metagenomics-book/perl6/oop]$ ./revcom.pl6 GATTAGA
+Input : GATTAGA
+Revcom: TCTAATC
+```
+
+And remember that, since we inherited from ```Str```, we get all those methods, too!
+
+```
+$ cat -n substr.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use lib '.';
+     4	use DNA2;
+     5
+     6	sub MAIN (Str :$seq, Int :$start=0, Int :$stop=0) {
+     7	    try {
+     8	        my $dna = DNA.new($seq);
+     9	        $stop ||= $dna.chars;
+    10	        put "DNA from $start to $stop: ", $dna.substr($start, $stop);
+    11	        CATCH { default { .Str.say } }
+    12	    }
+    13	}
+$ ./substr.pl6 --seq=GGATACC --start=2 --stop=5
+DNA from 2 to 5: ATACC
+```
+
 The main idea behind both modules and objects is to hide complexity from the user (even if the user is just you).  You package up everything belonging to DNA or whatever into a file or module or object, and the code that uses it doesn't have to worry about how the algorigthms or objects or whatever is implemented.  
 
 # Hangman
