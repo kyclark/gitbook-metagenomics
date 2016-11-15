@@ -28,7 +28,7 @@
    * [Counting Things](counting_things.md)
    * [Parsing Structured Data](parsing_structured_data.md)
    * [Parsing, Regular Expressions, Grammars](parsing,_regular_expressions,_grammars.md)
-   * [OOP](oop.md)
+   * [Modules and OOP](oop.md)
    * [Tests](tests.md)
    * [Web Development with Perl 5](web_development_with_perl_5.md)
    * [Problem Sets](problem_sets.md)
