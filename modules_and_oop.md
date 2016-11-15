@@ -162,11 +162,9 @@ $ cat -n dna4.pl6
     18	    try {
     19	        my $dna = DNA.new(value => $seq);
     20	        dd $dna;
-    21	        CATCH {
-    22	            default { .Str.say }
-    23	        }
-    24	    }
-    25	}
+    21	        CATCH { default { .Str.say } }
+    22	    }
+    23	}
 $ ./dna4.pl6 GGACTA
 DNA $dna = "GGACTA"
 $ ./dna4.pl6 foo
@@ -199,12 +197,9 @@ $ cat -n dna5.pl6
     18	    try {
     19	        my $dna = DNA.new($str);
     20	        dd $dna;
-    21
-    22	        CATCH {
-    23	            default { .Str.say }
-    24	        }
-    25	    }
-    26	}
+    21	        CATCH { default { .Str.say } }
+    22	    }
+    23	}
 $ ./dna5.pl6 GAAACT
 DNA $dna = "GAAACT"
 $ ./dna5.pl6 foo
@@ -238,12 +233,9 @@ $ cat -n dna6.pl6
      7	    try {
      8	        my $dna = DNA.new($str);
      9	        dd $dna;
-    10
-    11	        CATCH {
-    12	            default { .Str.say }
-    13	        }
-    14	    }
-    15	}
+    10	        CATCH { default { .Str.say } }
+    11	    }
+    12	}
 $ ./dna6.pl6 GAACTG
 DNA $dna = "GAACTG"
 $ ./dna6.pl6 foo
@@ -324,11 +316,9 @@ $ cat -n dna7.pl6
     17	        my $dna3 = DNA.new(value => $str, direction => Direction.pick);
     18	        printf $temp, ++$i, $dna3, $dna3.direction, $dna3.length;
     19
-    20	        CATCH {
-    21	            default { .Str.say }
-    22	        }
-    23	    }
-    24	}    
+    20	        CATCH { default { .Str.say } }
+    21	    }
+    22	}
 ```
 
 Notice at line 11 I create the ```DNA``` object with a single argument and no ```direction,``` but at line 14 I use two Pairs to define the ```value``` and ```direction```, while at line 17 I define the ```value``` and randomly pick a ```Direction```.  Here's what it looks like when it runs:
