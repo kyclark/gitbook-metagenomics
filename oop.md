@@ -4,6 +4,7 @@ As we've learned, Perl has types like ```(Int)``` and ```(Str)```, and you can e
 
 ```
 subset File of Str where *.IO.f;
+subset DNA of Str where 
 ```
 
 You may find you want to create a more complex type that can encapsulate complex data and novel methods.  To demonstrate, let's create a "Puzzle" object for playing "Hangman."  Here's how a game looks when won:
