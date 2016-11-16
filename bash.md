@@ -8,7 +8,7 @@ All programming language have a grammar where "statements" (like "sentences") ar
 
 # Comments
 
-Every language has a way to indicate text in the source code that should be executed by the program.  Many Unix/c-style languages use the "#" (hash) sign to indicate that any text to the right should be ignored by the language, but some languages use other characters or character combinations.  Programmers may use comments to explain what some particularly bit of code is doing, or they may use the characters to temporarily disable some section of code.  Here is an example of what you might see:
+Every language has a way to indicate text in the source code that should not be executed by the program.  Many Unix/c-style languages use the "#" (hash) sign to indicate that any text to the right should be ignored by the language, but some languages use other characters or character combinations.  Programmers may use comments to explain what some particularly bit of code is doing, or they may use the characters to temporarily disable some section of code.  Here is an example of what you might see:
 
 ```
 # cf. https://en.wikipedia.org/wiki/Factorial
