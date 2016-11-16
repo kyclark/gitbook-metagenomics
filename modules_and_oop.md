@@ -4,7 +4,7 @@ As you write more code, you will find yourself solving some problems repeatedly.
 
 # Modules
 
-Here's an example a simple module that has some code/type/functions that we've seen before:
+Here's an example of a simple module that has some code/type/functions that we've seen before:
 
 ```
 $ cat -n DNA.pm6
@@ -38,7 +38,7 @@ $ ./module1.pl6 AACTAGAN
 AACTAGAN revcom is NTCTAGTT
 ```
 
-The "DNA.pm6" and this script live in the same directory.  For the same security reason as why your ```$PATH``` does not normally include your current working directory, Perl does automatically include "." in your library path.  You either need to put your module somewhere in your ```$PERL6LIB``` path, or you need to ```use lib '.'```.  After that, then you can ```use DNA``` to bring in the "DNA" module exported code.
+The "DNA.pm6" and this script live in the same directory.  For the same security reason as why your ```$PATH``` does not normally include your current working directory, Perl does not automatically include "." in your library path.  You either need to put your module somewhere in your ```$PERL6LIB``` path, or you need to ```use lib '.'```.  After that, then you can ```use DNA``` to bring in the "DNA" module exported code.
 
 Here is how you might bring in the ```hamming``` function:
 
