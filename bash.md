@@ -104,7 +104,7 @@ $ echo $HOEM
 -bash: HOEM: unbound variable
 ```
 
-This command tells bash to complain when you variable that was never initialized to some value.  This is like putting on your helmet.  It's not a requirement (depending on which state you live in), but you absolutely should do this because there might come a day when you misspell a variable.  One serious problem is that you can still get errors like this:
+This command tells bash to complain when you use a variable that was never initialized to some value.  This is like putting on your helmet.  It's not a requirement (depending on which state you live in), but you absolutely should do this because there might come a day when you misspell a variable.  One serious problem is that you can still get errors like this:
 
 ```
 $ cat -n set-u-bug1.sh
