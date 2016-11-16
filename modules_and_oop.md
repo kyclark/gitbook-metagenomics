@@ -138,7 +138,7 @@ $ ./dna3.pl6 foo
 
 Now I can pattern-match on the ```DNA``` class because I implemented the ```ACCEPTS``` (https://docs.perl6.org/routine/ACCEPTS) method.  I used the ```multi``` keyword BECAUSE...?  
 
-There is still a big problem with this version, though, because check of the data is still happening outside the object.  We need to override the default ```new``` method to make sure we are getting valid data:
+There is still a big problem with this version, though, because the check of the data is still happening outside the object.  We need to override the default ```new``` method to make sure we are getting valid data:
 
 ```
 $ cat -n dna4.pl6
@@ -242,7 +242,7 @@ $ ./dna6.pl6 foo
 'foo' not a DNA sequence.
 ```
 
-Let's add some more functionality to our ```DNA``` class such as our ```revcom``` and ```hamming``` methods, a method to tell us the length of the DNA, and an attribute to let us know if we have a the forward or reverse strand.  While we're at it, let's have both of our ```new``` methods to allow users to create a ```DNA``` object either with a single argument or a Pair.
+Let's add some more functionality to our ```DNA``` class such as our ```revcom``` and ```hamming``` methods, a method to tell us the length of the DNA, and an attribute to let us know if we have the forward or reverse strand.  While we're at it, let's have both of our ```new``` methods to allow users to create a ```DNA``` object either with a single argument or a Pair.
 
 ```
 $ cat -n DNA2.pm6
