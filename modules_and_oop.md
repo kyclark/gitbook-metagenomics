@@ -59,7 +59,251 @@ Hamming distance from 'AACTAG' to 'CAAGAA': 4
 
 # OOPs, I did it again
 
-Objects are another way to package up code.  The TLA (three-letter acronym) "OOP" stands for "object-oriented programming," and it was perhaps the most popular programming paradigm of the 90s.  It's a way to couple data/state with functions that act on that data.  Let's take our code from the "DNA" module and turn it into an object.  We'll start really simply:
+Objects are another way to package up code.  The TLA (three-letter acronym) "OOP" stands for "object-oriented programming."  It's a way to couple data/state with functions that act on that data. 
+
+To illustrate, let's model a "Person," first with a hash:
+
+```
+$ cat -n person1.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	my %geddy = first_name => 'Geddy', last_name => 'Lee';
+     4	my %alex  = first_name => 'Alex',  last_name => 'Leifson';
+     5	my %neil  = first_name => 'Neil',  last_name => 'Peart';
+     6
+     7	for %geddy, %alex, %neil -> %person {
+     8	    printf "%s %s\n", %person<first_name>, %person<last_name>;
+     9	}
+$ ./person1.pl6
+Geddy Lee
+Alex Leifson
+Neil Peart
+```
+
+And now with objects:
+
+```
+$ cat -n person2.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class Person {
+     4	    has Str $.first_name;
+     5	    has Str $.last_name;
+     6	}
+     7
+     8	my $geddy = Person.new(first_name => 'Geddy', last_name => 'Lee');
+     9	my $alex  = Person.new(first_name => 'Alex',  last_name => 'Leifson');
+    10	my $neil  = Person.new(first_name => 'Neil',  last_name => 'Peart');
+    11
+    12	for $geddy, $alex, $neil -> $person {
+    13	    printf "%s %s\n", $person.first_name, $person.last_name;
+    14	}
+$ ./person2.pl6
+Geddy Lee
+Alex Leifson
+Neil Peart
+```
+
+OK, pretty similar, so why go with objects when hashes could work just fine.  Well, for one thing, hashes won't enforce key names, and mistakes could be made:
+
+```
+$ cat -n person3.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	my %geddy = first_name => 'Geddy', last_name => 'Lee';
+     4	my %alex  = frist_name => 'Alex',  last_name => 'Leifson';
+     5	my %neil  = first_name => 'Neil',  last_neme => 'Peart';
+     6
+     7	for %geddy, %alex, %neil -> %person {
+     8	    printf "%s %s\n", %person<first_name>, %person<last_name>;
+     9	}
+[saguaro@~/work/metagenomics-book/perl6/oop]$ ./person3.pl6
+Geddy Lee
+Use of uninitialized value of type Any in string context.
+Methods .^name, .perl, .gist, or .say can be used to stringify it to something meaningful.
+  in block  at ./person3.pl6 line 7
+Use of uninitialized value of type Any in string context.
+Methods .^name, .perl, .gist, or .say can be used to stringify it to something meaningful.
+  in block  at ./person3.pl6 line 7
+ Leifson
+Use of uninitialized value of type Any in string context.
+Methods .^name, .perl, .gist, or .say can be used to stringify it to something meaningful.
+  in block  at ./person3.pl6 line 7
+Use of uninitialized value of type Any in string context.
+Methods .^name, .perl, .gist, or .say can be used to stringify it to something meaningful.
+  in block  at ./person3.pl6 line 7
+Neil
+```
+
+Ugh.  Can you spot the typos in the code -- "frist_name" and "last_neme"?  Contrast with this:
+
+```
+$ cat -n person4.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class Person {
+     4	    has Str $.first_name is required;
+     5	    has Str $.last_name  is required;
+     6	}
+     7
+     8	my $geddy = Person.new(first_name => 'Geddy', last_name => 'Lee');
+     9	my $alex  = Person.new(frist_name => 'Alex',  last_name => 'Leifson');
+    10	my $neil  = Person.new(first_name => 'Neil',  last_neme => 'Peart');
+    11
+    12	for $geddy, $alex, $neil -> $person {
+    13	    printf "%s %s\n", $person.first_name, $person.last_name;
+    14	}
+$ ./person4.pl6
+The attribute '$!first_name' is required, but you did not provide a value for it.
+  in block <unit> at ./person4.pl6 line 9
+```
+
+Because we declared that the "first_name" and "last_name" are required attributes, we can't even run our code with those typos now.  We could also try misspelling the method (notice "list_name" in the ```for``` loop):
+
+```
+$ cat -n person5.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class Person {
+     4	    has Str $.first_name is required;
+     5	    has Str $.last_name  is required;
+     6	}
+     7
+     8	my $geddy = Person.new(first_name => 'Geddy', last_name => 'Lee');
+     9	my $alex  = Person.new(first_name => 'Alex',  last_name => 'Leifson');
+    10	my $neil  = Person.new(first_name => 'Neil',  last_name => 'Peart');
+    11
+    12	for $geddy, $alex, $neil -> $person {
+    13	    printf "%s %s\n", $person.first_name, $person.list_name;
+    14	}
+$ ./person5.pl6
+No such method 'list_name' for invocant of type 'Person'
+  in block <unit> at ./person5.pl6 line 12
+```
+
+What we're doing, obviously, is printing the full name for each member of the greatest rock band in the history of all mankind.  Everytime we want to do this, we have to manually concantenate the first and last names, or we could make our users (ourselves) duplicate the names into a "full_name" of the hash (very Bad Idea), or we could write a function to do it for us:
+
+```
+$ cat -n person6.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	my %geddy = first_name => 'Geddy', last_name => 'Lee';
+     4	my %alex  = first_name => 'Alex',  last_name => 'Leifson';
+     5	my %neil  = first_name => 'Neil',  last_name => 'Peart';
+     6
+     7	sub full_name (%person) {
+     8	    join ' ', %person<first_name>, %person<last_name>;
+     9	}
+    10
+    11	for %geddy, %alex, %neil -> %person {
+    12	    printf "Full Name: %s\n", full_name(%person);
+    13	}
+$ ./person6.pl6
+Full Name: Geddy Lee
+Full Name: Alex Leifson
+Full Name: Neil Peart
+```
+
+Contrast with having the method being contained within the object:
+
+```
+$ cat -n person7.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	class Person {
+     4	    has Str $.first_name is required;
+     5	    has Str $.last_name  is required;
+     6	    method full_name { join ' ', $!first_name, $!last_name }
+     7	}
+     8
+     9	my $geddy = Person.new(first_name => 'Geddy', last_name => 'Lee');
+    10	my $alex  = Person.new(first_name => 'Alex',  last_name => 'Leifson');
+    11	my $neil  = Person.new(first_name => 'Neil',  last_name => 'Peart');
+    12
+    13	for $geddy, $alex, $neil { put "Full Name: ", .full_name }
+$ ./person7.pl6
+Full Name: Geddy Lee
+Full Name: Alex Leifson
+Full Name: Neil Peart
+```
+
+Objects provide us the ability to make all sorts of requirements and validation of the data we're using.  Notice we required the first and last names to be the type ```Str```, and we could easily add "birthday" as a ```Date``` or even create our own type like ```Instrument```:
+
+```
+$ cat -n person8.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	enum Instrument <Guitar Bass Drums>;
+     4
+     5	class Person {
+     6	    has Str $.first_name is required;
+     7	    has Str $.last_name  is required;
+     8	    has Date $.birthday;
+     9	    has Instrument $.instrument;
+    10	    method full_name { join ' ', $!first_name, $!last_name }
+    11	}
+    12
+    13	my Person $geddy .= new(first_name => 'Geddy', last_name => 'Lee',
+    14	                    birthday => Date.new(1953, 6, 29), instrument => Bass);
+    15	my Person $alex  .= new(first_name => 'Alex',  last_name => 'Leifson',
+    16	                    birthday => Date.new(1953, 10, 27), instrument => Guitar);
+    17	my Person $neil  .= new(first_name => 'Neil',  last_name => 'Peart',
+    18	                    birthday => Date.new(1952, 9, 12), instrument => Drums);
+    19
+    20	for $geddy, $alex, $neil {
+    21	    printf "%s (%s) born %s\n", .full_name, .instrument, .birthday;
+    22	}
+$ ./person8.pl6
+Geddy Lee (Bass) born 1953-06-29
+Alex Leifson (Guitar) born 1953-10-27
+Neil Peart (Drums) born 1952-09-12
+```
+
+With this ```Person``` class, it is not possible to instantiate an object with a Integer for the ```birthday``` or any ```Instrument``` we have not enumerated.  While it may not seem like that big of a gain when you are manually creating the objects,  if you are reading in a file given to you by a collaborator, such data validation can help you clean and normalize your data.  Hashes will never give you that security.
+
+Let's say someone new joins the band like Michael J. Fox.  How are we going to handle printing his full name?  Obviously we must include his middle initial, so we can expand the class to have such a field but make it optional with a default value of "".  We can leave the implementation of "full_name" to the object and continue with the data we had before:
+
+```
+$ cat -n person9.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	enum Instrument <Guitar Bass Drums>;
+     4
+     5	class Person {
+     6	    has Str $.first_name is required;
+     7	    has Str $.middle_initial = '';
+     8	    has Str $.last_name  is required;
+     9	    has Date $.birthday;
+    10	    has Instrument $.instrument;
+    11	    method full_name {
+    12	        sprintf "%s %s%s",
+    13	        $!first_name,
+    14	        $!middle_initial ?? $!middle_initial ~ ' ' !! '',
+    15	        $!last_name
+    16	    }
+    17	}
+    18
+    19	my Person $geddy .= new(first_name => 'Geddy', last_name => 'Lee',
+    20	                    birthday => Date.new(1953, 6, 29), instrument => Bass);
+    21	my Person $alex  .= new(first_name => 'Alex',  last_name => 'Leifson',
+    22	                    birthday => Date.new(1953, 10, 27), instrument => Guitar);
+    23	my Person $neil  .= new(first_name => 'Neil',  last_name => 'Peart',
+    24	                    birthday => Date.new(1952, 9, 12), instrument => Drums);
+    25	my Person $mjfox .= new(first_name => 'Michael',  last_name => 'Fox',
+    26	                    middle_initial => 'J.',
+    27	                    birthday => Date.new(1961, 6, 9), instrument => Guitar);
+    28
+    29	for $geddy, $alex, $neil, $mjfox {
+    30	    printf "%s (%s) born %s\n", .full_name, .instrument, .birthday;
+    31	}
+$ ./person9.pl6
+Geddy Lee (Bass) born 1953-06-29
+Alex Leifson (Guitar) born 1953-10-27
+Neil Peart (Drums) born 1952-09-12
+Michael J. Fox (Guitar) born 1961-06-09
+```
+
+Now let's take our code from the "DNA" module and turn it into an object.  We'll start really simply:
 
 ```
 $ cat -n dna1.pl6
