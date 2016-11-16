@@ -24,7 +24,7 @@ sub fac(n) {
 }
 ```
 
-It's worth investing time in an editor that can easily comment/uncomment whole sections of code.  For instance, in vim, I have the "#" sign mapped to a function that will add or removed the appropriate comment character(s) (depending on the filetype) from the beginning of the selected section.  If your editor can't do that (e.g., nano), then I suggest you find something more powerful.
+It's worth investing time in an editor that can easily comment/uncomment whole sections of code.  For instance, in vim, I have a function that will add or removed the appropriate comment character(s) (depending on the filetype) from the beginning of the selected section.  If your editor can't do that (e.g., nano), then I suggest you find something more powerful.
 
 # Shebang
 
