@@ -370,3 +370,81 @@ $ cat -n gff1.pl6
     44 	    }
     45 	}
 ```
+
+# Feature annotation
+
+Imagine you've run uproc to classify your gene calls with annotations from KEGG and Pfam.  The output from uproc is a comma-separated file like so:
+
+```
+$ head -1 uproc-out.pfam
+1,0|contig:9|start:0|stop:630|direction:r|rev_compd:True|length:630,630,1,1,210,PF01119,1.318
+$ head -1 uproc-out.kegg
+1,0|contig:9|start:0|stop:630|direction:r|rev_compd:True|length:630,630,1,1,210,K10858,1.494
+```
+
+If we look at ```uproc-dna --help```, we can find what the fields mean:
+
+```
+    Columns to be printed when -p is used. By default, all of them are printed
+    in the order as below:
+        n: sequence number (starting from 1)
+        h: sequence header up to the first whitespace
+        l: sequence length (this is a lowercase L)
+        F: ORF frame number (1-6)
+        I: ORF index in the DNA sequence (starting from 1)
+        L: ORF length
+        f: predicted protein family
+        s: classification score
+```
+
+So we need to use the second-to-last field (e.g., "PF01119" or "K10858") and find the ID in the KEGG and Pfam files which have just two fields (id, description) which are delimited by tabs:
+
+```
+$ grep PF01119 pfam_to_domain
+PF01119	DNA_mis_repair
+$ grep K10858 kegg_to_desc
+K10858	PMS2; DNA mismatch repair protein PMS2
+```
+
+So the user will need to provide us two pairs of files: the Pfam and KEGG files and the Pfam and KEGG annotations from uproc, and our script will merge all this information into a new file which we can default to just "out."
+
+```
+$ cat -n annotate-uproc.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (
+     4	    Str :$kegg-out,
+     5	    Str :$pfam-out,
+     6	    Str :$kegg-desc,
+     7	    Str :$pfam-desc,
+     8	    Str :$out="out"
+     9	) {
+    10	    die "Must have --kegg-out or --pfam-out" unless $kegg-out || $pfam-out;
+    11
+    12	    my $out-fh = open $out, :w;
+    13	    $out-fh.put(<gene_callers_id source accession function e_value>.join("\t"));
+    14	    process('kegg', $kegg-out, $kegg-desc, $out-fh);
+    15	    process('pfam', $pfam-out, $pfam-desc, $out-fh);
+    16	    put "Done, see output '$out'";
+    17	}
+    18
+    19	sub process ($source, $uproc-out, $desc-file, $fh) {
+    20	    return unless $uproc-out && $desc-file;
+    21	    my %id_to_desc;
+    22	    for $desc-file.IO.lines -> $line {
+    23	        my ($id, $desc) = $line.split(/\t/);
+    24	        %id_to_desc{ $id } = $desc;
+    25	    }
+    26
+    27	    for $uproc-out.IO.lines -> $line {
+    28	        my @fields = $line.split(',');
+    29	        my $gene   = @fields[1].subst(/'|' .*/, '');
+    30	        my $id     = @fields[6];
+    31	        my $score  = @fields[7];
+    32	        my $desc   = %id_to_desc{ $id } || "NONE";
+    33	        $fh.put(join("\t", $gene, $source, $id, $desc, $score));
+    34	    }
+    35	}
+```
+
+Handling a comma- or tab-separated file is as simple as splitting each line on the proper character as shown on lines 23 and 28.  In lines 21-25, we're splitting each line of the Pfam or KEGG files into the ```$id``` and ```$desc``` and then storing these values into a hash called ```%id_to_desc``` that we can then use on line 32 to add the description from the file or "NONE" if none exists.  On line 29, we want to removed everything after the first "|" character with the ```subst``` (substitute) operation.  The other lines are just picking other desired fields from the file, and then we ```put``` the data into our output file handle ```$fh```.
