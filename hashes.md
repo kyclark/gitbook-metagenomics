@@ -98,6 +98,35 @@ Tyrosine        = TAC, TAT
 Valine          = GTA, GTC, GTG, GTT
 ```
 
+Hashes are great for counting things.  You don't have to check if a key/value pair exists first -- just add one to a key and it will be created and start counting from 0:
+
+```
+$ cat -n word-count.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	sub MAIN (Str $file where *.IO.f) {
+     4	    my %count;
+     5	    for $file.IO.words -> $word {
+     6	        %count{ $word }++;
+     7	    }
+     8
+     9	    for %count.grep(*.value > 1) -> (:$key, :$value) {
+    10	        printf "Saw '%s' %s time.\n", $key, $value;
+    11	    }
+    12	}
+$ ./word-count.pl6 because.txt
+Saw 'a' 3 times.
+Saw 'of' 2 times.
+Saw 'for' 2 times.
+Saw 'I' 3 times.
+Saw 'The' 3 times.
+Saw 'but' 3 times.
+Saw 'And' 2 times.
+Saw 'We' 5 times.
+Saw 'passed' 3 times.
+Saw 'the' 6 times.
+```
+
 You can set the keys and values all-at-once like above or one-at-a-time:
 
 ```
