@@ -32,3 +32,7 @@ Ken's first email client in college was "pine" running on the Unix machines whic
 Around 2001, Ken saw that a very celebrated Perl developer named Lincoln Stein was looking to hire people.  Ken got hired to work on the comparative plant genomics database called "Gramene," but really had no idea what Lincoln had done apart from his modules and books.  Lincoln was a very important character in a fairly new field called "bioinformatics" (cf. "How Perl Saved the Human Genome Project" https://www.foo.be/docs/tpj/issues/vol1_2/tpj0102-0001.html) and he ran a research lab at Cold Spring Harbor Laboratory in Cold Spring Harbor, NY.  Lincoln hired Ken to write a web-based visual comparative map application (CMap, PMID: 19648141) to augment existing web genome browsers like the UCSC browser, the Ensembl browser, and Lincoln's own Gbrowse.  This was Ken's entree into the world of biology and genomics.  Around 2004, Lincoln hired Bonnie Hurwitz who left a few years later to earn her PhD from the University of Arizona.  In 2014, Bonnie set up her new lab at the UofA and hired Ken to create the infrastructure for the iMicrobe project (http://imicrobe.us).
 
 Ken currently enjoys research computing, teaching, and the pursuit of his MS at UA.  He likes living in Tucson with his family (wife, three children), biking, cooking, and playing music.
+
+# Support
+
+Do you like this book?  Would you like to support the author?  Consider a donation via PayPal to "kyclark@gmail.com"!
