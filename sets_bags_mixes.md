@@ -142,16 +142,16 @@ BagHash.new(foo(3), baz, bar)
 These are both excellent data structures for when you have a unique group of items from which you would like to draw such that they are removed from the container.  When I was writing my Blackjack game, I found a ```Set``` to be the natural container for a deck of 52 unique cards:
 
 ```
-> my @suites = <Diamonds Hearts Clubs Spades>
-[Diamonds Hearts Clubs Spades]
+> my @suites = <D H C S>
+[D H C S]
 > my @faces = <2 3 4 5 6 7 8 9 10 J Q K A>
 [2 3 4 5 6 7 8 9 10 J Q K A]
 > my $deck = (@faces X @suites).map(~*).SetHash
-SetHash.new(4 Hearts, 5 Diamonds, 8 Hearts, 10 Diamonds, K Spades, 4 Clubs, 5 Hearts, A Clubs, A Hearts, K Clubs, 7 Diamonds, A Spades, A Diamonds, Q Spades, K Diamonds, 10 Spades, 3 Diamonds, 6 Diamonds, 8 Spades, J Diamonds, K Hearts, 4 Diamonds, 7 Hearts, 6 Spades, 3 Spades, 4 Spades, 5 Spades, 9 Hearts, 9 Spades, Q Hearts, 8 Diamonds, 8 Clubs, J Spades, 2 Spades, 5 Clubs, 6 Clubs, Q Clubs, 2 Hearts, 2 Clubs, 9 Diamonds, 2 Diamonds, 3 Clubs, 7 Clubs, J Hearts, Q Diamonds, J Clubs, 10 Clubs, 10 Hearts, 9 Clubs, 7 Spades, 6 Hearts, 3 Hearts)
+SetHash.new(3 C, 5 H, 7 S, 8 D, 10 S, 2 D, 2 H, 9 D, Q S, A C, 6 H, 6 C, 10 C, Q H, J S, 3 H, 9 H, A H, J D, 7 D, 8 H, Q C, 10 D, J C, 3 D, 4 D, 6 D, 8 C, 5 C, 5 D, 4 H, 2 S, K D, 8 S, 7 C, 4 S, K C, 7 H, K H, K S, 6 S, 5 S, J H, A D, A S, 10 H, 9 S, 4 C, 2 C, 9 C, 3 S, Q D)
 > $deck.elems
 52
 > $deck.grab(2).join(', ')
-8 Spades, 7 Clubs
+9 C, 9 D
 > $deck.elems
 50
 ```
