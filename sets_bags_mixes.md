@@ -160,6 +160,15 @@ The ```X``` (https://docs.perl6.org/routine/X) operator crosses two lists to pro
 
 When I realized that casinos regularly draw from a stack of many decks of cards, I realized I'd have to turn to a ```BagHash``` so that I could keep track of how many, e.g., Jack of Diamonds I have:
 
+```
+> my $baghash = (((@faces X @suites).map(~*)) xx 2).flat.BagHash
+BagHash.new(3 C(2), 5 H(2), 7 S(2), 8 D(2), 10 S(2), 2 D(2), 2 H(2), 9 D(2), Q S(2), A C(2), 6 H(2), 6 C(2), 10 C(2), Q H(2), J S(2), 3 H(2), 9 H(2), A H(2), J D(2), 7 D(2), 8 H(2), Q C(2), J C(2), 3 D(2), 4 D(2), 6 D(2), 8 C(2), 10 D(2), K D(2), 2 S(2), 4 H(2), 5 D(2), 5 C(2), K C(2), 4 S(2), 7 C(2), 8 S(2), K S(2), K H(2), 7 H(2), A S(2), A D(2), J H(2), 5 S(2), 6 S(2), 2 C(2), 4 C(2), 9 S(2), 10 H(2), Q D(2), 3 S(2), 9 C(2))
+> $baghash.grab(60).elems
+60
+> $baghash.elems
+37
+```
+
 # Mixes
 
 
