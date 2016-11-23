@@ -17,7 +17,7 @@
    * [Scalars](scalars.md)
    * [Arrays](arrays.md)
    * [Hashes](hashes.md)
-   * Sets, Bags, Mixes
+   * [Sets, Bags, Mixes](sets_bags_mixes.md)
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
