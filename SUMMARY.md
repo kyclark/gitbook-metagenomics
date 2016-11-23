@@ -22,6 +22,7 @@
    * [File handling](file_handling.md)
    * [Palindrome](palindrome.md)
    * [Delimited text](delimited_text.md)
+   * Sets, Bags, Mixes
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
    * [Regular Expression and Types](regular_expressions_and_types.md)
@@ -32,7 +33,6 @@
    * [Tests](tests.md)
    * [Web Development with Perl 5](web_development_with_perl_5.md)
    * [Problem Sets](problem_sets.md)
-   * Sets, Bags, Mixes
 * [HPC](hpc.md)
    * [PBS](pbs.md)
    * [SLURM](slurm.md)
