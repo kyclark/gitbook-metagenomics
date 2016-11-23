@@ -17,12 +17,12 @@
    * [Scalars](scalars.md)
    * [Arrays](arrays.md)
    * [Hashes](hashes.md)
+   * Sets, Bags, Mixes
    * [I Am Greet](i_am_greet.md)
    * [Add It Up](add_it_up.md)
    * [File handling](file_handling.md)
    * [Palindrome](palindrome.md)
    * [Delimited text](delimited_text.md)
-   * Sets, Bags, Mixes
    * [DNA Profiling](dna_profiling.md)
    * [Sequence similarity](sequence_similarity.md)
    * [Regular Expression and Types](regular_expressions_and_types.md)
