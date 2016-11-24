@@ -156,9 +156,31 @@ SetHash.new(3 C, 5 H, 7 S, 8 D, 10 S, 2 D, 2 H, 9 D, Q S, A C, 6 H, 6 C, 10 C, Q
 50
 ```
 
-The ```X``` (https://docs.perl6.org/routine/X) operator crosses two lists to produce a ```Pair``` for every combination, then I ```map``` each ```Pair``` into a stringification operation ```~*``` because the keys of a Set or Bag are strings.  When I ```grab``` cards (at random) from the Set, they are removed so that I don't have to worry about seeing them again.
+The ```X``` (https://docs.perl6.org/routine/X) operator crosses two lists to produce a ```Pair``` for every combination, then I ```map``` each ```Pair``` into a stringification operation ```~*``` because the keys of a Set or Bag are strings.  Rather than stringifying the pairs, I could flatten the whole list and use ```pairup```:
 
-When I realized that casinos regularly draw from a stack of many decks of cards, I realized I'd have to turn to a ```BagHash``` so that I could keep track of how many, e.g., Jack of Diamonds I have:
+```
+> ((@faces X @suites) xx 2).flat.pairup
+(2 => D 2 => H 2 => C 2 => S 3 => D 3 => H 3 => C 3 => S 4 => D 4 => H 4 => C 4 => S 5 => D 5 => H 5 => C 5 => S 6 => D 6 => H 6 => C 6 => S 7 => D 7 => H 7 => C 7 => S 8 => D 8 => H 8 => C 8 => S 9 => D 9 => H 9 => C 9 => S 10 => D 10 => H 10 => C 10 => S J => D J => H J => C J => S Q => D Q => H Q => C Q => S K => D K => H K => C K => S A => D A => H A => C A => S 2 => D 2 => H 2 => C 2 => S 3 => D 3 => H 3 => C 3 => S 4 => D 4 => H 4 => C 4 => S 5 => D 5 => H 5 => C 5 => S 6 => D 6 => H 6 => C 6 => S 7 => D 7 => H 7 => C 7 => S 8 => D 8 => H 8 => C 8 => S 9 => D 9 => H 9 => C 9 => S 10 => D 10 => H 10 => C 10 => S J => D J => H J => C J => S Q => D Q => H Q => C Q => S K => D K => H K => C K => S ...)
+> ((@faces X @suites) xx 2).flat.pairup.elems
+104
+```
+
+When I ```grab``` cards (at random) from the Set, they are removed so that I don't have to worry about seeing them again.  When I realized that casinos regularly draw from a stack of many decks of cards, I realized I'd have to turn to a ```BagHash``` so that I could keep track of how many, e.g., Jack of Diamonds I have.  I used the ```xx``` (https://docs.perl6.org/routine/xx) list repetition operator.  Take a look at that:
+
+```
+> 'YYZ' xx 3
+(YYZ YYZ YYZ)
+> 10 xx 3
+(10 10 10)
+> foo => 'bar' xx 3
+foo => (bar bar bar)
+> { foo => 'bar' } xx 3
+({foo => bar} {foo => bar} {foo => bar})
+> [1,2] xx 3
+([1 2] [1 2] [1 2])
+```
+
+Depending on how many decks I decide to deal from, it's easy to keep track of how many of each card has been dealt so far:
 
 ```
 > my $baghash = (((@faces X @suites).map(~*)) xx 2).flat.BagHash
@@ -171,5 +193,6 @@ BagHash.new(3 C(2), 5 H(2), 7 S(2), 8 D(2), 10 S(2), 2 D(2), 2 H(2), 9 D(2), Q S
 
 # Mixes
 
+Mixes and MixHashes are like Bags and BagHashes except that the weights are Reals rather than Ints.
 
 
