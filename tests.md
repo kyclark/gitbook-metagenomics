@@ -4,6 +4,8 @@ You can easily write a test suite in Perl using the "Test" module.  The DNA test
 
 One methodology to writing software is to actually write the tests *first* (called "test-driven development" or "TDD") and then write the software passes the tests.  It's a good way to define at least the behavior of a program, e.g., the expected output for a given input.  This is another reason I would encourage you to create a ```MAIN``` entry point with named parameters as it forces you to consider what you want from the user.  
 
+# Testing script output
+
 As a simple example, let's look at the test for the parallel file reader:
 
 ```
@@ -30,7 +32,47 @@ is $proc.out.slurp-rest, $expected, "Got expected output";
 done-testing();
 ```
 
-# Use tests elsewhere
+My first test is just to see if I'm able to ```run``` the script with a couple of known input files, and so I use ```ok``` to find out if the ```Proc``` (https://docs.perl6.org/type/Proc) was created.  Next I ask ```is``` the standard out of the process the same as the expected text.  
+
+I usually like to include a Makefile to assist me in running and testing my scripts:
+
+```
+$ cat Makefile
+run:
+	./parallel.pl6 --phred=phred.txt --seq=seq.txt
+
+test:
+	./test.pl6
+```    
+   
+If I run ```make``` with no target, the first target is run:
+
+```   
+$ make
+./parallel.pl6 --phred=phred.txt --seq=seq.txt
+Sequence_1
+1	2	3	4
+A	B	C	D
+Sequence_2
+5	6	7	8
+E	F	G	H
+```
+
+And it's so very satisfying to run ```make test``` and see all those "ok"s:
+
+```
+$ make test
+./test.pl6
+ok 1 - Ran script
+ok 2 - Got expected output
+1..2
+```
+
+# Test libraries
+
+Testing scripts is a bit laborious and tricky as they are usually designed to complete some monolithic tasks, so you are often limited to giving some input and checking that the output was what you expect.  As you move your code into libraries and modules to aid in sharing, you'll find it's much easier to write tests for each particular method.  In my blackjack example, each object (Card, Deck, Player, Game) had complex interactions, and I quickly found I wanted to test each part individually.  By moving the ```class``` code into a module, I could ```use``` any part and test them in isolation.
+
+# Use tests outside of test suites
 
 Tests don't have to be limited to test suites for your scirpts or libraries.  In this example, I needed to ensure that I had completely downloaded all the files from a collaborator by using MD5 checksums.  That's a test, so I decided to use the ```is``` assertion for an elegant solution and obvious output.
 
