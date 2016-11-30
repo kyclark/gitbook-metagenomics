@@ -4,7 +4,7 @@ You can easily write a test suite in Perl using the "Test" module.  The DNA test
 
 One methodology to writing software is to actually write the tests *first* (called "test-driven development" or "TDD") and then write the software passes the tests.  It's a good way to define at least the behavior of a program, e.g., the expected output for a given input.  This is another reason I would encourage you to create a ```MAIN``` entry point with named parameters as it forces you to consider what you want from the user.  
 
-# Testing script output
+# Testing scripts
 
 As a simple example, let's look at the test for the parallel file reader:
 
@@ -68,7 +68,7 @@ ok 2 - Got expected output
 1..2
 ```
 
-# Test libraries
+# Testing libraries
 
 Testing scripts is a bit laborious and tricky as they are usually designed to complete some monolithic tasks, so you are often limited to giving some input and checking that the output was what you expect.  As you move your code into libraries and modules to aid in sharing, you'll find it's much easier to write tests for each particular method.  In my blackjack example, each object (Card, Deck, Player, Game) had complex interactions, and I quickly found I wanted to test each part individually.  By moving the ```class``` code into a module, I could ```use``` any part and test them in isolation.
 
