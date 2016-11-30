@@ -65,6 +65,59 @@ This technique pushes the lines of the file directly into a the ```uc``` transfo
  
 > Golfing: Sometimes you may here about programmers (often Perl hackers) who like to "golf" their programs.  It's an attempt to create a program using the fewest keystrokes as possible, similar to the strategy in golf where the player tries to strike the ball as few times as possible to put it into the cup.  It's not a necessarily admirable quality to make one's code as terse as possible, but there is some truth to the notion that more code means more bugs.  There are incredibly powerful ideas built into every language, and learning how they can save you from writing code is worth the effort of writing fewer bugs.  If you understand ```map```, then you probably also understand why ```for``` loops and mutable variables are dangerous.  If you don't, then keep studying.
 
+# Reading two files in parallel
+
+I came across a StackOverflow question where the user had sequence scores in Phred format in one file and the sequences in another file like so:
+
+```
+$ cat phred.txt
+"#$%
+&'()
+$ cat seq.txt
+ABCD
+EFGH
+```
+
+The user needed to merge the files together, line-by-line, and assign "Sequence\_#" headers like so:
+
+```
+Sequence_1
+1	2	3	4
+A	B	C	D
+Sequence_2
+5	6	7	8
+E	F	G	H
+```
+
+In the following script, I use the ```Z``` zip operator (https://docs.perl6.org/routine/Z) to combine three lists together -- an increasing integer value (sequence number), a line from the Phred file, and a line from the sequence file.  To understand that, look at zipping an infinite list of integers ```1..*``` with the first four letters of the alphabet ```"a".."d"``` and the lines from the local dictionary file.  Remember that zipping stops on the shortest list:
+
+```
+> 1..* Z "a".."d" Z '/usr/share/dict/words'.IO.lines
+((1 a A) (2 b a) (3 c aa) (4 d aal))
+```
+
+Here it is in action:
+
+```
+$ cat -n parallel.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	subset File of Str where *.IO.f;
+     4
+     5	sub MAIN (File :$phred='phred.txt', File :$seq='seq.txt') {
+     6	    my $phred-fh = open $phred;
+     7	    my $seq-fh   = open $seq;
+     8	    my %xlate    = map { chr($_ + 33) => $_ }, 1..8;
+     9
+    10	    for 1..* Z $phred-fh.IO.lines Z $seq-fh.IO.lines -> ($i, $score, $bases) {
+    11	        put join "\n",
+    12	            "Sequence_$i",
+    13	            (map { %xlate{$_} }, $score.comb).join("\t"),
+    14	            $bases.comb.join("\t");
+    15	    }
+    16	}
+```
+
 # Movie file reader
 
 It seems to me that, even in movies set in the future, filmmakers still like to have computers spit out messages one-character-at-a-time as if they were arriving like telegrams. If you would like to read a file like this, I present the "movie file reader." First, an explicit, long-hand version:
