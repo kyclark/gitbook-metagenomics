@@ -86,26 +86,27 @@ a36e4adfaa62cc4adb8cea44c4f7825f  HOT232_1_0770m/prodigal.gff
 So I need to read the contents of this file, get just the first field, then execute my local "md5" (or "md5sum") program on the file without the ".md5" extension and determine if they are the same. All standard stuff, and I think Perl 6 gives us elegant ways to accomplish all of these, including a dead-simple testing framework. Here's my solution:
 
 ```
-#!/usr/bin/env perl6
-
-use File::Find;
-use Test;
-
-sub MAIN (Str :$dir=~$*CWD, Str :$md5="md5sum", Str :$ext='.md5') {
-    my $rx = rx/$ext $/;
-    for find(:dir($dir), :name($rx)) -> $md5-file {
-        my $basename    = $md5-file.basename;
-        my ($remote, $) = $md5-file.slurp.split(' ');
-        my $local-file  = $basename.subst($rx, '');
-        my $path        = $*SPEC.catfile(
-                          $md5-file.dirname, $local-file);
-        my ($local, $)  = run($md5, $path, :out)
-                          .out.slurp-rest.split(' ');
-        is $local, $remote, $md5-file;
-    }
-
-    done-testing();
-}
+$ cat -n check-md5.pl6
+     1	#!/usr/bin/env perl6
+     2
+     3	use File::Find;
+     4	use Test;
+     5
+     6	sub MAIN (Str :$dir=~$*CWD, Str :$md5="md5sum", Str :$ext='.md5') {
+     7	    my $rx = rx/$ext $/;
+     8	    for find(:dir($dir), :name($rx)) -> $md5-file {
+     9	        my $basename    = $md5-file.basename;
+    10	        my ($remote, $) = $md5-file.slurp.split(' ');
+    11	        my $local-file  = $basename.subst($rx, '');
+    12	        my $path        = $*SPEC.catfile(
+    13	                          $md5-file.dirname, $local-file);
+    14	        my ($local, $)  = run($md5, $path, :out)
+    15	                          .out.slurp-rest.split(' ');
+    16	        is $local, $remote, $md5-file;
+    17	    }
+    18
+    19	    done-testing();
+    20	}
 ```
 
 Here I'll default to looking in the current directory which is accessible as the global variable ```$*CWD```.  Remember that this variable uses a ```$*``` "twigle" (two sigils) to denote a global variable which in this case is actually an IO object. I need to stringify it either by putting it in double-quotes or coercing it with the ```~``` operator. The "md5" argument is the name of my local "md5sum" binary which is often called just "md5." Lastly, I assume the file extension of the remote checksums is ".md5."
