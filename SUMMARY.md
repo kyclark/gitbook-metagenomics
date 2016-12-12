@@ -20,7 +20,6 @@
     * [Sets, Bags, Mixes](sets_bags_mixes.md)
     * [I Am Greet](i_am_greet.md)
     * [The MAIN Thing](the-main-thing.md)
-    * [Add It Up](add_it_up.md)
     * [File handling](file_handling.md)
     * [Delimited text](delimited_text.md)
     * [DNA Profiling](dna_profiling.md)
