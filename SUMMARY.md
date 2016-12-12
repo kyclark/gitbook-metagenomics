@@ -22,7 +22,6 @@
     * [The MAIN Thing](the-main-thing.md)
     * [Add It Up](add_it_up.md)
     * [File handling](file_handling.md)
-    * [The MAIN Thing](the-main-thing.md)
     * [Delimited text](delimited_text.md)
     * [DNA Profiling](dna_profiling.md)
     * [Sequence similarity](sequence_similarity.md)
