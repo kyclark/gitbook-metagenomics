@@ -1,12 +1,12 @@
 # Unix exercises
 
-> Note: When you see a "$" given in the example prompts, it is a metacharacter indicating that this is the prompt for a normal (not super-user) account.  Your default prompt may be different, and it is highly configurable (search for "PS1 unix prompt" to learn more).  Anyway, point is that you should type (copy/paste) all the stuff *after* the $.  If you ever see a prompt with "#," it's indicating a command that should be run as the super-user/root account, e.g., installing some software into a system-wide directory so it can be shared by all users.
+> Note: When you see a "$" given in the example prompts, it is a metacharacter indicating that this is the prompt for a normal \(not super-user\) account.  Your default prompt may be different, and it is highly configurable \(search for "PS1 unix prompt" to learn more\).  Anyway, point is that you should type \(copy/paste\) all the stuff _after_ the $.  If you ever see a prompt with "\#," it's indicating a command that should be run as the super-user/root account, e.g., installing some software into a system-wide directory so it can be shared by all users.
 
 ## Number of unique users
 
 Find the number of unique users on a shared system
 
-We know that "w" will tell us the users logged in.  Try it now on a system that has many users (i.e., not your laptop) and see the output.  We'll connect the output of "w" to "head" using a pipe "|", but we only want the first five lines:
+We know that "w" will tell us the users logged in.  Try it now on a system that has many users \(i.e., not your laptop\) and see the output.  We'll connect the output of "w" to "head" using a pipe "\|", but we only want the first five lines:
 
 ```
 $ w | head -5
@@ -16,7 +16,7 @@ antontre pts/1    149.165.156.129  Sat14    3days  0.10s  0.10s /bin/sh -i
 huddack  pts/3    128.4.131.189    09:38    4:56m  0.15s  0.15s -bash
 ```
 
-We want to see the first five *users*, not the first five lines of output.  To skip the first two lines of headers from "w," we first pipe "w" into "awk" and tell it we only want to see output when the Number of Records (NR) is greater than 2:
+We want to see the first five _users_, not the first five lines of output.  To skip the first two lines of headers from "w," we first pipe "w" into "awk" and tell it we only want to see output when the Number of Records \(NR\) is greater than 2:
 
 ```
 $ w | awk 'NR>2' | head -5
@@ -49,7 +49,7 @@ minyard
 antontre
 ```
 
-Hmm, that's not right.  Remember I said earlier that "uniq" only works *on sorted input*?  So let's sort those names first:
+Hmm, that's not right.  Remember I said earlier that "uniq" only works _on sorted input_?  So let's sort those names first:
 
 ```
 $ w | awk 'NR>2' | head -5 | cut -d ' ' -f 1 | sort | uniq
@@ -58,21 +58,21 @@ huddack
 minyard
 ```
 
-OK, that is correct.  Now let's remove the "head -5" and use "wc" to count all the lines (-l) of input:
+OK, that is correct.  Now let's remove the "head -5" and use "wc" to count all the lines \(-l\) of input:
 
 ```
 $ w | awk 'NR>2' | cut -d ' ' -f 1 | sort | uniq | wc -l
 138
 ```
 
-So what you see is that we're connecting small, well-defined programs together using pipes to connect the "standard input" (STDIN) and "standard output (STDOUT) streams.  There's a third basic file handle in Unix called "standard error" (STDERR) that we'll come across later.  It's a way for programs to report problems without simply dying.  You can redirect errors into a file like so:
+So what you see is that we're connecting small, well-defined programs together using pipes to connect the "standard input" \(STDIN\) and "standard output \(STDOUT\) streams.  There's a third basic file handle in Unix called "standard error" \(STDERR\) that we'll come across later.  It's a way for programs to report problems without simply dying.  You can redirect errors into a file like so:
 
 ```
 $ program 2>err
 $ program 1>out 2>err
 ```
 
-The first example puts STDERR into a file called "err" and lets STDOUT print to the terminal.  The second example captures STDOUT into a file called "out" while STDERR goes to "err."  
+The first example puts STDERR into a file called "err" and lets STDOUT print to the terminal.  The second example captures STDOUT into a file called "out" while STDERR goes to "err."
 
 > Protip: Sometimes a program will complain about things that you cannot fix, e.g., "find" may complain about file permissions that you don't care about.  In those cases, you can redirect STDERR to a special filehandle called "/dev/null" where they are forgotten forever.  Kind of like the "memory hole" in 1984.
 
@@ -115,7 +115,7 @@ $ grep 'oo' /usr/share/dict/words | grep 'ow' | wc -l
 158
 ```
 
-How many *do not* contain the "ow" sequence?
+How many _do not_ contain the "ow" sequence?
 
 ```
 $ grep 'oo' /usr/share/dict/words | grep -v 'ow' | wc -l
@@ -160,7 +160,7 @@ ncftp /abe487/contigs > less contigs.zip.md5
 ncftp /abe487/contigs > exit
 ```
 
-> You can read up on MD5 (https://en.wikipedia.org/wiki/Md5sum) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches what we see on the server, then we can be sure that we have the exact file that is on the FTP site:
+> You can read up on MD5 \([https://en.wikipedia.org/wiki/Md5sum](https://en.wikipedia.org/wiki/Md5sum)\) to understand that this is a signature of the file.  If we calculate the MD5 of the file we dowloaded and it matches what we see on the server, then we can be sure that we have the exact file that is on the FTP site:
 
 ```
 $ md5sum contigs.zip
@@ -180,7 +180,7 @@ Archive:  contigs.zip
 $ rm contigs.zip
 ```
 
-These files are in FASTA format (https://en.wikipedia.org/wiki/FASTA_format), which basically looks like this:
+These files are in FASTA format \([https://en.wikipedia.org/wiki/FASTA\_format](https://en.wikipedia.org/wiki/FASTA_format)\), which basically looks like this:
 
 ```
 >MCHU - Calmodulin - Human, rabbit, bovine, rat, and chicken
@@ -195,9 +195,9 @@ GLMPFLHTSKHRSMMLRPLSQALFWTLTMDLLTLTWIGSQPVEYPYTIIGQMASILYFSIILAFLPIAGX
 IENY
 ```
 
-Header lines start with ">", then the sequence follows.  Sequences may be broken up over several lines of 50 or 80 characters, but it's just as common to see the sequences take only one (sometimes very long) line.  Sequences may be nucleotides, proteins, very short DNA/RNA, longer contigs (shorter strands assembled into contiguous regions), or entire chromosomes or even genomes.
+Header lines start with "&gt;", then the sequence follows.  Sequences may be broken up over several lines of 50 or 80 characters, but it's just as common to see the sequences take only one \(sometimes very long\) line.  Sequences may be nucleotides, proteins, very short DNA/RNA, longer contigs \(shorter strands assembled into contiguous regions\), or entire chromosomes or even genomes.
 
-So, how many sequences are in "group12_contigs.fasta"?  To answer, we just need to count how many times we see ">".  We can do that with "grep":
+So, how many sequences are in "group12\_contigs.fasta"?  To answer, we just need to count how many times we see "&gt;".  We can do that with "grep":
 
 ```
 $ grep > group12_contigs.fasta
@@ -205,21 +205,21 @@ Usage: grep [OPTION]... PATTERN [FILE]...
 Try 'grep --help' for more information.
 ```
 
-What is going on?  Remember when we captured the "oo" words that we used the ">" symbol to tell Unix to *redirect* the output of "grep" into a file.  We need to tell Unix that we mean a literal greater-than sign by placing it in single or double quotes or putting a backslash in front of it:
+What is going on?  Remember when we captured the "oo" words that we used the "&gt;" symbol to tell Unix to _redirect_ the output of "grep" into a file.  We need to tell Unix that we mean a literal greater-than sign by placing it in single or double quotes or putting a backslash in front of it:
 
 ```
 $ grep '>' group12_contigs.fasta
 $ grep \> group12_contigs.fasta
 ```
 
-You should actually see nothing because something quite insidious happened with that first "grep" statement -- it overwrote our original "group12_contigs.fasta" with the result of "grep"ing for nothing, which is nothing:
+You should actually see nothing because something quite insidious happened with that first "grep" statement -- it overwrote our original "group12\_contigs.fasta" with the result of "grep"ing for nothing, which is nothing:
 
 ```
 $ ls -l group12_contigs.fasta
 -rw-rw---- 1 kyclark staff 0 Aug 10 15:08 group12_contigs.fasta
 ```
 
-Ugh, OK, I have to go back and "wget" the "contigs.zip" file to restore it.  That's OK.  Things like this happen all the time.  
+Ugh, OK, I have to go back and "wget" the "contigs.zip" file to restore it.  That's OK.  Things like this happen all the time.
 
 ```
 $ ls -lh group12_contigs.fasta
@@ -233,7 +233,7 @@ $ grep '>' group12_contigs.fasta | wc -l
 132
 ```
 
-Hey, I could see doing that often.  Maybe we should make this into an "alias" (see above).  The problem is that the "argument" to the function (the filename) is stuck in the middle of the chain of commands, so it would make it tricky to use an alias for this.  We can create a bash function that we add to our .bashrc:
+Hey, I could see doing that often.  Maybe we should make this into an "alias" \(see above\).  The problem is that the "argument" to the function \(the filename\) is stuck in the middle of the chain of commands, so it would make it tricky to use an alias for this.  We can create a bash function that we add to our .bashrc:
 
 ```
 function countseqs() {
@@ -249,7 +249,7 @@ $ countseqs group12_contigs.fasta
 132
 ```
 
-Same answer.  Good.  However, someone beat us to the punch.  There is a powerful tool called "seqmagick" (https://github.com/fhcrc/seqmagick) that will do this (and much, much more).  It's installed into the "hurwitzlab/bin" directory, or you can install it locally:
+Same answer.  Good.  However, someone beat us to the punch.  There is a powerful tool called "seqmagick" \([https://github.com/fhcrc/seqmagick](https://github.com/fhcrc/seqmagick)\) that will do this \(and much, much more\).  It's installed into the "hurwitzlab/bin" directory, or you can install it locally:
 
 ```
 $ seqmagick info group12_contigs.fasta
@@ -259,7 +259,7 @@ group12_contigs.fasta FALSE           5136    116409  22974.30       132
 
 Run "seqmagick -h" to see everything it can do.
 
-Moving on, let's find how many contig IDs in "group12_contigs.fasta" contain the number "47":
+Moving on, let's find how many contig IDs in "group12\_contigs.fasta" contain the number "47":
 
 ```
 $ grep 47 group12_contigs.fasta > group12_ids_with_47
@@ -308,7 +308,7 @@ Now we will create a file with duplicate IDs:
 $ cat temp1_ids temp2_ids > duplicate_ids
 ```
 
-Check contents of "duplicate_ids" using "less" or "cat."  Now grab all of the contigs IDs from "group20_contigs.fasta" that contain the number "51."  Concatenate the new IDs to the duplicate_ids file in a file called "multiple_ids":
+Check contents of "duplicate\_ids" using "less" or "cat."  Now grab all of the contigs IDs from "group20\_contigs.fasta" that contain the number "51."  Concatenate the new IDs to the duplicate\_ids file in a file called "multiple\_ids":
 
 ```
 $ cp duplicate_ids multiple_ids
@@ -316,15 +316,15 @@ $ grep 51 group20_contigs.fasta >> !$
 grep 51 group20_contigs.fasta >> multiple_ids
 ```
 
-Notice the ">>" arrows to indicate that we are *appending* to the existing "multiple_ids" file.
+Notice the "&gt;&gt;" arrows to indicate that we are _appending_ to the existing "multiple\_ids" file.
 
-Remove the existing "temp" files using a "*" wildcard:
+Remove the existing "temp" files using a "\*" wildcard:
 
 ```
 $ rm temp*
 ```
 
-Now let's explore more of what "sort" and "uniq" can do for us.  We want to find which IDs are unique and which are duplicated.  If we read the manpage ("man uniq"), we see that there are "-d" and "-u" flags for doing just that.  However, we've already seen that input to "uniq" needs to be sorted, so we need to remember to do that:
+Now let's explore more of what "sort" and "uniq" can do for us.  We want to find which IDs are unique and which are duplicated.  If we read the manpage \("man uniq"\), we see that there are "-d" and "-u" flags for doing just that.  However, we've already seen that input to "uniq" needs to be sorted, so we need to remember to do that:
 
 ```
 $ sort multiple_ids | uniq -d > temp1_ids
@@ -352,14 +352,14 @@ $ diff temp*
 > >Contig_9851
 ```
 
-Let's remove our temp files again and make a "clean_ids" file:
+Let's remove our temp files again and make a "clean\_ids" file:
 
 ```
 $ rm temp*
 $ sort multiple_ids | uniq > clean_ids
 ```
 
-We can use "sed" to alter the IDs.  The "s//" command say to "substitute" the first thing with the second thing, e.g., to replace all occurences of "foo" with "bar", use "s/foo/bar" (http://stackoverflow.com/questions/4868904/what-is-the-origin-of-foo-and-bar).
+We can use "sed" to alter the IDs.  The "s//" command say to "substitute" the first thing with the second thing, e.g., to replace all occurences of "foo" with "bar", use "s/foo/bar" \([http://stackoverflow.com/questions/4868904/what-is-the-origin-of-foo-and-bar](http://stackoverflow.com/questions/4868904/what-is-the-origin-of-foo-and-bar)\).
 
 ```
 $ sed 's/C/c/' clean_ids
@@ -407,4 +407,6 @@ FALSE      5029     22601
 FALSE      5024     81329
 FALSE      5587     30751
 ```
+
+
 

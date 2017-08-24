@@ -10,7 +10,19 @@ We need to get into a Unix system.  If you're on Linux or OSX, open a terminal a
 ssh <NetID>@hpc.arizona.edu
 ```
 
-If all goes well, you should be on a machine called "gatekeeper.hpc.arizona.edu."  Verfiy this with the command "hostname<Enter>".  Use the command "menuon" to get the following menu:
+If all goes well, you should see something like this:
+
+```
+Last login: Thu Aug 24 09:12:07 2017 from dhcp-10-142-130-41.uawifi.arizona.edu
+This is a bastion host used to access the rest of the environment.
+
+Shortcut commands to access each resource
+-----------------------------------------
+Ocelote:                El Gato:                Cluster(ICE)/HTC/SMP:
+$ ocelote               $ elgato                $ ice
+```
+ 
+The name of the machine should be  "keymaster.hpc.arizona.edu."  Verify this with the command "hostname<Enter>".  Use the command "menuon" to get the following menu:
 
 ```
 ===============
