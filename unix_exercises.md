@@ -357,6 +357,10 @@ Let's remove our temp files again and make a "clean\_ids" file:
 ```
 $ rm temp*
 $ sort multiple_ids | uniq > clean_ids
+$ wc -l multiple_ids clean_ids
+ 25 multiple_ids
+ 18 clean_ids
+ 43 total
 ```
 
 We can use "sed" to alter the IDs.  The "s//" command say to "substitute" the first thing with the second thing, e.g., to replace all occurences of "foo" with "bar", use "s/foo/bar" \([http://stackoverflow.com/questions/4868904/what-is-the-origin-of-foo-and-bar](http://stackoverflow.com/questions/4868904/what-is-the-origin-of-foo-and-bar)\).
