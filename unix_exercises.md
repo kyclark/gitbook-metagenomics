@@ -292,7 +292,7 @@ How can we be sure these files are the same?  Let's use "diff":
 $ diff temp1_ids temp2_ids
 ```
 
-You should see nothing, which is a case of "no news is good news."  The don't differ in any way.  We can verify this with "md5sum":
+You should see nothing, which is a case of "no news is good news."  They don't differ in any way.  We can verify this with "md5sum":
 
 ```
 $ md5sum temp*
@@ -364,7 +364,7 @@ We can use "sed" to alter the IDs.  The "s//" command say to "substitute" the fi
 ```
 $ sed 's/C/c/' clean_ids
 $ sed 's/_/./' clean_ids
-# sed 's/>//' clean_ids > newclean_ids
+$ sed 's/>//' clean_ids > newclean_ids
 ```
 
 That last one removes the FASTA file artifact that identifies the beginning of an ID but is not part of the ID.  We can use this with "seqmagick" now to extract those sequences and find out how many were found:
