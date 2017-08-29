@@ -131,6 +131,131 @@ $ bc <<< 158+10302
 
 Excellent.  Smithers, massage my brain.
 
+## Gapminder
+
+Do the following:
+
+```
+$ git clone https://github.com/kyclark/metagenomics-book
+$ cd metagenomics-book/problems/gapminder/data
+```
+
+How many files are in the "data" directory?
+
+```
+ls | wc -l
+```
+
+How many lines are in each/all of the files?
+
+```
+wc -l *
+```
+
+You can use `cat` to spew at the entire contents of a file into your shell, but if you'd just like to see the top of a file, you can use:
+
+```
+head Trinidad_and_Tobago.cc.txt
+```
+
+If you only want to see 5 lines, use `-n 5` or `-5` .
+
+For our exercise, we'd like to combine all the files into one file we can analyze.  That's easy enough with:
+
+```
+cat * > all.txt
+```
+
+Let's use `head` to look at the top of file:
+
+```
+$ head -5 all.txt
+Afghanistan	1997	22227415	Asia	41.763	635.341351
+Afghanistan	2002	25268405	Asia	42.129	726.7340548
+Afghanistan	2007	31889923	Asia	43.828	974.5803384
+Afghanistan	1952	8425333	Asia	28.801	779.4453145
+Afghanistan	1957	9240934	Asia	30.332	820.8530296
+```
+
+Hmm, there are no column headers.  Let's fix that.  There's one file that's pretty different in content \(it has only one line\) and name \("country.cc.txt"\):
+
+```
+$ cat country.cc.txt
+country	year	pop	continent	lifeExp	gdpPercap
+```
+
+Those are the headers that you can combine to all the other files to get named columns, something very important if you want to look at the data in Excel and R/Python data frames.  
+
+```
+$ rm all.txt
+$ mv country.cc.txt headers
+$ cat headers *.txt > all.txt
+$ head -5 all.txt | column -t
+country      year  pop       continent  lifeExp  gdpPercap
+Afghanistan  1997  22227415  Asia       41.763   635.341351
+Afghanistan  2002  25268405  Asia       42.129   726.7340548
+Afghanistan  2007  31889923  Asia       43.828   974.5803384
+Afghanistan  1952  8425333   Asia       28.801   779.4453145
+```
+
+Yes, that looks much better.  Double-check that the number of lines in the `all.txt` match the number of lines of input:
+
+```
+$ wc -l *.cc.txt headers
+$ wc -l all.txt
+```
+
+How many observations do we have for 1952?
+
+```
+$ grep 1952 all.txt | wc -l
+```
+
+How many observations are present for Africa?
+
+```
+$ grep Africa all.txt | wc -l
+```
+
+How many observations where the life expectancy \("lifeExp," field \#5\) is greater than 40?  For this, let's use the `awk` tool.  Normally `awk` will split on whitespace, so we need to use `-F"\t"` to tell it to split on the tab \(`\t`\) character.  Use `man awk` to learn more.
+
+```
+$ awk -F"\t" '$5 > 40' all.txt | wc -l
+```
+
+How many of those are from Africa?
+
+```
+$ awk -F"\t" '$5 > 40' all.txt | grep Africa | wc -l
+```
+
+How many countries had a life expectancy greater than 70, grouped by year?
+
+```
+$ awk -F"\t" '$5 > 70 { print $2 }' all.txt | sort | uniq -c
+   5 1952
+   9 1957
+  16 1962
+  25 1967
+  30 1972
+  38 1977
+  44 1982
+  49 1987
+  54 1992
+  65 1997
+  75 2002
+  83 2007
+   1 year
+```
+
+How could we add continent to this?
+
+```
+$ awk -F"\t" '$5 > 70 { print $2 ":" $4 }' all.txt | sort | uniq -c
+```
+
+As you look at the data and want to ask more complicated questions like how does `gdpPercap` affect `lifeExp`, you'll find you need more advanced tools like Python or R.  Now that the data has been collated and the columns named, that will be much easier.
+
 ## Something with sequences
 
 Now we will get some sequence data from the iMicrobe FTP site.  Both "wget" and "ncftpget" will do the trick:
