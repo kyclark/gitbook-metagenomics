@@ -143,19 +143,19 @@ $ cd metagenomics-book/problems/gapminder/data
 How many files are in the "data" directory?
 
 ```
-ls | wc -l
+$ ls | wc -l
 ```
 
 How many lines are in each/all of the files?
 
 ```
-wc -l *
+$ wc -l *
 ```
 
 You can use `cat` to spew at the entire contents of a file into your shell, but if you'd just like to see the top of a file, you can use:
 
 ```
-head Trinidad_and_Tobago.cc.txt
+$ head Trinidad_and_Tobago.cc.txt
 ```
 
 If you only want to see 5 lines, use `-n 5` or `-5` .
@@ -163,28 +163,28 @@ If you only want to see 5 lines, use `-n 5` or `-5` .
 For our exercise, we'd like to combine all the files into one file we can analyze.  That's easy enough with:
 
 ```
-cat * > all.txt
+$ cat * > all.txt
 ```
 
 Let's use `head` to look at the top of file:
 
 ```
 $ head -5 all.txt
-Afghanistan	1997	22227415	Asia	41.763	635.341351
-Afghanistan	2002	25268405	Asia	42.129	726.7340548
-Afghanistan	2007	31889923	Asia	43.828	974.5803384
-Afghanistan	1952	8425333	Asia	28.801	779.4453145
-Afghanistan	1957	9240934	Asia	30.332	820.8530296
+Afghanistan    1997    22227415    Asia    41.763    635.341351
+Afghanistan    2002    25268405    Asia    42.129    726.7340548
+Afghanistan    2007    31889923    Asia    43.828    974.5803384
+Afghanistan    1952    8425333    Asia    28.801    779.4453145
+Afghanistan    1957    9240934    Asia    30.332    820.8530296
 ```
 
 Hmm, there are no column headers.  Let's fix that.  There's one file that's pretty different in content \(it has only one line\) and name \("country.cc.txt"\):
 
 ```
 $ cat country.cc.txt
-country	year	pop	continent	lifeExp	gdpPercap
+country    year    pop    continent    lifeExp    gdpPercap
 ```
 
-Those are the headers that you can combine to all the other files to get named columns, something very important if you want to look at the data in Excel and R/Python data frames.  
+Those are the headers that you can combine to all the other files to get named columns, something very important if you want to look at the data in Excel and R/Python data frames.
 
 ```
 $ rm all.txt
@@ -209,6 +209,25 @@ How many observations do we have for 1952?
 
 ```
 $ grep 1952 all.txt | wc -l
+$ cut -f 2 *.cc.txt | grep 1952 | wc -l
+```
+
+Those numbers aren't the same!  Why is that?
+
+```
+$ grep 1952 all.txt | cut -f 2 | sort | uniq -c
+ 142 1952
+   1 1982
+   1 1987
+$ grep 1952 all.txt | grep 198[27]
+Lebanon    1982    3086876    Asia    66.983    7640.519521
+Mozambique    1987    12891952    Africa    42.861    389.8761846
+```
+
+How many observations for every year?
+
+```
+$ cut -f 2 *.cc.txt | sort | uniq -c
 ```
 
 How many observations are present for Africa?
@@ -217,22 +236,139 @@ How many observations are present for Africa?
 $ grep Africa all.txt | wc -l
 ```
 
-How many observations where the life expectancy \("lifeExp," field \#5\) is greater than 40?  For this, let's use the `awk` tool.  Normally `awk` will split on whitespace, so we need to use `-F"\t"` to tell it to split on the tab \(`\t`\) character.  Use `man awk` to learn more.
+How many for each continent?
+
+```
+$ cut -f 4 *.cc.txt | sort | uniq -c
+```
+
+What was the world population in 1952?  As we've seen, just using `grep 1952` is not sufficient.  We want to take the 3rd column if the 2nd column is equal to "1952."  `awk` will let us do just that.  Normally `awk` will split on whitespace, so we need to use `-F"\t"` to tell it to split on the tab \(`\t`\) character.  Use `man awk` to learn more.
+
+```
+$ awk -F"\t" '$2 == "1952" { print $3 }' *.cc.txt
+```
+
+I'll bet you didn't notice that one of those numbers was in scientific notation.  That's going to cause a problem.  Here it is:
+
+```
+$ awk -F"\t" '$2 == "1952" { print $3 }' *.cc.txt | grep [a-z]
+3.72e+08
+```
+
+We have to throw in a `grep -v` to get rid of that \(the `-v` reverses the match\), then use the `paste` command is used to put a "+" in between all the numbers:
+
+```
+$ awk -F"\t" '$2 == "1952" { print $3 }' *.cc.txt | grep -v [a-z] | paste -sd+ -
+```
+
+and then we pipe that to the `bc` calculator:
+
+```
+$ awk -F"\t" '$2 == "1952" { print $3 }' *.cc.txt | grep -v [a-z] | paste -sd+ - | bc
+2034957150.999989
+```
+
+It bothers me that it's not an integer, so I'm going to use `printf` in the `awk` command to trim that:
+
+```
+$ awk -F"\t" '$2 == "1952" { printf "%d\n", $3 }' *.cc.txt | grep -v [a-z] | paste -sd+ - | bc
+2406957150
+```
+
+How did population change over the years?  Let's put a list of the unique years into a file called "years" and then `cat` over that to run the above for each year:
+
+    $ cut -f 2 *.txt | sort | uniq > years
+    $ for year in `cat years`; do echo -n $year ": " && awk -F"\t" "\$2 == $year { printf \"%d\n\", \$3 }" *.cc.txt | grep -v [a-z] | paste -sd+ - | bc; done
+    1952 : 2406957150
+    1957 : 2664404580
+    1962 : 2899782974
+    1967 : 3217478384
+    1972 : 3576977158
+    1977 : 3930045807
+    1982 : 4289436840
+    1987 : 4691477418
+    1992 : 5110710260
+    1997 : 5515204472
+    2002 : 5886977579
+    2007 : 6251013179
+
+That's kind of useful!  Here's how I might put that into a script:
+
+```
+$ cat pop-years.sh
+#!/bin/bash
+
+set -u
+
+YEARS="years"
+
+cut -f 2 ./*.cc.txt | sort | uniq > "$YEARS"
+NUM=$(wc -l $YEARS | awk '{print $1}')
+
+if [[ "$NUM" -lt 1 ]]; then
+  echo "No years ($NUM)!"
+  exit 1
+fi
+
+while read -r YEAR; do
+    echo -n "$YEAR: "
+    awk -F"\t" "\$2 == $YEAR { printf \"%d\\n\", \$3 }" ./*.cc.txt | grep -v "[a-z]" | paste -sd+ - | bc
+done < "$YEARS"
+$ ./pop-years.sh
+1952: 2406957150
+1957: 2664404580
+1962: 2899782974
+1967: 3217478384
+1972: 3576977158
+1977: 3930045807
+1982: 4289436840
+1987: 4691477418
+1992: 5110710260
+1997: 5515204472
+2002: 5886977579
+2007: 6251013179
+```
+
+How has life expectancy changed over the years?  For this we'll need to write a little Python program.  I'll `cat` the program so you can see it.  You can type this in with `nano` and then do `chmod +x avg.py` to make it executable \(or use the one I added\):
+
+    $ cat avg.py
+    #!/usr/bin/env python3
+
+    import sys
+
+    args = list(map(float, sys.argv[1:]))
+    print(str(sum(args) // len(args)))
+    $ for year in `cat years`; do echo -n "$year: " && grep $year *.txt | cut -f 5 | xargs ./avg.py; done
+    1952: 49.0
+    1957: 51.0
+    1962: 53.0
+    1967: 55.0
+    1972: 57.0
+    1977: 59.0
+    1982: 61.0
+    1987: 63.0
+    1992: 64.0
+    1997: 65.0
+    2002: 65.0
+    2007: 66.0
+
+How many observations where the life expectancy \("lifeExp," field \#5\) is greater than 40?  For this, let's use the `awk` tool.  
 
 ```
 $ awk -F"\t" '$5 > 40' all.txt | wc -l
 ```
 
-How many of those are from Africa?
+How many of those are from Africa?  We can either use `cut` to get the 4th field or ask `awk` to print the 4th field for us:
 
 ```
-$ awk -F"\t" '$5 > 40' all.txt | grep Africa | wc -l
+$ awk -F"\t" '$5 > 40' all.txt | cut -f 4 | grep Africa | wc -l
+$ awk -F"\t" '$5 > 40 {print $4}' all.txt | grep Africa | wc -l
 ```
 
 How many countries had a life expectancy greater than 70, grouped by year?
 
 ```
-$ awk -F"\t" '$5 > 70 { print $2 }' all.txt | sort | uniq -c
+$ awk -F"\t" '$5 > 70 { print $2 }' *.cc.txt | sort | uniq -c
    5 1952
    9 1957
   16 1962
@@ -245,16 +381,39 @@ $ awk -F"\t" '$5 > 70 { print $2 }' all.txt | sort | uniq -c
   65 1997
   75 2002
   83 2007
-   1 year
 ```
 
 How could we add continent to this?
 
 ```
-$ awk -F"\t" '$5 > 70 { print $2 ":" $4 }' all.txt | sort | uniq -c
+$ awk -F"\t" '$5 > 70 { print $2 ":" $4 }' *.cc.txt | sort | uniq -c
 ```
 
 As you look at the data and want to ask more complicated questions like how does `gdpPercap` affect `lifeExp`, you'll find you need more advanced tools like Python or R.  Now that the data has been collated and the columns named, that will be much easier.
+
+What if we want to add headers to each of the files?
+
+```
+$ mkdir wheaders
+$ for file in *.txt; do cat headers $file > wheaders/$file; done
+$ wc -l wheaders/* | head -5
+      13 wheaders/Afghanistan.cc.txt
+      13 wheaders/Albania.cc.txt
+      13 wheaders/Algeria.cc.txt
+      13 wheaders/Angola.cc.txt
+      13 wheaders/Argentina.cc.txt
+$ head wheaders/Vietnam.cc.txt
+country    year    pop    continent    lifeExp    gdpPercap
+Vietnam    1952    26246839    Asia    40.412    605.0664917
+Vietnam    1957    28998543    Asia    42.887    676.2854478
+Vietnam    1962    33796140    Asia    45.363    772.0491602
+Vietnam    1967    39463910    Asia    47.838    637.1232887
+Vietnam    1972    44655014    Asia    50.254    699.5016441
+Vietnam    1977    50533506    Asia    55.764    713.5371196
+Vietnam    1982    56142181    Asia    58.816    707.2357863
+Vietnam    1987    62826491    Asia    62.82    820.7994449
+Vietnam    1992    69940728    Asia    67.662    989.0231487
+```
 
 ## Something with sequences
 
