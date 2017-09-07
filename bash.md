@@ -190,7 +190,7 @@ In lines 5 and 6, I'm assigning two new variables to the first and second argume
 GREETING = $1 # this will not work!
 ```
 
-When making my variable assignments, I'm taking into account that maybe the user ran the program with no arguments, so I say "use $1 \(the first argument\) or this other thing \(Hello\)."
+When making my variable assignments, I'm taking into account that maybe the user ran the program with no arguments, so I say "use `$1` \(the first argument\) or this other thing \(Hello\)."
 
 If I want to _require_ at least the greeting, then I can check the number of arguments with the `$#` variable:
 
