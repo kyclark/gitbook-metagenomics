@@ -109,10 +109,10 @@ Let's make our script say "Hello" to someone:
 
 ```
 $ cat -n hello2.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	NAME="Newman"
-     4	echo "Hello, $NAME!"
+     3    NAME="Newman"
+     4    echo "Hello, $NAME!"
 $ ./hello2.sh
 Hello, Newman!
 ```
@@ -140,13 +140,13 @@ A la:
 
 ```
 $ cat -n args.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	echo "Num of args    : \"$#\""
-     4	echo "String of args : \"$@\""
-     5	echo "Name of program: \"$0\""
-     6	echo "First arg      : \"$1\""
-     7	echo "Second arg     : \"$2\""
+     3    echo "Num of args    : \"$#\""
+     4    echo "String of args : \"$@\""
+     5    echo "Name of program: \"$0\""
+     6    echo "First arg      : \"$1\""
+     7    echo "Second arg     : \"$2\""
 $ ./args.sh
 Num of args    : "0"
 String of args : ""
@@ -171,17 +171,17 @@ If you would like to iterate over all the arguments, you can use `$@` like so:
 
 ```
 $ cat -n args2.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	if [[ $# -lt 1 ]]; then
-     4	    echo "There are no arguments"
-     5	else
-     6	    i=0
-     7	    for ARG in "$@"; do
-     8	        let i++
-     9	        echo "$i: $ARG"
-    10	    done
-    11	fi
+     3    if [[ $# -lt 1 ]]; then
+     4        echo "There are no arguments"
+     5    else
+     6        i=0
+     7        for ARG in "$@"; do
+     8            let i++
+     9            echo "$i: $ARG"
+    10        done
+    11    fi
 $ ./args2.sh
 There are no arguments
 $ ./args2.sh foo
@@ -192,7 +192,7 @@ $ ./args2.sh foo bar "baz quux"
 3: baz quux
 ```
 
-Here I'm throwing in a conditional at line 3 to check if the script has any arguments.  If the number of arguments \(`$#`\) is less than \(`-lt`\) 1, then let the user know there is nothing to show; otherwise \(`else`\) do the next block of code.  The `for` loop on line 7 works by splitting the argument string \(`$@`\) on spaces just like the command line does.  Both `for` and `while` loops require the `do/done` pair to delineate the block of code \(some languages use `{}`, Haskell and Python use only indentation\).  Along those lines, line 11 is the close of the `if` -- "if" spell backwards; the close of a `case` statement in bash is `esac`.  
+Here I'm throwing in a conditional at line 3 to check if the script has any arguments.  If the number of arguments \(`$#`\) is less than \(`-lt`\) 1, then let the user know there is nothing to show; otherwise \(`else`\) do the next block of code.  The `for` loop on line 7 works by splitting the argument string \(`$@`\) on spaces just like the command line does.  Both `for` and `while` loops require the `do/done` pair to delineate the block of code \(some languages use `{}`, Haskell and Python use only indentation\).  Along those lines, line 11 is the close of the `if` -- "if" spell backwards; the close of a `case` statement in bash is `esac`.
 
 The other bit of magic I threw in was a counter variable \(which I always use lowercase `i` \["integer"\], `j` if I needed an inner-counter and so on\) which is initialized to "0" on line 6.  I increment it, I could have written `$i=$(($i + 1))`, but it's easier to use the `let i++` shorthand.  Lastly, notice that "baz quux" seen as a single argument because it was placed in quotes; otherwise arguments are separated by spaces.
 
@@ -200,17 +200,17 @@ Note that indentation doesn't matter as the program below works, but, honestly, 
 
 ```
 $ cat -n args3.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	if [[ $# -lt 1 ]]; then
-     4	echo "There are no arguments"
-     5	else
-     6	i=0
-     7	for ARG in "$@"; do
-     8	let i++
-     9	echo "$i: $ARG"
-    10	done
-    11	fi
+     3    if [[ $# -lt 1 ]]; then
+     4    echo "There are no arguments"
+     5    else
+     6    i=0
+     7    for ARG in "$@"; do
+     8    let i++
+     9    echo "$i: $ARG"
+    10    done
+    11    fi
 $ ./args3.sh foo bar
 1: foo
 2: bar
@@ -273,9 +273,9 @@ AT LAST, let's return to our "hello" script!
 
 ```
 $ cat -n hello3.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	echo "Hello, $1!"
+     3    echo "Hello, $1!"
 $ ./hello3.sh Captain
 Hello, Captain!
 ```
@@ -291,14 +291,14 @@ Well, that looks bad.  We should check that the script has the proper number of 
 
 ```
 $ cat -n hello4.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	if [[ $# -ne 1 ]]; then
-     4	    printf "Usage: %s NAME\n" "$(basename "$0")"
-     5	    exit 1
-     6	fi
+     3    if [[ $# -ne 1 ]]; then
+     4        printf "Usage: %s NAME\n" "$(basename "$0")"
+     5        exit 1
+     6    fi
      7
-     8	echo "Hello, $1!"
+     8    echo "Hello, $1!"
 $ ./hello4.sh
 Usage: hello4.sh NAME
 $ ./hello4.sh Captain
@@ -330,15 +330,15 @@ To continue, here is an alternate way to write this script:
 
 ```
 $ cat -n hello5.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	if [[ $# -eq 1 ]]; then
-     4	    NAME=$1
-     5	    echo "Hello, $NAME!"
-     6	else
-     7	    printf "Usage: %s NAME\n" "$(basename "$0")"
-     8	    exit 1
-     9	fi
+     3    if [[ $# -eq 1 ]]; then
+     4        NAME=$1
+     5        echo "Hello, $NAME!"
+     6    else
+     7        printf "Usage: %s NAME\n" "$(basename "$0")"
+     8        exit 1
+     9    fi
 ```
 
 Here I check on line 3 if there is just one argument, and the `else` is devoted to handling the error; however, I prefer to check for all possible errors at the beginning and `exit` the program quickly.  This also has the effect of keeping my code as far left on the page as possible.
@@ -347,9 +347,9 @@ Here is how you can provide a default value for an argument with `:-`:
 
 ```
 $ cat -n hello6.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	echo "Hello, ${1:-Stranger}!"
+     3    echo "Hello, ${1:-Stranger}!"
 $ ./hello6.sh
 Hello, Stranger!
 $ ./hello6.sh Govnuh
@@ -360,14 +360,14 @@ Now we're going to accept two arguments, "GREETING" and "NAME" while providing d
 
 ```
 $ cat -n positional.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	GREETING=${1:-Hello}
-     6	NAME=${2:-Stranger}
+     5    GREETING=${1:-Hello}
+     6    NAME=${2:-Stranger}
      7
-     8	echo "$GREETING, $NAME"
+     8    echo "$GREETING, $NAME"
 $ ./positional.sh
 Hello, Stranger
 $ ./positional.sh Howdy
@@ -380,19 +380,19 @@ What if I want to require at least one argument?
 
 ```
 $ cat -n positional2.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	if [[ $# -lt 1 ]]; then
-     6	    printf "Usage: %s GREETING [NAME]\n" "$(basename "$0")"
-     7	    exit 1
-     8	fi
+     5    if [[ $# -lt 1 ]]; then
+     6        printf "Usage: %s GREETING [NAME]\n" "$(basename "$0")"
+     7        exit 1
+     8    fi
      9
-    10	GREETING=$1
-    11	NAME=${2:-Stranger}
+    10    GREETING=$1
+    11    NAME=${2:-Stranger}
     12
-    13	echo "$GREETING, $NAME"
+    13    echo "$GREETING, $NAME"
 $ ./positional2.sh "Good Day"
 Good Day, Stranger
 $ ./positional2.sh "Good Day" "Kind Sir"
@@ -410,19 +410,19 @@ Hmm, maybe we should detect that the script had too many arguments?
 
 ```
 $ cat -n positional3.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
-     6	    printf "Usage: %s GREETING [NAME]\n" "$(basename "$0")"
-     7	    exit 1
-     8	fi
+     5    if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
+     6        printf "Usage: %s GREETING [NAME]\n" "$(basename "$0")"
+     7        exit 1
+     8    fi
      9
-    10	GREETING=$1
-    11	NAME=${2:-Stranger}
+    10    GREETING=$1
+    11    NAME=${2:-Stranger}
     12
-    13	printf "%s, %s\n" "$GREETING" "$NAME"
+    13    printf "%s, %s\n" "$GREETING" "$NAME"
 $ ./positional3.sh Good Day Kind Sir
 Usage: positional3.sh GREETING [NAME]
 $ ./positional3.sh "Good Day" "Kind Sir"
@@ -439,50 +439,50 @@ Here is a version that has named arguments:
 
 ```
 $ cat -n named.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	GREETING=""
-     6	NAME="Stranger"
+     5    GREETING=""
+     6    NAME="Stranger"
      7
-     8	function USAGE() {
-     9	    printf "Usage:\n  %s -g GREETING [-n NAME]\n\n" $(basename $0)
-    10	    echo "Required arguments:"
-    11	    echo " -g GREETING"
-    12	    echo
-    13	    echo "Options:"
-    14	    echo " -n NAME ($NAME)"
-    15	    echo
-    16	    exit ${1:-0}
-    17	}
+     8    function USAGE() {
+     9        printf "Usage:\n  %s -g GREETING [-n NAME]\n\n" $(basename $0)
+    10        echo "Required arguments:"
+    11        echo " -g GREETING"
+    12        echo
+    13        echo "Options:"
+    14        echo " -n NAME ($NAME)"
+    15        echo
+    16        exit ${1:-0}
+    17    }
     18
-    19	[[ $# -eq 0 ]] && USAGE 1
+    19    [[ $# -eq 0 ]] && USAGE 1
     20
-    21	while getopts :g:n:h OPT; do
-    22	  case $OPT in
-    23	    h)
-    24	      USAGE
-    25	      ;;
-    26	    g)
-    27	      GREETING="$OPTARG"
-    28	      ;;
-    29	    n)
-    30	      NAME="$OPTARG"
-    31	      ;;
-    32	    :)
-    33	      echo "Error: Option -$OPTARG requires an argument."
-    34	      exit 1
-    35	      ;;
-    36	    \?)
-    37	      echo "Error: Invalid option: -${OPTARG:-""}"
-    38	      exit 1
-    39	  esac
-    40	done
+    21    while getopts :g:n:h OPT; do
+    22      case $OPT in
+    23        h)
+    24          USAGE
+    25          ;;
+    26        g)
+    27          GREETING="$OPTARG"
+    28          ;;
+    29        n)
+    30          NAME="$OPTARG"
+    31          ;;
+    32        :)
+    33          echo "Error: Option -$OPTARG requires an argument."
+    34          exit 1
+    35          ;;
+    36        \?)
+    37          echo "Error: Invalid option: -${OPTARG:-""}"
+    38          exit 1
+    39      esac
+    40    done
     41
-    42	[[ -z "$GREETING" ]] && USAGE 1
+    42    [[ -z "$GREETING" ]] && USAGE 1
     43
-    44	echo "$GREETING, $NAME"
+    44    echo "$GREETING, $NAME"
 $ ./named.sh
 Usage:
   named.sh -g GREETING [-n NAME]
@@ -541,22 +541,22 @@ Here it is in a script:
 
 ```
 $ cat -n for.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	DIR=${1:-$PWD}
+     5    DIR=${1:-$PWD}
      6
-     7	if [[ ! -d "$DIR" ]]; then
-     8	    echo "$DIR is not a directory"
-     9	    exit 1
-    10	fi
+     7    if [[ ! -d "$DIR" ]]; then
+     8        echo "$DIR is not a directory"
+     9        exit 1
+    10    fi
     11
-    12	i=0
-    13	for FILE in $DIR/*; do
-    14	    let i++
-    15	    printf "%3d: %s\n" $i "$FILE"
-    16	done    
+    12    i=0
+    13    for FILE in $DIR/*; do
+    14        let i++
+    15        printf "%3d: %s\n" $i "$FILE"
+    16    done
 ```
 
 On line 5, I default `DIR` to the current working directory which I can find with the environmental variable `$PWD` \(print working directory\).  I check on line 7 that the argument is actually a directory with the `-d` test \(`man test`\).  The rest should look familiar.  Here it is in action:
@@ -601,27 +601,27 @@ Often I want to iterate over the results of some calculation.  Here is an exampl
 
 ```
 $ cat -n while.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	FILE="${1:-../problems/gc/anthrax.fa}"
-     6	IDS=$(mktemp)
-     7	grep '^>' "$FILE" | awk '{print $1}' | sed "s/^>//" > "$IDS"
-     8	NUM=$(wc -l "$IDS" | awk '{print $1}')
+     5    FILE="${1:-../problems/gc/anthrax.fa}"
+     6    IDS=$(mktemp)
+     7    grep '^>' "$FILE" | awk '{print $1}' | sed "s/^>//" > "$IDS"
+     8    NUM=$(wc -l "$IDS" | awk '{print $1}')
      9
-    10	if [[ $NUM -lt 1 ]]; then
-    11	    echo "Found no ids in FILE \"$FILE\""
-    12	    exit 1
-    13	fi
+    10    if [[ $NUM -lt 1 ]]; then
+    11        echo "Found no ids in FILE \"$FILE\""
+    12        exit 1
+    13    fi
     14
-    15	i=0
-    16	while read -r ID; do
-    17	    let i++
-    18	    printf "%3d: %s\n" $i "$ID"
-    19	done < "$IDS"
+    15    i=0
+    16    while read -r ID; do
+    17        let i++
+    18        printf "%3d: %s\n" $i "$ID"
+    19    done < "$IDS"
     20
-    21	rm "$IDS"
+    21    rm "$IDS"
 ```
 
 Line 6 uses the `mktemp` function to give us the name of a temporary file.  On line 7, I `grep` for the greater than sign at the beginning of a line \("^&gt;"\) in the given `$FILE`. The results of that are piped `|` into `awk` to give me just the first field \(as delimited by spaces\) which I then pipe into `sed` \(stream editor\) to substitute \(`s//`\) the "&gt;" at the beginning of the line for nothing.  The result of that pipeline is redirected \(`>`\) into the `$IDS` file.  Line 8 counts the lines of the file \(`wc -l`\) and gets the first field using `awk`.  Line 10 checks that we found some identifiers and bails if not.  Line 16 uses `while; do/done` to read a redirect in \(`<`\) from the `$IDS` file.   Line 21 removes the temporary file.  Here is how it works:
@@ -659,12 +659,12 @@ To understand the `read` better, see this:
 
 ```
 $ cat -n read.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
-     4	echo -n "What is your name? "
-     5	read NAME
-     6	echo "Would you like to play a nice game of chess, $NAME?"
+     3    set -u
+     4    echo -n "What is your name? "
+     5    read NAME
+     6    echo "Would you like to play a nice game of chess, $NAME?"
 $ ./read.sh
 What is your name? Joshua
 Would you like to play a nice game of chess, Joshua?
@@ -676,52 +676,52 @@ It's possible to write this with `cat`, too:
 
 ```
 $ cat -n while2.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	FILE="${1:-../problems/gc/anthrax.fa}"
-     6	IDS=$(mktemp)
-     7	grep '^>' "$FILE" | awk '{print $1}' | sed "s/^>//" > "$IDS"
-     8	NUM=$(wc -l "$IDS" | awk '{print $1}')
+     5    FILE="${1:-../problems/gc/anthrax.fa}"
+     6    IDS=$(mktemp)
+     7    grep '^>' "$FILE" | awk '{print $1}' | sed "s/^>//" > "$IDS"
+     8    NUM=$(wc -l "$IDS" | awk '{print $1}')
      9
-    10	if [[ $NUM -lt 1 ]]; then
-    11	    echo "Found no ids in FILE \"$FILE\""
-    12	    exit 1
-    13	fi
+    10    if [[ $NUM -lt 1 ]]; then
+    11        echo "Found no ids in FILE \"$FILE\""
+    12        exit 1
+    13    fi
     14
-    15	i=0
-    16	for ID in $(cat "$IDS"); do
-    17	    let i++
-    18	    printf "%3d: %s\n" $i "$ID"
-    19	done
+    15    i=0
+    16    for ID in $(cat "$IDS"); do
+    17        let i++
+    18        printf "%3d: %s\n" $i "$ID"
+    19    done
     20
-    21	rm "$IDS"
+    21    rm "$IDS"
 ```
 
 But `while` has another advantage in that it can split each line of input into separate variables:
 
 ```
 $ cat -n while3.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	FILE="${1:-../problems/gc/anthrax.fa}"
-     6	TMP=$(mktemp)
-     7	grep '^>' "$FILE" | sed "s/^>//" | awk '{print $1 " " $3}' | sed "s/length=//" > "$TMP"
-     8	NUM=$(wc -l "$TMP" | awk '{print $1}')
+     5    FILE="${1:-../problems/gc/anthrax.fa}"
+     6    TMP=$(mktemp)
+     7    grep '^>' "$FILE" | sed "s/^>//" | awk '{print $1 " " $3}' | sed "s/length=//" > "$TMP"
+     8    NUM=$(wc -l "$TMP" | awk '{print $1}')
      9
-    10	if [[ $NUM -lt 1 ]]; then
-    11	    echo "Found no ids in FILE \"$FILE\""
-    12	    exit 1
-    13	fi
+    10    if [[ $NUM -lt 1 ]]; then
+    11        echo "Found no ids in FILE \"$FILE\""
+    12        exit 1
+    13    fi
     14
-    15	while read -r ID LENGTH; do
-    16	    printf "%3d: %s\n" "$LENGTH" "$ID"
-    17	done < "$TMP"
+    15    while read -r ID LENGTH; do
+    16        printf "%3d: %s\n" "$LENGTH" "$ID"
+    17    done < "$TMP"
     18
-    19	rm "$TMP"
+    19    rm "$TMP"
 $ ./while3.sh ../problems/gc/burk.fa
 300: SRR3943777.1
 300: SRR3943777.2
@@ -739,88 +739,87 @@ $ ./while3.sh ../problems/gc/burk.fa
 Lastly I'm going to show you how to create some sane defaults, make missing directories, find user input, transform that input, and report back to the user.  Here's a script that takes an IN\_DIR, counts the lines of all the files therein, and reports said line counts into an optional OUT\_DIR.
 
 ```
-     1	#!/bin/bash
-     2	
-     3	set -u
-     4	
-     5	IN_DIR=""
-     6	OUT_DIR="$PWD/$(basename "$0" '.sh')-out"
-     7	
-     8	function lc() {
-     9	    wc -l "$1" | awk '{print $1}'
-    10	}
-    11	
-    12	function USAGE() {
-    13	    printf "Usage:\n  %s -i IN_DIR -o OUT_DIR\n\n" "$(basename "$0")"
-    14	
-    15	    echo "Required arguments:"
-    16	    echo " -i IN_DIR"
-    17	    echo "Options:"
-    18	    echo " -o OUT_DIR"
-    19	    echo 
-    20	    exit "${1:-0}"
-    21	}
-    22	
-    23	[[ $# -eq 0 ]] && USAGE 1
-    24	
-    25	while getopts :i:o:h OPT; do
-    26	    case $OPT in
-    27	        h)
-    28	            USAGE
-    29	            ;;
-    30	        i)
-    31	            IN_DIR="$OPTARG"
-    32	            ;;
-    33	        o)
-    34	            OUT_DIR="$OPTARG"
-    35	            ;;
-    36	        :)
-    37	            echo "Error: Option -$OPTARG requires an argument."
-    38	            exit 1
-    39	            ;;
-    40	        \?)
-    41	            echo "Error: Invalid option: -${OPTARG:-""}"
-    42	            exit 1
-    43	    esac
-    44	done
-    45	
-    46	if [[ -z "$IN_DIR" ]]; then
-    47	    echo "IN_DIR is required"
-    48	    exit 1
-    49	fi
-    50	
-    51	if [[ ! -d "$IN_DIR" ]]; then
-    52	    echo "IN_DIR \"$IN_DIR\" is not a directory."
-    53	    exit 1
-    54	fi
-    55	
-    56	echo "Started $(date)"
-    57	
-    58	FILES_LIST=$(mktemp)
-    59	find "$IN_DIR" -type f -name \*.sh > "$FILES_LIST"
-    60	NUM_FILES=$(lc "$FILES_LIST")
-    61	
-    62	if [[ $NUM_FILES -gt 0 ]]; then
-    63	    echo "Will process NUM_FILES \"$NUM_FILES\""
-    64	
-    65	    [[ ! -d $OUT_DIR ]] && mkdir -p "$OUT_DIR"
-    66	
-    67	    i=0
-    68	    while read -r FILE; do
-    69	        BASENAME=$(basename "$FILE")
-    70	        let i++
-    71	        printf "%3d: %s\n" $i "$BASENAME"
-    72	        wc -l "$FILE" > "$OUT_DIR/$BASENAME"
-    73	    done < "$FILES_LIST"
-    74	
-    75	    rm "$FILES_LIST"
-    76	    echo "See results in OUT_DIR \"$OUT_DIR\""
-    77	else
-    78	    echo "No files found in \"$IN_DIR\""
-    79	fi
-    80	
-    81	echo "Finished $(date)"
-
+     1    #!/bin/bash
+     2    
+     3    set -u
+     4    
+     5    IN_DIR=""
+     6    OUT_DIR="$PWD/$(basename "$0" '.sh')-out"
+     7    
+     8    function lc() {
+     9        wc -l "$1" | awk '{print $1}'
+    10    }
+    11    
+    12    function USAGE() {
+    13        printf "Usage:\n  %s -i IN_DIR -o OUT_DIR\n\n" "$(basename "$0")"
+    14    
+    15        echo "Required arguments:"
+    16        echo " -i IN_DIR"
+    17        echo "Options:"
+    18        echo " -o OUT_DIR"
+    19        echo 
+    20        exit "${1:-0}"
+    21    }
+    22    
+    23    [[ $# -eq 0 ]] && USAGE 1
+    24    
+    25    while getopts :i:o:h OPT; do
+    26        case $OPT in
+    27            h)
+    28                USAGE
+    29                ;;
+    30            i)
+    31                IN_DIR="$OPTARG"
+    32                ;;
+    33            o)
+    34                OUT_DIR="$OPTARG"
+    35                ;;
+    36            :)
+    37                echo "Error: Option -$OPTARG requires an argument."
+    38                exit 1
+    39                ;;
+    40            \?)
+    41                echo "Error: Invalid option: -${OPTARG:-""}"
+    42                exit 1
+    43        esac
+    44    done
+    45    
+    46    if [[ -z "$IN_DIR" ]]; then
+    47        echo "IN_DIR is required"
+    48        exit 1
+    49    fi
+    50    
+    51    if [[ ! -d "$IN_DIR" ]]; then
+    52        echo "IN_DIR \"$IN_DIR\" is not a directory."
+    53        exit 1
+    54    fi
+    55    
+    56    echo "Started $(date)"
+    57    
+    58    FILES_LIST=$(mktemp)
+    59    find "$IN_DIR" -type f -name \*.sh > "$FILES_LIST"
+    60    NUM_FILES=$(lc "$FILES_LIST")
+    61    
+    62    if [[ $NUM_FILES -gt 0 ]]; then
+    63        echo "Will process NUM_FILES \"$NUM_FILES\""
+    64    
+    65        [[ ! -d $OUT_DIR ]] && mkdir -p "$OUT_DIR"
+    66    
+    67        i=0
+    68        while read -r FILE; do
+    69            BASENAME=$(basename "$FILE")
+    70            let i++
+    71            printf "%3d: %s\n" $i "$BASENAME"
+    72            wc -l "$FILE" > "$OUT_DIR/$BASENAME"
+    73        done < "$FILES_LIST"
+    74    
+    75        rm "$FILES_LIST"
+    76        echo "See results in OUT_DIR \"$OUT_DIR\""
+    77    else
+    78        echo "No files found in \"$IN_DIR\""
+    79    fi
+    80    
+    81    echo "Finished $(date)"
 ```
 
 The IN\_DIR argument is required \(lines 46-49\), and it must be a directory \(lines 51-54\). If the user does not supply an OUT\_DIR, I will create a reasonable default using the current working directory and the name of the script plus "-out" \(line 6\).  One thing I love about bash is that I can call functions inside of strings, so OUT\_DIR is a string \(it's in double quotes\) of the variable $PWD, the character "/", and the result of the function call to `basename` where I'm giving the optional second argument ".sh" that I want removed from the first argument, and then the string "-out".
