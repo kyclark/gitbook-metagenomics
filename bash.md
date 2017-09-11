@@ -112,12 +112,19 @@ $ cat -n hello2.sh
      1    #!/bin/bash
      2
      3    NAME="Newman"
-     4    echo "Hello, $NAME!"
+     4    echo "Hello," $NAME
+     5    NAME="Jerry"
+     6    echo "Hello, $NAME"
 $ ./hello2.sh
-Hello, Newman!
+Hello, Newman
+Hello, Jerry
 ```
 
-I've created a variable called `NAME` to hold the string "Newman."  Because all the variables from the environment \(see `env`\) are uppercase \(e.g., `$HOME` and `$USER`\), I tend to use all-caps myself, but this is not a requirement.  Just remember that everything in Unix is case-sensitive, so `$Name` is an entirely different variable from `$name`.  When assigning a variable, you can have NO SPACES and you never use the `$` in front of the variable:
+I've created a variable called `NAME` to hold the string "Newman" and print it.  Notice there is no `$` when assigning to the variable, only when you use it.   The value of `NAME` can be changed at any time.  You can print it out like on line 4 as it's own argument to `echo` or inside of a string like on line 6.  Notice that the version on line 4 puts a space between the arguments to `echo`.
+
+Because all the variables from the environment \(see `env`\) are uppercase \(e.g., `$HOME` and `$USER`\), I tend to use all-caps myself, but this did lead to a problem once when I named a variable `PATH` and then overwrote the actual `PATH` and then my program stopped working entirely as it could no longer find any of the programs it needed.  Just remember that everything in Unix is case-sensitive, so `$Name` is an entirely different variable from `$name`.
+
+When assigning a variable, you can have NO SPACES around the `=` sign:
 
 ```
 $ NAME1="Doge"
@@ -128,6 +135,8 @@ $ NAME2 = "Doge"
 $ echo "Such $NAME2"
 Such
 ```
+
+## Arguments, agreements, advice, answers
 
 We would like to get the NAME from the user rather than having it hardcoded in the script.  The arguments to a bash script are available through a few variables:
 
@@ -196,6 +205,8 @@ Here I'm throwing in a conditional at line 3 to check if the script has any argu
 
 The other bit of magic I threw in was a counter variable \(which I always use lowercase `i` \["integer"\], `j` if I needed an inner-counter and so on\) which is initialized to "0" on line 6.  I increment it, I could have written `$i=$(($i + 1))`, but it's easier to use the `let i++` shorthand.  Lastly, notice that "baz quux" seen as a single argument because it was placed in quotes; otherwise arguments are separated by spaces.
 
+## Make It Pretty \(or else\)
+
 Note that indentation doesn't matter as the program below works, but, honestly, which one is easier for you to read?
 
 ```
@@ -215,6 +226,8 @@ $ ./args3.sh foo bar
 1: foo
 2: bar
 ```
+
+## Catching Common Errors \(set -u\)
 
 bash is a notoriously easy language to write incorrectly.  One step you can take to ensure you don't misspell variables is to add `set -u` at the top of your script.  E.g., if you type `echo $HOEM` on the command line, you'll get no output or warning that you misspelled the `$HOME` variable unless you `set -u`:
 
@@ -269,6 +282,10 @@ Hi
 
 We were foolishly hoping that `set -u` would prevent us from misspelling the `$GREETING`, but at line 7 we simple created a new variable called `$GRETING`.  Perhaps you were hoping for more help from your language?  This is why we try to limit how much bash we write.
 
+NB: I highly recommend you use the program `shellcheck` \([https://www.shellcheck.net/\](https://www.shellcheck.net/\)\) to find errors in your bash code.
+
+## Our First Argument
+
 AT LAST, let's return to our "hello" script!
 
 ```
@@ -286,6 +303,8 @@ This should make perfect sense now.  We are simply saying "hello" to the first a
 $ ./hello3.sh
 Hello, !
 ```
+
+## Checking the Number of Arguments
 
 Well, that looks bad.  We should check that the script has the proper number of arguments which is 1:
 
@@ -309,24 +328,7 @@ Usage: hello4.sh NAME
 
 Line 3 checks if the number of arguments is not equal \(`-ne`\) to 1 and prints a help message to indicate proper "usage."  Importantly, it also will `exit` the program with a value which is not zero to indicate that there was an error.  \(NB: An exit value of "0" indicates 0 errors.\)  Line 4 uses `printf` rather than `echo` so I can do some fancy substitution so that the results of calling the `basename` function on the `$0` \(name of the program\) is inserted at the location of the `%s` \(a string value, cf. man pages for "printf" and "basename"\).
 
-To call a function in bash, we can use either backticks \(under the `~` on a US keyboard\) or `$()`.  I find backticks to be too similar to single quotes, so I prefer the latter.  To demonstrate:
-
-    $ ls | head
-    args.sh*
-    args2.sh*
-    args3.sh*
-    basic.sh*
-    hello.sh*
-    hello2.sh*
-    hello3.sh*
-    hello4.sh*
-    hello5.sh*
-    hello6.sh*
-    $ FILES=`ls | head`
-    $ echo $FILES
-    args.sh args2.sh args3.sh basic.sh hello.sh hello2.sh hello3.sh hello4.sh hello5.sh hello6.sh
-
-To continue, here is an alternate way to write this script:
+Here is an alternate way to write this script:
 
 ```
 $ cat -n hello5.sh
@@ -342,6 +344,48 @@ $ cat -n hello5.sh
 ```
 
 Here I check on line 3 if there is just one argument, and the `else` is devoted to handling the error; however, I prefer to check for all possible errors at the beginning and `exit` the program quickly.  This also has the effect of keeping my code as far left on the page as possible.
+
+## Sidebar: Saving Function Results
+
+To call a function in bash and save the results into a variable, we can use either backticks \(under the `~` on a US keyboard\) or `$()`.  I find backticks to be too similar to single quotes, so I prefer the latter.  To demonstrate:
+
+    $ ls | head
+    args.sh*
+    args2.sh*
+    args3.sh*
+    basic.sh*
+    hello.sh*
+    hello2.sh*
+    hello3.sh*
+    hello4.sh*
+    hello5.sh*
+    hello6.sh*
+    $ FILES=`ls | head`
+    $ echo $FILES
+    args.sh args2.sh args3.sh basic.sh hello.sh hello2.sh hello3.sh hello4.sh hello5.sh hello6.sh
+    $ cat -n functions.sh
+         1    #!/bin/bash
+         2
+         3    # call function
+         4    echo -n "1: BASENAME: "
+         5    basename "$0"
+         6
+         7    # put function results into variable
+         8    BASENAME=$(basename "$0")
+         9    echo "2: BASENAME: $BASENAME"
+        10
+        11    # use results of function as argument to another function
+        12    echo "3: BASENAME:" "$(basename "$0")"
+        13    echo "4: BASENAME: $(basename "$0")"
+        14    printf "5: BASENAME: %s\n" "$(basename "$0")"
+    $ ./functions.sh
+    1: BASENAME: functions.sh
+    2: BASENAME: functions.sh
+    3: BASENAME: functions.sh
+    4: BASENAME: functions.sh
+    5: BASENAME: functions.sh
+
+## Providing Default Argument Values
 
 Here is how you can provide a default value for an argument with `:-`:
 
@@ -376,6 +420,8 @@ $ ./positional.sh Howdy Padnuh
 Howdy, Padnuh
 ```
 
+## Required and Optional Arguments
+
 What if I want to require at least one argument?
 
 ```
@@ -406,6 +452,8 @@ $ ./positional2.sh Good Day Kind Sir
 Good, Day
 ```
 
+## Not Too Few, Not Too Many \(Goldilocks\)
+
 Hmm, maybe we should detect that the script had too many arguments?
 
 ```
@@ -431,11 +479,11 @@ Good Day, Kind Sir
 
 To check for too many arguments, I added an "OR" \(the double pipes `||`\) and another conditional \("AND" is `&&`\).  I also changed line 13 to use a `printf` command to highlight the importance of quoting the arguments _inside the script_ so that bash won't get confused.  Try it without those quotes and try to figure out why it's doing what it's doing.  I highly recommend using the program "shellcheck" \([https://github.com/koalaman/shellcheck](https://github.com/koalaman/shellcheck)\) to find mistakes like this.  Also, consider using more powerful/helpful/sane languages -- but that's for another discussion.
 
-# Named arguments
+## Named Arguments To The Rescue
 
 It's great that we can make our script take arguments, some of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" \("file," probably\) argument is "mouse.fa," whereas a flag like "-v" might be a yes/no \("Boolean," if you like\) indicator that we do or do not want "verbose" mode.  You've encountered these with programs like `ls -l` to indicate you want the "long" directory listing or `ps -u $USER` to indicate the value for "-u" is the $USER.
 
-Here is a version that has named arguments:
+The best thing about named arguments is that they can be provided in any order.  Some may have values, some may be flags, and you can easily provide good defaults to make it easy for the user to provide the bare minimum information to run your program. Here is a version that has named arguments:
 
 ```
 $ cat -n named.sh
@@ -483,6 +531,11 @@ $ cat -n named.sh
     42    [[ -z "$GREETING" ]] && USAGE 1
     43
     44    echo "$GREETING, $NAME"
+```
+
+When run without arguments or with the `-h` flag, it produces a help message.  Arguments can be switched up.
+
+```
 $ ./named.sh
 Usage:
   named.sh -g GREETING [-n NAME]
@@ -513,7 +566,7 @@ $ ./named01.sh -g ""
 
 Which would technically pass muster but does not actually meet our requirements.
 
-# Loops
+# For Loops
 
 Often we want to do some set of actions for all the files in a directory or all the identifiers in a file:
 
@@ -597,144 +650,152 @@ $ ./for.sh ../problems
  13: ../problems/yeast
 ```
 
-Often I want to iterate over the results of some calculation.  Here is an example of saving the results of an operation into a temporary file:
+You will see many examples of using `for` to read from a file like so:
+
+```
+$ cat -n for-read-file.sh
+     1	#!/bin/bash
+     2
+     3	FILE=${1:-'srr.txt'}
+     4	for LINE in $(cat "$FILE"); do
+     5	    echo "LINE \"$LINE\""
+     6	done
+$ cat srr.txt
+SRR3115965
+SRR516222
+SRR919365
+$ ./for-read-file.sh srr.txt
+LINE "SRR3115965"
+LINE "SRR516222"
+LINE "SRR919365"
+```
+
+But that can break badly when the file contains more than one "word" \(as defined by the `$IFS` \[input field separator\]\):
+
+```
+$ column -t pov-meta.tab
+name              lat_lon.ll
+GD.Spr.C.8m.fa    -17.92522,146.14295
+GF.Spr.C.9m.fa    -16.9207,145.9965833
+L.Spr.C.1000m.fa  48.6495,-126.66434
+L.Spr.C.10m.fa    48.6495,-126.66434
+L.Spr.C.1300m.fa  48.6495,-126.66434
+L.Spr.C.500m.fa   48.6495,-126.66434
+L.Spr.I.1000m.fa  48.96917,-130.67033
+L.Spr.I.10m.fa    48.96917,-130.67033
+L.Spr.I.2000m.fa  48.96917,-130.67033
+$ ./for-read-file.sh pov-meta.tab
+LINE "name"
+LINE "lat_lon.ll"
+LINE "GD.Spr.C.8m.fa"
+LINE "-17.92522,146.14295"
+LINE "GF.Spr.C.9m.fa"
+LINE "-16.9207,145.9965833"
+LINE "L.Spr.C.1000m.fa"
+LINE "48.6495,-126.66434"
+LINE "L.Spr.C.10m.fa"
+LINE "48.6495,-126.66434"
+LINE "L.Spr.C.1300m.fa"
+LINE "48.6495,-126.66434"
+LINE "L.Spr.C.500m.fa"
+LINE "48.6495,-126.66434"
+LINE "L.Spr.I.1000m.fa"
+LINE "48.96917,-130.67033"
+LINE "L.Spr.I.10m.fa"
+LINE "48.96917,-130.67033"
+LINE "L.Spr.I.2000m.fa"
+LINE "48.96917,-130.67033"
+```
+
+# While Loops
+
+The proper way to read a file line-by-line is with `while`:
 
 ```
 $ cat -n while.sh
-     1    #!/bin/bash
+     1	#!/bin/bash
      2
-     3    set -u
-     4
-     5    FILE="${1:-../problems/gc/anthrax.fa}"
-     6    IDS=$(mktemp)
-     7    grep '^>' "$FILE" | awk '{print $1}' | sed "s/^>//" > "$IDS"
-     8    NUM=$(wc -l "$IDS" | awk '{print $1}')
-     9
-    10    if [[ $NUM -lt 1 ]]; then
-    11        echo "Found no ids in FILE \"$FILE\""
-    12        exit 1
-    13    fi
-    14
-    15    i=0
-    16    while read -r ID; do
-    17        let i++
-    18        printf "%3d: %s\n" $i "$ID"
-    19    done < "$IDS"
-    20
-    21    rm "$IDS"
+     3	FILE=${1:-'srr.txt'}
+     4	while read -r LINE; do
+     5	    echo "LINE \"$LINE\""
+     6	done < "$FILE"
+$ ./while.sh srr.txt
+LINE "SRR3115965"
+LINE "SRR516222"
+LINE "SRR919365"
+$ ./while.sh meta.tab
+LINE "GD.Spr.C.8m.fa	-17.92522,146.14295"
+LINE "GF.Spr.C.9m.fa	-16.9207,145.9965833"
+LINE "L.Spr.C.1000m.fa	48.6495,-126.66434"
+LINE "L.Spr.C.10m.fa	48.6495,-126.66434"
+LINE "L.Spr.C.1300m.fa	48.6495,-126.66434"
+LINE "L.Spr.C.500m.fa	48.6495,-126.66434"
+LINE "L.Spr.I.1000m.fa	48.96917,-130.67033"
+LINE "L.Spr.I.10m.fa	48.96917,-130.67033"
+LINE "L.Spr.I.2000m.fa	48.96917,-130.67033"
 ```
 
-Line 6 uses the `mktemp` function to give us the name of a temporary file.  On line 7, I `grep` for the greater than sign at the beginning of a line \("^&gt;"\) in the given `$FILE`. The results of that are piped `|` into `awk` to give me just the first field \(as delimited by spaces\) which I then pipe into `sed` \(stream editor\) to substitute \(`s//`\) the "&gt;" at the beginning of the line for nothing.  The result of that pipeline is redirected \(`>`\) into the `$IDS` file.  Line 8 counts the lines of the file \(`wc -l`\) and gets the first field using `awk`.  Line 10 checks that we found some identifiers and bails if not.  Line 16 uses `while; do/done` to read a redirect in \(`<`\) from the `$IDS` file.   Line 21 removes the temporary file.  Here is how it works:
-
-```
-$ ./while.sh for.sh
-Found no ids in FILE "for.sh"
-$ ./while.sh
-  1: ERR1596646.1
-  2: ERR1596646.2
-  3: ERR1596646.3
-  4: ERR1596646.4
-  5: ERR1596646.5
-  6: ERR1596646.6
-  7: ERR1596646.7
-  8: ERR1596646.8
-  9: ERR1596646.9
- 10: ERR1596646.10
- 11: ERR1596646.11
- 12: ERR1596646.12
- 13: ERR1596646.13
- 14: ERR1596646.14
- 15: ERR1596646.15
- 16: ERR1596646.16
- 17: ERR1596646.17
- 18: ERR1596646.18
- 19: ERR1596646.19
- 20: ERR1596646.20
- 21: ERR1596646.21
- 22: ERR1596646.22
- 23: ERR1596646.23
-```
-
-To understand the `read` better, see this:
-
-```
-$ cat -n read.sh
-     1    #!/bin/bash
-     2
-     3    set -u
-     4    echo -n "What is your name? "
-     5    read NAME
-     6    echo "Would you like to play a nice game of chess, $NAME?"
-$ ./read.sh
-What is your name? Joshua
-Would you like to play a nice game of chess, Joshua?
-```
-
-So the `while` keeps succeeding as long as `read` can put a line of input into `ID`.  When it reaches the end of the file, it stops.
-
-It's possible to write this with `cat`, too:
+Another advantage is that `while` can break the line into fields:
 
 ```
 $ cat -n while2.sh
-     1    #!/bin/bash
+     1	#!/bin/bash
      2
-     3    set -u
-     4
-     5    FILE="${1:-../problems/gc/anthrax.fa}"
-     6    IDS=$(mktemp)
-     7    grep '^>' "$FILE" | awk '{print $1}' | sed "s/^>//" > "$IDS"
-     8    NUM=$(wc -l "$IDS" | awk '{print $1}')
-     9
-    10    if [[ $NUM -lt 1 ]]; then
-    11        echo "Found no ids in FILE \"$FILE\""
-    12        exit 1
-    13    fi
-    14
-    15    i=0
-    16    for ID in $(cat "$IDS"); do
-    17        let i++
-    18        printf "%3d: %s\n" $i "$ID"
-    19    done
-    20
-    21    rm "$IDS"
+     3	FILE='meta.tab'
+     4	while read -r SITE LOC; do
+     5	    echo "$SITE is located at \"$LOC\""
+     6	done < "$FILE"
+$ ./while2.sh
+GD.Spr.C.8m.fa is located at "-17.92522,146.14295"
+GF.Spr.C.9m.fa is located at "-16.9207,145.9965833"
+L.Spr.C.1000m.fa is located at "48.6495,-126.66434"
+L.Spr.C.10m.fa is located at "48.6495,-126.66434"
+L.Spr.C.1300m.fa is located at "48.6495,-126.66434"
+L.Spr.C.500m.fa is located at "48.6495,-126.66434"
+L.Spr.I.1000m.fa is located at "48.96917,-130.67033"
+L.Spr.I.10m.fa is located at "48.96917,-130.67033"
+L.Spr.I.2000m.fa is located at "48.96917,-130.67033"
 ```
 
-But `while` has another advantage in that it can split each line of input into separate variables:
+## Sidebar: Saving Function Results in Files
+
+Often I want to iterate over the results of some calculation.  Here is an example of saving the results of an operation \(`find`\) into a temporary file:
 
 ```
-$ cat -n while3.sh
-     1    #!/bin/bash
+$ cat -n count-fa.sh
+     1	#!/bin/bash
      2
-     3    set -u
+     3	set -u
      4
-     5    FILE="${1:-../problems/gc/anthrax.fa}"
-     6    TMP=$(mktemp)
-     7    grep '^>' "$FILE" | sed "s/^>//" | awk '{print $1 " " $3}' | sed "s/length=//" > "$TMP"
-     8    NUM=$(wc -l "$TMP" | awk '{print $1}')
+     5	if [[ $# -ne 1 ]]; then
+     6	    printf "Usage: %s DIR\n" "$(basename "$0")"
+     7	    exit 1
+     8	fi
      9
-    10    if [[ $NUM -lt 1 ]]; then
-    11        echo "Found no ids in FILE \"$FILE\""
-    12        exit 1
-    13    fi
+    10	DIR=$1
+    11	TMP=$(mktemp)
+    12	find "$DIR" -type f \( -name \*.fa -o -name \*.fasta \) > "$TMP"
+    13	NUM_FILES=$(wc -l "$TMP" | awk '{print $1}')
     14
-    15    while read -r ID LENGTH; do
-    16        printf "%3d: %s\n" "$LENGTH" "$ID"
-    17    done < "$TMP"
-    18
-    19    rm "$TMP"
-$ ./while3.sh ../problems/gc/burk.fa
-300: SRR3943777.1
-300: SRR3943777.2
-300: SRR3943777.3
-300: SRR3943777.4
-300: SRR3943777.5
-300: SRR3943777.6
-300: SRR3943777.7
-300: SRR3943777.8
-300: SRR3943777.9
+    15	if [[ $NUM_FILES -lt 1 ]]; then
+    16	    echo "Found no fa(sta) files in $DIR"
+    17	    exit 1
+    18	fi
+    19
+    20	while read -r FILE; do
+    21	    NUM_SEQ=$(grep -c '^>' "$FILE")
+    22	    printf "%10d %s\n" "$NUM_SEQ" "$(basename "$FILE")"
+    23	done < "$TMP"
+    24
+    25	rm "$TMP"
+$ ./count-fa.sh ../problems/
+        23 anthrax.fa
+         9 burk.fa
 ```
 
-# A few more tricks
+Line 11 uses the `mktemp` function to give us the name of a temporary file, then I `find` all the files ending in ".fa" or ".fasta" and put that into the temporary file.  I could them to make sure I found something.  Then I read from the tempfile and use the `FILE` name to count the number of times I see a greater-than sign at the beginning of a line.
+
+# A Full Bag of Tricks
 
 Lastly I'm going to show you how to create some sane defaults, make missing directories, find user input, transform that input, and report back to the user.  Here's a script that takes an IN\_DIR, counts the lines of all the files therein, and reports said line counts into an optional OUT\_DIR.
 
