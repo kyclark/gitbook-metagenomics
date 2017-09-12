@@ -282,7 +282,7 @@ Hi
 
 We were foolishly hoping that `set -u` would prevent us from misspelling the `$GREETING`, but at line 7 we simple created a new variable called `$GRETING`.  Perhaps you were hoping for more help from your language?  This is why we try to limit how much bash we write.
 
-NB: I highly recommend you use the program `shellcheck` \([https://www.shellcheck.net/\](https://www.shellcheck.net/\)\) to find errors in your bash code.
+NB: I highly recommend you use the program `shellcheck` \([https://www.shellcheck.net/\](https://www.shellcheck.net/%29\) to find errors in your bash code.
 
 ## Our First Argument
 
@@ -347,7 +347,7 @@ Here I check on line 3 if there is just one argument, and the `else` is devoted 
 
 ## Sidebar: Saving Function Results
 
-To call a function in bash and save the results into a variable, we can use either backticks \(under the `~` on a US keyboard\) or `$()`.  I find backticks to be too similar to single quotes, so I prefer the latter.  To demonstrate:
+To call a function in bash and save the results into a variable, we can use either backticks \(\`\`\) \(under the `~` on a US keyboard\) or `$()`.  I find backticks to be too similar to single quotes, so I prefer the latter.  To demonstrate:
 
     $ ls | head
     args.sh*
@@ -400,6 +400,92 @@ $ ./hello6.sh Govnuh
 Hello, Govnuh!
 ```
 
+## Arguments From The Environment
+
+You can also use look in the environment for argument values.  For instance, we could accept the `NAME` as either the first argument to the script \(`$1`\) or the `$USER` from the environment:
+
+```
+$ cat -n hello7.sh
+     1	#!/bin/bash
+     2
+     3	NAME=${1:-$USER}
+     4	[[ -z "$NAME" ]] && NAME='Stranger'
+     5	echo "Hello, $NAME
+$ ./hello7.sh
+Hello, kyclark
+$ ./hello7.sh Barbara
+Hello, Barbara
+```
+
+What's interesting is that you can temporarily over-ride an environmental variable like so:
+
+```
+$ USER=Bart ./hello7.sh
+Hello, Bart
+$ ./hello7.sh
+Hello, kyclark
+```
+
+## Exporting Values to the Environment
+
+Notice that I can set `USER` for the first run to "Bart," but the value returns to "kyclark" on the next run.  I can permanently set a value in the environment by using the `export` command.  Here is a version of the script that looks for an environmental variable called `WHOM`:
+
+```
+$ cat -n hello8.sh
+     1	#!/bin/bash
+     2
+     3	echo "Hello, ${WHOM:-Marie}"
+$ ./hello8.sh
+Hello, Marie
+```
+
+As before I can set it temporarily:
+
+```
+$ WHOM=Doris ./hello8.sh
+Hello, Doris
+$ ./hello8.sh
+Hello, Marie
+```
+
+Now I will `export WHOM` so that it persists:
+
+```
+$ WHOM=Doris
+$ export WHOM
+$ ./hello8.sh
+Hello, Doris
+$ ./hello8.sh
+Hello, Doris
+```
+
+To remove `WHOM` from the environment, use `unset`:
+
+```
+$ unset WHOM
+$ ./hello8.sh
+Hello, Marie
+```
+
+Some programs rely heavily on environmental variables \(e.g., Centrifuge, TACC LAUNCHER\) for arguments.  Here is a short script to illustrate how you would use such a program:
+
+```
+$ cat -n hello9.sh
+     1	#!/bin/bash
+     2
+     3	WHOM="Who's on first" ./hello8.sh
+     4	WHOM="What's on second"
+     5	export WHOM
+     6	./hello8.sh
+     7	WHOM="I don't know's on third" ./hello8.sh
+$ ./hello9.sh
+Hello, Who's on first
+Hello, What's on second
+Hello, I don't know's on third
+```
+
+## Required and Optional Arguments
+
 Now we're going to accept two arguments, "GREETING" and "NAME" while providing defaults for both:
 
 ```
@@ -418,9 +504,11 @@ $ ./positional.sh Howdy
 Howdy, Stranger
 $ ./positional.sh Howdy Padnuh
 Howdy, Padnuh
+$ ./positional.sh "" Pahnuh
+Hello, Pahnuh
 ```
 
-## Required and Optional Arguments
+You notice that if I want to use the default argument for the greeting, I have to pass an empty string `""`.
 
 What if I want to require at least one argument?
 
@@ -481,9 +569,18 @@ To check for too many arguments, I added an "OR" \(the double pipes `||`\) and a
 
 ## Named Arguments To The Rescue
 
-It's great that we can make our script take arguments, some of which are required, but it gets to be pretty icky once we go beyond approximately two arguments.  After that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be "-f mouse.fa" to indicate the value for the "-f" \("file," probably\) argument is "mouse.fa," whereas a flag like "-v" might be a yes/no \("Boolean," if you like\) indicator that we do or do not want "verbose" mode.  You've encountered these with programs like `ls -l` to indicate you want the "long" directory listing or `ps -u $USER` to indicate the value for "-u" is the $USER.
+I hope maybe by this point you're thinking that the script is getting awfully complicated just to allow for a combination of required an optional arguments all given in a particular order.  You can manage with 1-3 positional arguments, but, after that, we really need to have named arguments and/or flags to indicate how we want to run the program.  A named argument might be `-f mouse.fa` to indicate the value for the `-f` \("file," probably\) argument is "mouse.fa," whereas a flag like `-v` might be a yes/no \("Boolean," if you like\) indicator that we do or do not want "verbose" mode.  You've encountered these with programs like `ls -l` to indicate you want the "long" directory listing or `ps -u $USER` to indicate the value for `-u` is the `$USER`.
 
-The best thing about named arguments is that they can be provided in any order.  Some may have values, some may be flags, and you can easily provide good defaults to make it easy for the user to provide the bare minimum information to run your program. Here is a version that has named arguments:
+The best thing about named arguments is that they can be provided in any order:
+
+```
+$ ./named.sh -g "Top of the morning" -n "Sara with no 'h'" 
+Top of the morning, Sara with no 'h'!
+$ ./named.sh -n Patch -g "Good Boy"
+Good Boy, Patch!
+```
+
+Some may have values, some may be flags, and you can easily provide good defaults to make it easy for the user to provide the bare minimum information to run your program. Here is a version that has named arguments:
 
 ```
 $ cat -n named.sh
@@ -530,7 +627,7 @@ $ cat -n named.sh
     41
     42    [[ -z "$GREETING" ]] && USAGE 1
     43
-    44    echo "$GREETING, $NAME"
+    44    echo "$GREETING, $NAME!"
 ```
 
 When run without arguments or with the `-h` flag, it produces a help message.  Arguments can be switched up.
@@ -545,9 +642,6 @@ Required arguments:
 
 Options:
  -n NAME (Stranger)
-
-$ ./named.sh -n Patch -g "Good Boy"
-Good Boy, Patch
 ```
 
 Our script just got much longer but also more flexible.  I've written a hundred shell scripts with just this as the template, so you can, too.  Go search for how `getopt` works and copy-paste this for your bash scripts, but the important thing to understand about `getopt` is that flags that take arguments have a `:` after them \(`g:` == "-g something"\) and ones that do not, well, do not \(`h` == "-h" == "please show me the help page\).
@@ -654,12 +748,12 @@ You will see many examples of using `for` to read from a file like so:
 
 ```
 $ cat -n for-read-file.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	FILE=${1:-'srr.txt'}
-     4	for LINE in $(cat "$FILE"); do
-     5	    echo "LINE \"$LINE\""
-     6	done
+     3    FILE=${1:-'srr.txt'}
+     4    for LINE in $(cat "$FILE"); do
+     5        echo "LINE \"$LINE\""
+     6    done
 $ cat srr.txt
 SRR3115965
 SRR516222
@@ -713,38 +807,38 @@ The proper way to read a file line-by-line is with `while`:
 
 ```
 $ cat -n while.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	FILE=${1:-'srr.txt'}
-     4	while read -r LINE; do
-     5	    echo "LINE \"$LINE\""
-     6	done < "$FILE"
+     3    FILE=${1:-'srr.txt'}
+     4    while read -r LINE; do
+     5        echo "LINE \"$LINE\""
+     6    done < "$FILE"
 $ ./while.sh srr.txt
 LINE "SRR3115965"
 LINE "SRR516222"
 LINE "SRR919365"
 $ ./while.sh meta.tab
-LINE "GD.Spr.C.8m.fa	-17.92522,146.14295"
-LINE "GF.Spr.C.9m.fa	-16.9207,145.9965833"
-LINE "L.Spr.C.1000m.fa	48.6495,-126.66434"
-LINE "L.Spr.C.10m.fa	48.6495,-126.66434"
-LINE "L.Spr.C.1300m.fa	48.6495,-126.66434"
-LINE "L.Spr.C.500m.fa	48.6495,-126.66434"
-LINE "L.Spr.I.1000m.fa	48.96917,-130.67033"
-LINE "L.Spr.I.10m.fa	48.96917,-130.67033"
-LINE "L.Spr.I.2000m.fa	48.96917,-130.67033"
+LINE "GD.Spr.C.8m.fa    -17.92522,146.14295"
+LINE "GF.Spr.C.9m.fa    -16.9207,145.9965833"
+LINE "L.Spr.C.1000m.fa    48.6495,-126.66434"
+LINE "L.Spr.C.10m.fa    48.6495,-126.66434"
+LINE "L.Spr.C.1300m.fa    48.6495,-126.66434"
+LINE "L.Spr.C.500m.fa    48.6495,-126.66434"
+LINE "L.Spr.I.1000m.fa    48.96917,-130.67033"
+LINE "L.Spr.I.10m.fa    48.96917,-130.67033"
+LINE "L.Spr.I.2000m.fa    48.96917,-130.67033"
 ```
 
 Another advantage is that `while` can break the line into fields:
 
 ```
 $ cat -n while2.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	FILE='meta.tab'
-     4	while read -r SITE LOC; do
-     5	    echo "$SITE is located at \"$LOC\""
-     6	done < "$FILE"
+     3    FILE='meta.tab'
+     4    while read -r SITE LOC; do
+     5        echo "$SITE is located at \"$LOC\""
+     6    done < "$FILE"
 $ ./while2.sh
 GD.Spr.C.8m.fa is located at "-17.92522,146.14295"
 GF.Spr.C.9m.fa is located at "-16.9207,145.9965833"
@@ -774,23 +868,28 @@ $ cat -n count-fa.sh
      9
     10	DIR=$1
     11	TMP=$(mktemp)
-    12	find "$DIR" -type f \( -name \*.fa -o -name \*.fasta \) > "$TMP"
+    12	find "$DIR" -type f -name \*.fa > "$TMP"
     13	NUM_FILES=$(wc -l "$TMP" | awk '{print $1}')
     14
     15	if [[ $NUM_FILES -lt 1 ]]; then
-    16	    echo "Found no fa(sta) files in $DIR"
+    16	    echo "Found no .fa files in $DIR"
     17	    exit 1
     18	fi
     19
-    20	while read -r FILE; do
-    21	    NUM_SEQ=$(grep -c '^>' "$FILE")
-    22	    printf "%10d %s\n" "$NUM_SEQ" "$(basename "$FILE")"
-    23	done < "$TMP"
-    24
-    25	rm "$TMP"
-$ ./count-fa.sh ../problems/
+    20	NUM_SEQS=0
+    21	while read -r FILE; do
+    22	    NUM_SEQ=$(grep -c '^>' "$FILE")
+    23	    NUM_SEQS=$((NUM_SEQS + NUM_SEQ))
+    24	    printf "%10d %s\n" "$NUM_SEQ" "$(basename "$FILE")"
+    25	done < "$TMP"
+    26
+    27	rm "$TMP"
+    28
+    29	echo "Done, found $NUM_SEQS sequences in $NUM_FILES files."
+$ ./count-fa.sh ../problems
         23 anthrax.fa
          9 burk.fa
+Done, found 32 sequences in 2 files.
 ```
 
 Line 11 uses the `mktemp` function to give us the name of a temporary file, then I `find` all the files ending in ".fa" or ".fasta" and put that into the temporary file.  I could them to make sure I found something.  Then I read from the tempfile and use the `FILE` name to count the number of times I see a greater-than sign at the beginning of a line.
