@@ -1,3 +1,6 @@
+
+---
+
 # Minimally competent bash scripting
 
 Bash is the worst shell scripting language except for all the others.  For many of the analyses you'll write, all you will need is a simple bash script, so let's figure out how to write a decent one.  I'll share with you what I've found to be the minimal amount of bash I use.
@@ -406,11 +409,11 @@ You can also use look in the environment for argument values.  For instance, we 
 
 ```
 $ cat -n hello7.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	NAME=${1:-$USER}
-     4	[[ -z "$NAME" ]] && NAME='Stranger'
-     5	echo "Hello, $NAME
+     3    NAME=${1:-$USER}
+     4    [[ -z "$NAME" ]] && NAME='Stranger'
+     5    echo "Hello, $NAME
 $ ./hello7.sh
 Hello, kyclark
 $ ./hello7.sh Barbara
@@ -432,9 +435,9 @@ Notice that I can set `USER` for the first run to "Bart," but the value returns 
 
 ```
 $ cat -n hello8.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	echo "Hello, ${WHOM:-Marie}"
+     3    echo "Hello, ${WHOM:-Marie}"
 $ ./hello8.sh
 Hello, Marie
 ```
@@ -471,13 +474,13 @@ Some programs rely heavily on environmental variables \(e.g., Centrifuge, TACC L
 
 ```
 $ cat -n hello9.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	WHOM="Who's on first" ./hello8.sh
-     4	WHOM="What's on second"
-     5	export WHOM
-     6	./hello8.sh
-     7	WHOM="I don't know's on third" ./hello8.sh
+     3    WHOM="Who's on first" ./hello8.sh
+     4    WHOM="What's on second"
+     5    export WHOM
+     6    ./hello8.sh
+     7    WHOM="I don't know's on third" ./hello8.sh
 $ ./hello9.sh
 Hello, Who's on first
 Hello, What's on second
@@ -857,35 +860,35 @@ Often I want to iterate over the results of some calculation.  Here is an exampl
 
 ```
 $ cat -n count-fa.sh
-     1	#!/bin/bash
+     1    #!/bin/bash
      2
-     3	set -u
+     3    set -u
      4
-     5	if [[ $# -ne 1 ]]; then
-     6	    printf "Usage: %s DIR\n" "$(basename "$0")"
-     7	    exit 1
-     8	fi
+     5    if [[ $# -ne 1 ]]; then
+     6        printf "Usage: %s DIR\n" "$(basename "$0")"
+     7        exit 1
+     8    fi
      9
-    10	DIR=$1
-    11	TMP=$(mktemp)
-    12	find "$DIR" -type f -name \*.fa > "$TMP"
-    13	NUM_FILES=$(wc -l "$TMP" | awk '{print $1}')
+    10    DIR=$1
+    11    TMP=$(mktemp)
+    12    find "$DIR" -type f -name \*.fa > "$TMP"
+    13    NUM_FILES=$(wc -l "$TMP" | awk '{print $1}')
     14
-    15	if [[ $NUM_FILES -lt 1 ]]; then
-    16	    echo "Found no .fa files in $DIR"
-    17	    exit 1
-    18	fi
+    15    if [[ $NUM_FILES -lt 1 ]]; then
+    16        echo "Found no .fa files in $DIR"
+    17        exit 1
+    18    fi
     19
-    20	NUM_SEQS=0
-    21	while read -r FILE; do
-    22	    NUM_SEQ=$(grep -c '^>' "$FILE")
-    23	    NUM_SEQS=$((NUM_SEQS + NUM_SEQ))
-    24	    printf "%10d %s\n" "$NUM_SEQ" "$(basename "$FILE")"
-    25	done < "$TMP"
+    20    NUM_SEQS=0
+    21    while read -r FILE; do
+    22        NUM_SEQ=$(grep -c '^>' "$FILE")
+    23        NUM_SEQS=$((NUM_SEQS + NUM_SEQ))
+    24        printf "%10d %s\n" "$NUM_SEQ" "$(basename "$FILE")"
+    25    done < "$TMP"
     26
-    27	rm "$TMP"
+    27    rm "$TMP"
     28
-    29	echo "Done, found $NUM_SEQS sequences in $NUM_FILES files."
+    29    echo "Done, found $NUM_SEQS sequences in $NUM_FILES files."
 $ ./count-fa.sh ../problems
         23 anthrax.fa
          9 burk.fa
