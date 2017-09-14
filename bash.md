@@ -108,7 +108,7 @@ Use exit() or Ctrl-D (i.e. EOF) to exit
 
 # Let's Make A Script!
 
-Let's make our script say "Hello" to someone:
+Let's make our script say "Hello" to some people:
 
 ```
 $ cat -n hello2.sh
@@ -139,9 +139,15 @@ $ echo "Such $NAME2"
 Such
 ```
 
-## Arguments, agreements, advice, answers
+# Getting Data Into Your Program: Arguments
 
-We would like to get the NAME from the user rather than having it hardcoded in the script.  The arguments to a bash script are available through a few variables:
+We would like to get the NAME from the user rather than having it hardcoded in the script.  I'll show you three ways our script can take in data from outside:
+
+1. Command-line arguments, both positional \(i.e., the first one, the second one, etc.\) or named \(e.g., `-n NAME`\)
+2. The environment
+3. Reading a configuration file
+
+First we'll cover the command-line arguments which are available through a few variables:
 
 * `$#`: The number \(think "\#" == number\) of arguments
 * `$@`: All the arguments in a single string
@@ -208,7 +214,7 @@ Here I'm throwing in a conditional at line 3 to check if the script has any argu
 
 The other bit of magic I threw in was a counter variable \(which I always use lowercase `i` \["integer"\], `j` if I needed an inner-counter and so on\) which is initialized to "0" on line 6.  I increment it, I could have written `$i=$(($i + 1))`, but it's easier to use the `let i++` shorthand.  Lastly, notice that "baz quux" seen as a single argument because it was placed in quotes; otherwise arguments are separated by spaces.
 
-## Make It Pretty \(or else\)
+## Sidebar: Make It Pretty \(or else\)
 
 Note that indentation doesn't matter as the program below works, but, honestly, which one is easier for you to read?
 
@@ -230,7 +236,7 @@ $ ./args3.sh foo bar
 2: bar
 ```
 
-## Catching Common Errors \(set -u\)
+## Sidebar: Catching Common Errors \(set -u\)
 
 bash is a notoriously easy language to write incorrectly.  One step you can take to ensure you don't misspell variables is to add `set -u` at the top of your script.  E.g., if you type `echo $HOEM` on the command line, you'll get no output or warning that you misspelled the `$HOME` variable unless you `set -u`:
 
@@ -350,7 +356,7 @@ Here I check on line 3 if there is just one argument, and the `else` is devoted 
 
 ## Sidebar: Saving Function Results
 
-To call a function in bash and save the results into a variable, we can use either backticks \(\`\`\) \(under the `~` on a US keyboard\) or `$()`.  I find backticks to be too similar to single quotes, so I prefer the latter.  To demonstrate:
+In the previous script, you may have noticed `$(basename "$0")`.  I was passing the script name \(`$0`\) to the function `basename` and then passing that to the `printf` function.  To call a function in bash and save the results into a variable or use the results as an argument, we can use either backticks \(\`\`\) \(under the `~` on a US keyboard\) or `$()`.  I find backticks to be too similar to single quotes, so I prefer the latter.  To demonstrate:
 
     $ ls | head
     args.sh*
@@ -366,27 +372,38 @@ To call a function in bash and save the results into a variable, we can use eith
     $ FILES=`ls | head`
     $ echo $FILES
     args.sh args2.sh args3.sh basic.sh hello.sh hello2.sh hello3.sh hello4.sh hello5.sh hello6.sh
-    $ cat -n functions.sh
-         1    #!/bin/bash
-         2
-         3    # call function
-         4    echo -n "1: BASENAME: "
-         5    basename "$0"
-         6
-         7    # put function results into variable
-         8    BASENAME=$(basename "$0")
-         9    echo "2: BASENAME: $BASENAME"
-        10
-        11    # use results of function as argument to another function
-        12    echo "3: BASENAME:" "$(basename "$0")"
-        13    echo "4: BASENAME: $(basename "$0")"
-        14    printf "5: BASENAME: %s\n" "$(basename "$0")"
-    $ ./functions.sh
-    1: BASENAME: functions.sh
-    2: BASENAME: functions.sh
-    3: BASENAME: functions.sh
-    4: BASENAME: functions.sh
-    5: BASENAME: functions.sh
+
+Here is a script that shows:
+
+1. Calling `basename` and having the result print out \(line 5\)
+2. Using `$()` to capture the results of `basename` into a variable \(line 8\)
+3. Using `$()` to call `basename` as the second argument to `echo`
+4. Showing that `$()` can be interpolated **inside a string**
+5. Using `$()` to call `basename` as an argument to `printf`
+
+```
+$ cat -n functions.sh
+     1    #!/bin/bash
+     2
+     3    # call function
+     4    echo -n "1: BASENAME: "
+     5    basename "$0"
+     6
+     7    # put function results into variable
+     8    BASENAME=$(basename "$0")
+     9    echo "2: BASENAME: $BASENAME"
+    10
+    11    # use results of function as argument to another function
+    12    echo "3: BASENAME:" "$(basename "$0")"
+    13    echo "4: BASENAME: $(basename "$0")"
+    14    printf "5: BASENAME: %s\n" "$(basename "$0")"
+$ ./functions.sh
+1: BASENAME: functions.sh
+2: BASENAME: functions.sh
+3: BASENAME: functions.sh
+4: BASENAME: functions.sh
+5: BASENAME: functions.sh
+```
 
 ## Providing Default Argument Values
 
@@ -431,7 +448,7 @@ Hello, kyclark
 
 ## Exporting Values to the Environment
 
-Notice that I can set `USER` for the first run to "Bart," but the value returns to "kyclark" on the next run.  I can permanently set a value in the environment by using the `export` command.  Here is a version of the script that looks for an environmental variable called `WHOM`:
+Notice that I can set `USER` for the first run to "Bart," but the value returns to "kyclark" on the next run.  I can permanently set a value in the environment by using the `export` command.  Here is a version of the script that looks for an environmental variable called `WHOM` \(please do override your `$USER` name in the environment as things will break\):
 
 ```
 $ cat -n hello8.sh
@@ -577,8 +594,6 @@ I hope maybe by this point you're thinking that the script is getting awfully co
 The best thing about named arguments is that they can be provided in any order:
 
 ```
-$ ./named.sh -g "Top of the morning" -n "Sara with no 'h'" 
-Top of the morning, Sara with no 'h'!
 $ ./named.sh -n Patch -g "Good Boy"
 Good Boy, Patch!
 ```
@@ -587,73 +602,89 @@ Some may have values, some may be flags, and you can easily provide good default
 
 ```
 $ cat -n named.sh
-     1    #!/bin/bash
-     2
-     3    set -u
-     4
-     5    GREETING=""
-     6    NAME="Stranger"
-     7
-     8    function USAGE() {
-     9        printf "Usage:\n  %s -g GREETING [-n NAME]\n\n" $(basename $0)
-    10        echo "Required arguments:"
-    11        echo " -g GREETING"
-    12        echo
-    13        echo "Options:"
-    14        echo " -n NAME ($NAME)"
-    15        echo
-    16        exit ${1:-0}
-    17    }
-    18
-    19    [[ $# -eq 0 ]] && USAGE 1
-    20
-    21    while getopts :g:n:h OPT; do
-    22      case $OPT in
-    23        h)
-    24          USAGE
-    25          ;;
-    26        g)
-    27          GREETING="$OPTARG"
-    28          ;;
-    29        n)
-    30          NAME="$OPTARG"
-    31          ;;
-    32        :)
-    33          echo "Error: Option -$OPTARG requires an argument."
-    34          exit 1
-    35          ;;
-    36        \?)
-    37          echo "Error: Invalid option: -${OPTARG:-""}"
-    38          exit 1
-    39      esac
-    40    done
-    41
-    42    [[ -z "$GREETING" ]] && USAGE 1
-    43
-    44    echo "$GREETING, $NAME!"
+     1	#!/bin/bash
+     2	
+     3	set -u
+     4	
+     5	GREETING=""
+     6	NAME="Stranger"
+     7	EXCITED=0
+     8	
+     9	function USAGE() {
+    10	    printf "Usage:\n  %s -g GREETING [-e] [-n NAME]\n\n" $(basename $0)
+    11	    echo "Required arguments:"
+    12	    echo " -g GREETING"
+    13	    echo
+    14	    echo "Options:"
+    15	    echo " -n NAME ($NAME)"
+    16	    echo " -e Print exclamation mark (default yes)"
+    17	    echo 
+    18	    exit ${1:-0}
+    19	}
+    20	
+    21	[[ $# -eq 0 ]] && USAGE 1
+    22	
+    23	while getopts :g:n:eh OPT; do
+    24	  case $OPT in
+    25	    h)
+    26	      USAGE
+    27	      ;;
+    28	    e)
+    29	      EXCITED=1
+    30	      ;;
+    31	    g)
+    32	      GREETING="$OPTARG"
+    33	      ;;
+    34	    n)
+    35	      NAME="$OPTARG"
+    36	      ;;
+    37	    :)
+    38	      echo "Error: Option -$OPTARG requires an argument."
+    39	      exit 1
+    40	      ;;
+    41	    \?)
+    42	      echo "Error: Invalid option: -${OPTARG:-""}"
+    43	      exit 1
+    44	  esac
+    45	done
+    46	
+    47	[[ -z "$GREETING" ]] && USAGE 1
+    48	PUNCTUATION="."
+    49	[[ $EXCITED -ne 0 ]] && PUNCTUATION="!"
+    50	
+    51	echo "$GREETING, $NAME$PUNCTUATION"
+
 ```
 
-When run without arguments or with the `-h` flag, it produces a help message.  Arguments can be switched up.
+When run without arguments or with the `-h` flag, it produces a help message. 
 
 ```
 $ ./named.sh
 Usage:
-  named.sh -g GREETING [-n NAME]
+  named.sh -g GREETING [-e] [-n NAME]
 
 Required arguments:
  -g GREETING
 
 Options:
  -n NAME (Stranger)
+ -e Print exclamation mark (default yes)
 ```
 
-Our script just got much longer but also more flexible.  I've written a hundred shell scripts with just this as the template, so you can, too.  Go search for how `getopt` works and copy-paste this for your bash scripts, but the important thing to understand about `getopt` is that flags that take arguments have a `:` after them \(`g:` == "-g something"\) and ones that do not, well, do not \(`h` == "-h" == "please show me the help page\).
+Our script just got much longer but also more flexible.  I've written a hundred shell scripts with just this as the template, so you can, too.  Go search for how `getopt` works and copy-paste this for your bash scripts, but the important thing to understand about `getopt` is that flags that take arguments have a `:` after them \(`g:` == "-g something"\) and ones that do not, well, do not \(`h` == "-h" == "please show me the help page\).  Both the "h" and "e" arguments are flags:
+
+```
+$ ./named.sh -n Patch -g "Good Boy"
+Good Boy, Patch.
+$ ./named.sh -n Patch -g "Good Boy" -e
+Good Boy, Patch!
+```
 
 I've introduced a new function called `USAGE` that prints out the "Usage" statement so that it can be called when:
 
-* the script is run with no arguments \(line 19\)
-* the script is run with the "-h" flag \(lines 23-24\)
-* the script is run with bad input \(line 44\)
+* the script is run with no arguments \(line 21\)
+* the script is run with the "-h" flag \(lines 25-26\)
+* the script is run with bad input \(line 47\)
 
 I initialized the NAME to "Stranger" \(line 6\) and then let the user know in the "Usage" what the default value will be.  When checking the GREETING in line 44, I'm actually checking that the length of the value is greater than zero because it's possible to run the script like this:
 
@@ -663,9 +694,51 @@ $ ./named01.sh -g ""
 
 Which would technically pass muster but does not actually meet our requirements.
 
+## Reading a Configuration File
+
+The last way I'll show you to get data into your program is to read a configuration file.  This builds on the earlier example of using `export` to put values into the environment:
+
+```
+$ cat -n config1.sh
+     1	export NAME="Merry Boy"
+     2	export GREETING="Good morning"
+$ cat -n read-config.sh
+     1	#!/bin/bash
+     2
+     3	source config1.sh
+     4	echo "$GREETING, $NAME!"
+$ ./read-config.sh
+Good morning, Merry Boy!
+```
+
+To make this more flexible, let's pass the config file as an argument:
+
+```
+$ cat -n read-config2.sh
+     1	#!/bin/bash
+     2
+     3	CONFIG=${1:-config1.sh}
+     4	if [[ ! -f "$CONFIG" ]]; then
+     5	    echo "Bad config \"$CONFIG\""
+     6	    exit 1
+     7	fi
+     8
+     9	source $CONFIG
+    10	echo "$GREETING, $NAME!"
+$ ./read-config2.sh
+Good morning, Merry Boy!
+$ cat -n config2.sh
+     1	export NAME="François"
+     2	export GREETING="Salut"
+$ ./read-config2.sh config2.sh
+Salut, François!
+$ ./read-config2.sh foo
+Bad config "foo"
+```
+
 # For Loops
 
-Often we want to do some set of actions for all the files in a directory or all the identifiers in a file:
+Often we want to do some set of actions for all the files in a directory or all the identifiers in a file.  You can use a `for` loop to iterate over the values in some command that returns a list of results:
 
 ```
 $ for FILE in *.sh; do echo "FILE = $FILE"; done
@@ -712,26 +785,18 @@ $ cat -n for.sh
 On line 5, I default `DIR` to the current working directory which I can find with the environmental variable `$PWD` \(print working directory\).  I check on line 7 that the argument is actually a directory with the `-d` test \(`man test`\).  The rest should look familiar.  Here it is in action:
 
 ```
-$ ./for.sh
+$ ./for.sh | head
   1: /Users/kyclark/work/metagenomics-book/bash/args.sh
   2: /Users/kyclark/work/metagenomics-book/bash/args2.sh
   3: /Users/kyclark/work/metagenomics-book/bash/args3.sh
   4: /Users/kyclark/work/metagenomics-book/bash/basic.sh
-  5: /Users/kyclark/work/metagenomics-book/bash/for.sh
-  6: /Users/kyclark/work/metagenomics-book/bash/hello.sh
-  7: /Users/kyclark/work/metagenomics-book/bash/hello2.sh
-  8: /Users/kyclark/work/metagenomics-book/bash/hello3.sh
-  9: /Users/kyclark/work/metagenomics-book/bash/hello4.sh
- 10: /Users/kyclark/work/metagenomics-book/bash/hello5.sh
- 11: /Users/kyclark/work/metagenomics-book/bash/hello6.sh
- 12: /Users/kyclark/work/metagenomics-book/bash/named.sh
- 13: /Users/kyclark/work/metagenomics-book/bash/positional.sh
- 14: /Users/kyclark/work/metagenomics-book/bash/positional2.sh
- 15: /Users/kyclark/work/metagenomics-book/bash/positional3.sh
- 16: /Users/kyclark/work/metagenomics-book/bash/set-u-bug1.sh
- 17: /Users/kyclark/work/metagenomics-book/bash/set-u-bug2.sh
- 18: /Users/kyclark/work/metagenomics-book/bash/unclustered-proteins
-$ ./for.sh ../problems
+  5: /Users/kyclark/work/metagenomics-book/bash/config1.sh
+  6: /Users/kyclark/work/metagenomics-book/bash/config2.sh
+  7: /Users/kyclark/work/metagenomics-book/bash/count-fa.sh
+  8: /Users/kyclark/work/metagenomics-book/bash/for-read-file.sh
+  9: /Users/kyclark/work/metagenomics-book/bash/for.sh
+ 10: /Users/kyclark/work/metagenomics-book/bash/functions.sh
+$ ./for.sh ../problems | head
   1: ../problems/cat-n
   2: ../problems/common-words
   3: ../problems/dna
@@ -742,9 +807,6 @@ $ ./for.sh ../problems
   8: ../problems/hello
   9: ../problems/proteins
  10: ../problems/tac
- 11: ../problems/txt2fasta
- 12: ../problems/wc
- 13: ../problems/yeast
 ```
 
 You will see many examples of using `for` to read from a file like so:
@@ -767,7 +829,7 @@ LINE "SRR516222"
 LINE "SRR919365"
 ```
 
-But that can break badly when the file contains more than one "word" \(as defined by the `$IFS` \[input field separator\]\):
+But that can break badly when the file contains more than one "word" per line \(as defined by the `$IFS` \[input field separator\]\):
 
 ```
 $ column -t pov-meta.tab
