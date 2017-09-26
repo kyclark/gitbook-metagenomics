@@ -11,6 +11,48 @@ $ cat -n hello.py
 
 The first thing to notice is a change to the "shebang" line.  I'm going to use `env` to find `python3` so I won't have a hard-coded path that my user will have to change.  In bash, we could use either `echo` or `printf` to print to the terminal \(or a file\).  In Python, we have `print()` noting that we must use parentheses now to invoke functions.  \(One difference between versions 2 and 3 of Python was that the parens to `print` were not necessary in version 2\).
 
+## Variables
+
+Let's use the REPL to play:
+
+```
+$ python3
+Python 3.6.1 |Anaconda custom (x86_64)| (default, May 11 2017, 13:04:09)
+[GCC 4.2.1 Compatible Apple LLVM 6.0 (clang-600.0.57)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> name = 'Gorgeous'
+>>> print('Hello, ' + name)
+Hello, Gorgeous
+```
+
+Here I'm showing that it's easy to create a variable called `name` which we assign the value "Gorgeous."  Just as in bash, we can use it in a `print` statement, but we can't directly stick it into the string:
+
+```
+>>> print('Hello, name')
+Hello, name
+```
+
+We have to use the `+` operator to concatenate it to the literal string "Hello, ":
+
+```
+>>> print('Hello, ' + name)
+Hello, Gorgeous
+```
+
+We can also pass a list of arguments to `print`, but notice the extra space:
+
+```
+>>> print('Hello, ', name)
+Hello,  Gorgeous
+```
+
+So, we've just found that Python will automatically put a space between all the arguments:
+
+```
+>>> print('foo', 'bar', 'baz')
+foo bar baz
+```
+
 ## Arguments
 
 To say hello to an argument passed from the command line, we need to a module which is just a package of code we can use:
@@ -112,26 +154,26 @@ Lastly, let me introduce the `main` function.  Many languages \(e.g., Python, Pe
 
 ```
 $ cat -n hello_arg4.py
-     1	#!/usr/bin/env python3
-     2	"""hello with args/main"""
+     1    #!/usr/bin/env python3
+     2    """hello with args/main"""
      3
-     4	import sys
-     5	import os
+     4    import sys
+     5    import os
      6
-     7	def main():
-     8	    """main"""
-     9	    args = sys.argv
+     7    def main():
+     8        """main"""
+     9        args = sys.argv
     10
-    11	    if len(args) != 2:
-    12	        script = os.path.basename(args[0])
-    13	        print('Usage: {} NAME'.format(script))
-    14	        sys.exit(1)
+    11        if len(args) != 2:
+    12            script = os.path.basename(args[0])
+    13            print('Usage: {} NAME'.format(script))
+    14            sys.exit(1)
     15
-    16	    name = args[1]
-    17	    print('Hello, {}!'.format(name))
+    16        name = args[1]
+    17        print('Hello, {}!'.format(name))
     18
-    19	if __name__ == '__main__':
-    20	    main()
+    19    if __name__ == '__main__':
+    20        main()
 ```
 
 ## Function Order
@@ -140,14 +182,14 @@ Note that you cannot put lines 19-20 first because you cannot call a function th
 
 ```
 $ cat -n func-def-order.py
-     1	#!/usr/bin/env python3
+     1    #!/usr/bin/env python3
      2
-     3	print('Starting the program')
-     4	foo()
-     5	print('Ending the program')
+     3    print('Starting the program')
+     4    foo()
+     5    print('Ending the program')
      6
-     7	def foo():
-     8	    print('This is foo')
+     7    def foo():
+     8        print('This is foo')
 $ ./func-def-order.py
 Starting the program
 Traceback (most recent call last):
@@ -160,14 +202,14 @@ To contrast:
 
 ```
 $ cat -n func-def-order2.py
-     1	#!/usr/bin/env python3
+     1    #!/usr/bin/env python3
      2
-     3	def foo():
-     4	    print('This is foo')
+     3    def foo():
+     4        print('This is foo')
      5
-     6	print('Starting the program')
-     7	foo()
-     8	print('Ending the program')
+     6    print('Starting the program')
+     7    foo()
+     8    print('Ending the program')
 $ ./func-def-order2.py
 Starting the program
 This is foo
@@ -249,18 +291,18 @@ Above we saw a simple `if` condition, but what if you want to test for more then
 
 ```
 $ cat -n if-else.py
-     1	#!/usr/bin/env python3
-     2	"""conditions"""
+     1    #!/usr/bin/env python3
+     2    """conditions"""
      3
-     4	name = input('What is your name? ')
-     5	age = int(input('Hi, ' + name + '. What is your age? '))
+     4    name = input('What is your name? ')
+     5    age = int(input('Hi, ' + name + '. What is your age? '))
      6
-     7	if age < 0:
-     8	    print("That isn't possible.")
-     9	elif age < 18:
-    10	    print('You are a minor.')
-    11	else:
-    12	    print('You are an adult.')
+     7    if age < 0:
+     8        print("That isn't possible.")
+     9    elif age < 18:
+    10        print('You are a minor.')
+    11    else:
+    12        print('You are an adult.')
 $ ./if-else.py
 What is your name? Geoffrey
 Hi, Geoffrey. What is your age? 47
@@ -300,4 +342,122 @@ Which leads into the notion that Python, unlike bash, has types -- variables can
 ```
 
 As noted earlier, you can use `help` on any of the class names to find out more of what you can do with them.
+
+So let's return to the `+` operator earlier and check out how it works with different types:
+
+```
+>>> 1 + 2
+3
+>>> 'foo' + 'bar'
+'foobar'
+>>> '1' + 2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: must be str, not int
+```
+
+Python will crash if you try to "add" two different types together, but the type of the argument depends on the run-time conditions:
+
+```
+>>> x = 4
+>>> y = 5
+>>> x + y
+9
+>>> z = '1'
+>>> x + z
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+```
+
+To avoid such errors, you can coerce your data:
+
+```
+>>> int(x) + int(z)
+5
+```
+
+Or check the types at run-time:
+
+```
+>>> for pair in [(1, 2), (3, '4')]:
+...     n1, n2 = pair[0], pair[1]
+...     if type(n1) == int and type(n2) == int:
+...         print('{} + {} = {}'.format(n1, n2, n1 + n2))
+...     else:
+...         print('Cannot add {} ({}) and {} ({})'.format(n1, type(n1), n2, type(n2)))
+...
+1 + 2 = 3
+Cannot add 3 (<class 'int'>) and 4 (<class 'str'>)
+```
+
+## Loops
+
+As in bash, we can use `for` and `while` loops in Python.  Here's another way to greet all the people:
+
+```
+$ cat -n hello_arg6.py
+     1	#!/usr/bin/env python3
+     2	"""hello with to many"""
+     3
+     4	import sys
+     5	import os
+     6
+     7	def main():
+     8	    """main"""
+     9	    args = sys.argv
+    10
+    11	    if len(args) < 2:
+    12	        script = os.path.basename(args[0])
+    13	        print('Usage: {} NAME [NAME2 ...]'.format(script))
+    14	        sys.exit(1)
+    15
+    16	    for name in args[1:]:
+    17	        print('Hello, ' + name + '!')
+    18
+    19	if __name__ == '__main__':
+    20	    main()
+$ ./hello_arg6.py Jack Jill
+Hello, Jack!
+Hello, Jill!
+```
+
+You can see more in the REPL:
+
+```
+>>> for letter in "abc":
+...     print(letter)
+...
+a
+b
+c
+>>> for number in range(0, 5):
+...     print(number)
+...
+0
+1
+2
+3
+4
+>>> for word in ['foo', 'bar']:
+...     print(word)
+...
+foo
+bar
+>>> for word in 'We hold these truths'.split():
+...     print(word)
+...
+We
+hold
+these
+truths
+>>> for line in open('input1.txt'):
+...     print(line, end='')
+...
+this is
+some text
+from a file.
+```
+
+In each case, we're iterating over the members of a list as produced from a string, a range, an actual list, a list produced by a function, and an open file, respectively. \(That last example either needs to suppress the newline from `print` or do `rstrip()` on the line to remove it as the text coming from the file has a newline.\)
 
