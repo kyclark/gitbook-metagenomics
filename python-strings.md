@@ -1,29 +1,51 @@
 # Strings, Lists, and Tuples
 
-There's some overlap among Python's strings, lists, and tuples.  In a way, you could think of strings as lists of characters \(Haskell certainly does\).  Many list operations work exactly the same over strings:
+There's some overlap among Python's strings, lists, and tuples.  In a way, you could think of strings as lists of characters.  Many list operations work exactly the same over strings like subscripting to get a particular item:
 
 ```
 >>> names = ['Larry', 'Moe', 'Curly', 'Shemp']
 >>> names[0]
 'Larry'
->>> names[2:4]
-['Curly', 'Shemp']
 >>> 'Curly'[0]
 'C'
+```
+
+"Slice" operations let you take a range of items:
+
+```
+>>> names[2:4]
+['Curly', 'Shemp']
 >>> 'Curly'[2:4]
 'rl'
+```
+
+Functions like `join` that take lists can also work on strings:
+
+```
 >>> ', '.join(names)
 'Larry, Moe, Curly, Shemp'
 >>> ', '.join(names[0])
 'L, a, r, r, y'
+```
+
+You can ask if a list contains a certain member, and you can also ask if a string contains a certain character or substring:
+
+```
 >>> 'Moe' in names
 True
 >>> 'r' in 'Larry'
+True
+>>> 'url' in 'Curly'
 True
 >>> 'x' in 'Larry'
 False
 >>> 'Joe' in names
 False
+```
+
+You can iterate with a `for` loop over both the items in a list or the characters in a word:
+
+```
 >>> names = ['Larry', 'Moe', 'Curly', 'Shemp']
 >>> for name in names:
 ...   print(name)
@@ -32,6 +54,19 @@ Larry
 Moe
 Curly
 Shemp
+>>> for letter in 'Curly':
+...   print(letter)
+...
+C
+u
+r
+l
+y
+```
+
+Another very useful function called `enumerate` takes a list/string and returns the index/position along with the item/character:
+
+```
 >>> for i, name in enumerate(names):
 ...   print('{:3} {}'.format(i, name))
 ...
@@ -39,30 +74,38 @@ Shemp
   1 Moe
   2 Curly
   3 Shemp
+>>> for i, letter in enumerate('Curly'):
+...   print('{:3} {}'.format(i, letter))
+...
+  0 C
+  1 u
+  2 r
+  3 l
+  4 y
 ```
 
-For an example, here is a simple program to determine if a given string is a palindrome
+For an example, here is a simple program to determine if a given string is a palindrome:
 
 ```
 $ cat -n word_is_palindrome.py
-     1	#!/usr/bin/env python3
-     2	"""Report if the given word is a palindrome"""
+     1    #!/usr/bin/env python3
+     2    """Report if the given word is a palindrome"""
      3
-     4	import sys
-     5	import os
+     4    import sys
+     5    import os
      6
-     7	args = sys.argv[1:]
+     7    args = sys.argv[1:]
      8
-     9	if len(args) != 1:
-    10	    print('Usage: {} STR'.format(os.path.basename(args[0])))
-    11	    sys.exit(1)
+     9    if len(args) != 1:
+    10        print('Usage: {} STR'.format(os.path.basename(args[0])))
+    11        sys.exit(1)
     12
-    13	word = args[0]
-    14	rev = ''.join(reversed(word))
-    15	print('"{}" is{} a palindrome.'.format(word, '' if word.lower() == rev.lower() else ' NOT'))
+    13    word = args[0]
+    14    rev = ''.join(reversed(word))
+    15    print('"{}" is{} a palindrome.'.format(word, '' if word.lower() == rev.lower() else ' NOT'))
 ```
 
-As we discussed earlier, `sys.argv` returns exactly what the operating system thinks of as "the program" it's running, namely that the program name is in the first \(zeroth\) position, and anything else you type on the command line follows.  If you run this as "./word\_is\_palindrome.py foo" then `sys.argv` looks like `['./word_is_palindrome.py', 'foo']`.  While discussing this with a student, I realized the confusion over the program name being in the `[0]` position, so rather than doing:
+As we discussed earlier, `sys.argv` returns exactly what the operating system thinks of as "the program" it's running, namely that the program name is in the first \(zeroth\) position, and anything else you type on the command line follows.  If you run this as `./word_is_palindrome.py foo` then `sys.argv` looks like `['./word_is_palindrome.py', 'foo']`.  While discussing this with a student, I realized the confusion over the program name being in the `[0]` position, so rather than doing:
 
 ```
 args = sys.argv
@@ -82,20 +125,29 @@ if len(args) == 0:
     sys.exit(1)
 ```
 
-Note that Python will throw an exception if you try to reference an index position in a list that doesn't exist, e.g., you try to use `args[0]` if there are no arguments, but it will not blow up if you take a slice of an array starting or ending at non-existent positions:
+Note that Python will throw an exception if you try to reference an index position in a list that doesn't exist:
 
 ```
->>> names
-['Larry', 'Moe', 'Curly', 'Shemp']
->>> names[3:10]
-['Shemp']
->>> names[5:10]
-[]
+>>> 'foo'[0]
+'f'
+>>> 'foo'[10]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IndexError: string index out of range
+```
+
+Python will not blow up if you take a slice of an array starting or ending at non-existent positions:
+
+```
+>>> 'foo'[1:10]
+'oo'
+>>> 'foo'[5:]
+''
 ```
 
 Which is why it's safe to say `sys.argv[1:]` to slice out everything starting at position 1 even if there is nothing there.
 
-We can extrapolate from this to a program that finds all palindromes in a file:
+We can expand our palindrome program to one that searches in a file:
 
 ```
 $ cat -n find_palindromes.py
@@ -105,13 +157,13 @@ $ cat -n find_palindromes.py
      4	import sys
      5	import os
      6
-     7	args = sys.argv
+     7	args = sys.argv[1:]
      8
-     9	if len(args) != 2:
-    10	    print('Usage: {} FILE'.format(os.path.basename(args[0])))
+     9	if len(args) != 1:
+    10	    print('Usage: {} FILE'.format(os.path.basename(sys.argv[0])))
     11	    sys.exit(1)
     12
-    13	file = args[1]
+    13	file = args[0]
     14
     15	if not os.path.isfile(file):
     16	    print('"{}" is not a file'.format(file))
@@ -374,7 +426,35 @@ If we had simply wanted to use them in a reversed order **WITHOUT ALTERING THE A
 ['Larry', 'Moe', 'Curly', 'Shemp']
 ```
 
-It's really easy to read an entire file directly into a list with `readlines` \(this preserves newlines\), but you should be sure that you have at least as much memory on your machine as the file is big:
+It's really easy to read an entire file directly into a list with `readlines` \(this preserves newlines\), but you should be sure that you have at least as much memory on your machine as the file is big.  Compare these various ways to read an entire file.  `read` will give you the contents as one string, and newlines will be present to denote the end of each line:
+
+```
+>>> open('input.txt').read()
+'first line\nsecond line\nthird line\nfourth line\n'
+```
+
+Whereas `readlines` will return a list of strings broken on the newlines \(but not removing them\):
+
+```
+>>> open('input.txt').readlines()
+['first line\n', 'second line\n', 'third line\n', 'fourth line\n']
+```
+
+Calling `read().splitlines()` will suck in the whole file, then break on the newlines, removing them in the process:
+
+```
+>>> open('input.txt').read().splitlines()
+['first line', 'second line', 'third line', 'fourth line']
+```
+
+Similarly, you can `read().split()` to break all the input on spaces to get the words:
+
+```
+>>> open('input.txt').read().split()
+['first', 'line', 'second', 'line', 'third', 'line', 'fourth', 'line']
+```
+
+Here is a version that uses `readlines()`:
 
 ```
 $ cat -n tac2.py
