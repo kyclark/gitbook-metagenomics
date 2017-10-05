@@ -36,4 +36,5 @@
   * [PBS](pbs.md)
   * [SLURM](slurm.md)
 * [Python](python.md)
+* [Python Strings Lists Tuples](python-strings.md)
 
