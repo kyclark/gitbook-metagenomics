@@ -37,4 +37,5 @@
   * [SLURM](slurm.md)
 * [Python](python.md)
 * [Python Strings Lists Tuples](python-strings.md)
+* [Python Dictionaries](python-dictionaries.md)
 
