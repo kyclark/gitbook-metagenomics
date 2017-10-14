@@ -38,4 +38,5 @@
 * [Python](python.md)
 * [Python Strings Lists Tuples](python-strings.md)
 * [Python Dictionaries](python-dictionaries.md)
+* [Parsing in Python](parsing-in-python.md)
 
