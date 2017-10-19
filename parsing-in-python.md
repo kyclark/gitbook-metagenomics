@@ -64,9 +64,11 @@ int_arg = "42"
 flag_arg = "True"
 ```
 
+Please RTFM \(https://docs.python.org/3/library/argparse.html\) to find all the other Fine things you can do with argparse.
+
 # CSV Files
 
-Delimited text files are a standard way to distribute non-hierarchical data -- e.g., records that can be represented each on one line.  \(When you get into data that have relationships, e.g., parents/children, then structures like XML and JSON are more appropriate.\)  Let's first take a look at the `csv` module in Python \([https://docs.python.org/3/library/csv.html\](https://docs.python.org/3/library/csv.html%29\) to parse the output from Centrifuge \([http://www.ccb.jhu.edu/software/centrifuge/](http://www.ccb.jhu.edu/software/centrifuge/%29\)\).
+Delimited text files are a standard way to distribute non/semi-hierarchical data -- e.g., records that can be represented each on one line.  \(When you get into data that have relationships, e.g., parents/children, then structures like XML and JSON are more appropriate, which is not to say that people haven't sorely abused this venerable format, e.g., GFF3.\)  Let's first take a look at the `csv` module in Python \([https://docs.python.org/3/library/csv.html\](https://docs.python.org/3/library/csv.html%29\) to parse the output from Centrifuge \([http://www.ccb.jhu.edu/software/centrifuge/](http://www.ccb.jhu.edu/software/centrifuge/%29%29\).
 
 For this, we'll use some data from a study from Yellowstone National Park \([https://www.imicrobe.us/sample/view/1378\](https://www.imicrobe.us/sample/view/1378%29%29.  For each input file, Centrifuge creates two output files: 1\) a file \("YELLOWSTONE\_SMPL\_20723.sum"\) showing the taxonomy ID for each read it was able to classify and 2\) a file \("YELLOWSTONE\_SMPL\_20723.tsv"\) of the complete taxonomy information for each taxonomy ID.  One record from the first looks like this:
 
@@ -202,7 +204,37 @@ count    taxID
 
 # tabchk
 
-Talk about tab-check program.
+A huge chunk of my time is spent doing ETL operations -- extract, transform, load -- meaning someone sends me data \(Excel or delimited-text, JSON/XML\), and I put it into some sort of database.  I usually want to inspect the data to see what it looks like, and it's hard to see the data when it's in columnar format.  I'd rather see it formatted vertically.  E.g., here is an export of some iMicrobe sample annotations:
+
+```
+$ tabchk.py -d imicrobe-blast-annots.txt
+// ****** Record 1 ****** //
+sample_id             : 1
+project_name          : Acid Mine Drainage Metagenome
+ontologies            : ENVO:01000033 (oceanic pelagic zone biome),ENVO:00002149 (sea water),ENVO:00000015 (ocean)
+project_id            : 1
+source_mat_id         : 33
+sample_type           : metagenome
+sample_description    : ACID_MINE_02 - 5-Way (CG) Acid Mine Drainage Biofilm
+sample_name           : ACID_MINE_02
+collection_start_time : 2002-03-01 00:00:00.0
+collection_stop_time  : 2002-03-01 00:00:00.0
+site_name             : Richmond Mine
+latitude              : 40.666668
+longitude             : -122.51667
+site_description      : Acid Mine Drainage
+country               : UNITED STATES
+region                : Iron Mountain, CA
+library_acc           : JGI_AMD_5WAY_IRNMTN_LIB_20020301
+sequencing_method     : dideoxysequencing (Sanger)
+dna_type              : gDNA
+num_of_reads          : 180713
+habitat_name          : waste water
+temperature           : 42
+sample_acc            : JGI_AMD_5WAY_IRNMTN_SMPL_20020301
+```
+
+If you open that file in a text editor, you will see there are many more column headers than are shown here.  The lines are extremely long, and it's a pretty sparse matrix of data.  The `-d` flag to the program indicates to show a "dense" matrix, i.e., leave out the empty fields.  I find the above format much easier to read.  Here is the program to do that:
 
 ```
 $ cat -n tabchk.py
@@ -255,31 +287,83 @@ $ cat -n tabchk.py
     47    # --------------------------------------------------
     48    if __name__ == '__main__':
     49        main()
-$ tabchk.py -d imicrobe-blast-annots.txt
-// ****** Record 1 ****** //
-sample_id             : 1
-project_name          : Acid Mine Drainage Metagenome
-ontologies            : ENVO:01000033 (oceanic pelagic zone biome),ENVO:00002149 (sea water),ENVO:00000015 (ocean)
-project_id            : 1
-source_mat_id         : 33
-sample_type           : metagenome
-sample_description    : ACID_MINE_02 - 5-Way (CG) Acid Mine Drainage Biofilm
-sample_name           : ACID_MINE_02
-collection_start_time : 2002-03-01 00:00:00.0
-collection_stop_time  : 2002-03-01 00:00:00.0
-site_name             : Richmond Mine
-latitude              : 40.666668
-longitude             : -122.51667
-site_description      : Acid Mine Drainage
-country               : UNITED STATES
-region                : Iron Mountain, CA
-library_acc           : JGI_AMD_5WAY_IRNMTN_LIB_20020301
-sequencing_method     : dideoxysequencing (Sanger)
-dna_type              : gDNA
-num_of_reads          : 180713
-habitat_name          : waste water
-temperature           : 42
-sample_acc            : JGI_AMD_5WAY_IRNMTN_SMPL_20020301
+```
+
+# FASTA
+
+Now let's finally get into parsing good, old FASTA files.  The `argparse` and `csv` modules are standard in Python, but for FASTA we're going to need to install the BioPython \(http://biopython.org/\) module.  This should work for you:
+
+```
+$ python3 -m pip install biopython
+```
+
+For this exercise, I'll use a few reads from the Global Ocean Sampling Expedition \(https://imicrobe.us/sample/view/578\):
+
+```
+$ head -5 CAM_SMPL_GS108.fa
+>CAM_READ_0231669761 /library_id="CAM_LIB_GOS108XLRVAL-4F-1-400" /sample_id="CAM_SMPL_GS108" raw_id=SRA_ID=SRR066139.70645 raw_id=FG67BMZ02PUFIF
+ATTTACAATAATTTAATAAAATTAACTAGAAATAAAATATTGTATGAAAATATGTTAAATAATGAAAGTTTTT
+CAGATCGTTTAATAATATTTTTCTTCCATTTTGCTTTTTTCTAAAATTGTTCAAAAACAAACTTCAAAGGAAA
+ATCTTCAAAATTTACATGATTTTATATTTAAACAAATAGAGTTAAGTATAAGAGAAATTGGATATGGTGATGC
+TTCAATAAATAAAAAAATGAAAGAGTATGTCAATGTGATGTACGCAATAATTGACAAAGTTGATTCATGGGAA
+```
+
+Let's write a script that mimics `seqmagick`:
+
+```
+$ seqmagick info CAM_SMPL_GS108.fa
+name              alignment    min_len   max_len   avg_len  num_seqs
+CAM_SMPL_GS108.fa FALSE            168       440    325.60         5
+```
+
+We'll skip the "alignment" and just do min/max/avg lengths and the number of sequences.  You can pretty much copy and paste the example code from http://biopython.org/wiki/SeqIO.  Here is the output from our script, "seqmagique.py":
+
+```
+$ ./seqmagique.py *.fa
+name                 min_len    max_len    avg_len   num_seqs
+CAM_SMPL_GS108.fa        168        440      325.6          5
+CAM_SMPL_GS112.fa         71        517      398.4          5
+```
+
+The code to produce this builds on our earlier skills of lists and dictionaries as we will parse each file and save a dictionary of stats into a list, then we will iterate over that list at the end to show the output.
+
+```
+$ cat -n seqmagique.py
+     1	#!/usr/bin/env python3
+     2	"""Mimic seqmagick, print stats on FASTA sequences"""
+     3
+     4	import os
+     5	import sys
+     6	from statistics import mean
+     7	from Bio import SeqIO
+     8
+     9	files = sys.argv[1:]
+    10
+    11	if len(files) < 1:
+    12	    print('Usage: {} F1.fa [F2.fa...]'.format(os.path.basename(sys.argv[0])))
+    13	    sys.exit(1)
+    14
+    15	info = []
+    16	for file in files:
+    17	    lengths = []
+    18	    for record in SeqIO.parse(file, "fasta"):
+    19	        lengths.append(len(record.seq))
+    20
+    21	    info.append({'name': os.path.basename(file),
+    22	                 'min_len': min(lengths),
+    23	                 'max_len': max(lengths),
+    24	                 'avg_len': mean(lengths),
+    25	                 'num_seqs': len(lengths)})
+    26
+    27	if len(info):
+    28	    longest_file_name = max([len(f['name']) for f in info])
+    29	    fmt = '{:' + str(longest_file_name) + '} {:>10} {:>10} {:>10} {:>10}'
+    30	    flds = ['name', 'min_len', 'max_len', 'avg_len', 'num_seqs']
+    31	    print(fmt.format(*flds))
+    32	    for rec in info:
+    33	        print(fmt.format(*[rec[fld] for fld in flds]))
+    34	else:
+    35	    print('I had trouble parsing your data')
 ```
 
 
