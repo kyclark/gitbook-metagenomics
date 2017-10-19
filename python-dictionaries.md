@@ -940,74 +940,74 @@ Well, that's pretty uninformative.  Sure "a" and "the" are shared, but we don't 
 
 ```
 $ cat -n common_words2.py
-     1	#!/usr/bin/env python3
-     2	"""Count words/frequencies in two files"""
+     1    #!/usr/bin/env python3
+     2    """Count words/frequencies in two files"""
      3
-     4	import os
-     5	import re
-     6	import sys
-     7	import string
-     8	from collections import defaultdict
+     4    import os
+     5    import re
+     6    import sys
+     7    import string
+     8    from collections import defaultdict
      9
-    10	# --------------------------------------------------
-    11	def word_counts(file):
-    12	    """Return a dictionary of words/counts"""
-    13	    words = defaultdict(int)
-    14	    regex = re.compile('[' + string.punctuation + ']')
-    15	    for line in open(file):
-    16	        for word in [regex.sub('', w) for w in line.lower().split()]:
-    17	            words[word] += 1
+    10    # --------------------------------------------------
+    11    def word_counts(file):
+    12        """Return a dictionary of words/counts"""
+    13        words = defaultdict(int)
+    14        regex = re.compile('[' + string.punctuation + ']')
+    15        for line in open(file):
+    16            for word in [regex.sub('', w) for w in line.lower().split()]:
+    17                words[word] += 1
     18
-    19	    return words
+    19        return words
     20
-    21	# --------------------------------------------------
-    22	def main():
-    23	    """Start here"""
-    24	    args = sys.argv[1:]
+    21    # --------------------------------------------------
+    22    def main():
+    23        """Start here"""
+    24        args = sys.argv[1:]
     25
-    26	    if len(args) != 2:
-    27	        msg = 'Usage: {} FILE1 FILE2'
-    28	        print(msg.format(os.path.basename(sys.argv[0])))
-    29	        sys.exit(1)
+    26        if len(args) != 2:
+    27            msg = 'Usage: {} FILE1 FILE2'
+    28            print(msg.format(os.path.basename(sys.argv[0])))
+    29            sys.exit(1)
     30
-    31	    for file in args[0:2]:
-    32	        if not os.path.isfile(file):
-    33	            print('"{}" is not a file'.format(file))
-    34	            sys.exit(1)
+    31        for file in args[0:2]:
+    32            if not os.path.isfile(file):
+    33                print('"{}" is not a file'.format(file))
+    34                sys.exit(1)
     35
-    36	    file1 = args[0]
-    37	    file2 = args[1]
-    38	    words1 = word_counts(file1)
-    39	    words2 = word_counts(file2)
-    40	    common = set(words1.keys()).intersection(set(words2.keys()))
-    41	    num_common = len(common)
-    42	    verb = 'is' if num_common == 1 else 'are'
-    43	    plural = '' if num_common == 1 else 's'
-    44	    msg = 'There {} {} word{} in common between "{}" ({}) and "{}" ({}).'
-    45	    tot1 = sum(words1.values())
-    46	    tot2 = sum(words2.values())
-    47	    print(msg.format(verb, num_common, plural, file1, tot1, file2, tot2))
+    36        file1 = args[0]
+    37        file2 = args[1]
+    38        words1 = word_counts(file1)
+    39        words2 = word_counts(file2)
+    40        common = set(words1.keys()).intersection(set(words2.keys()))
+    41        num_common = len(common)
+    42        verb = 'is' if num_common == 1 else 'are'
+    43        plural = '' if num_common == 1 else 's'
+    44        msg = 'There {} {} word{} in common between "{}" ({}) and "{}" ({}).'
+    45        tot1 = sum(words1.values())
+    46        tot2 = sum(words2.values())
+    47        print(msg.format(verb, num_common, plural, file1, tot1, file2, tot2))
     48
-    49	    if num_common > 0:
-    50	        fmt = '{:>3} {:20} {:>5} {:>5}'
-    51	        print(fmt.format('#', 'word', '1', '2'))
-    52	        print('-' * 36)
-    53	        shared1, shared2 = 0, 0
-    54	        for i, word in enumerate(sorted(common)):
-    55	            c1 = words1[word]
-    56	            c2 = words2[word]
-    57	            shared1 += c1
-    58	            shared2 += c2
-    59	            print(fmt.format(i + 1, word, c1, c2))
+    49        if num_common > 0:
+    50            fmt = '{:>3} {:20} {:>5} {:>5}'
+    51            print(fmt.format('#', 'word', '1', '2'))
+    52            print('-' * 36)
+    53            shared1, shared2 = 0, 0
+    54            for i, word in enumerate(sorted(common)):
+    55                c1 = words1[word]
+    56                c2 = words2[word]
+    57                shared1 += c1
+    58                shared2 += c2
+    59                print(fmt.format(i + 1, word, c1, c2))
     60
-    61	        print(fmt.format('', '-----', '--', '--'))
-    62	        print(fmt.format('', 'total', shared1, shared2))
-    63	        print(fmt.format('', 'pct',
-    64	                         int(shared1/tot1 * 100), int(shared2/tot2 * 100)))
+    61            print(fmt.format('', '-----', '--', '--'))
+    62            print(fmt.format('', 'total', shared1, shared2))
+    63            print(fmt.format('', 'pct',
+    64                             int(shared1/tot1 * 100), int(shared2/tot2 * 100)))
     65
-    66	# --------------------------------------------------
-    67	if __name__ == '__main__':
-    68	    main()
+    66    # --------------------------------------------------
+    67    if __name__ == '__main__':
+    68        main()
 ```
 
 And here it is in action:
@@ -1097,23 +1097,42 @@ l a b o   r      c a t a l o g          p r e t e n s e     l i t e r
 
 Try writing a sequence alignment program \(no, really!\), and you'll find it's really quite difficult.  Decades of research have gone into Smith-Waterman and BLAST and BLAT and LAST and more.  Alignment works very well, but it's computationally expensive.  We need a faster approximation of similarity.  Enter k-mers!
 
-A k-mer is a `k` length of "mers" or contiguous sequence \(think "polymers"\).  Here are the 3/4-mers in "foobar":
+A k-mer is a `k` length of "mers" or contiguous sequence \(think "polymers"\).  Here are the 3/4-mers in my last name:
 
 ```
-$ ./kmer_tiler.py foobar
-There are 4 3-mers in "foobar."
-foobar
-foo
- oob
-  oba
-   bar
-$ ./kmer_tiler.py foobar 4
-There are 3 4-mers in "foobar."
-foobar
-foob
- ooba
-  obar
+$ ./kmer_tiler.py youens
+There are 4 3-mers in "youens."
+youens
+you
+ oue
+  uen
+   ens
+$ ./kmer_tiler.py youens 4
+There are 3 4-mers in "youens."
+youens
+youe
+ ouen
+  uens
 ```
+
+If instead looking for shared "words" we search for k-mers, we will find very different results, and the length of the k-mer matters.  For instance, the first 3-mer in my name, "you" can be found 81 times in my local dictionary, but the 4-mer "youe" not at all.  The longer the k-mer, the greater the specificity.  Let's try our English variations with a k-mer counter:
+
+```
+$ ./common_kmers.py british.txt american.txt
+There are 112 kmers in common between "british.txt" (127) and "american.txt" (127).
+  # kmer                     1     2
+------------------------------------
+  1 abo                      2     2
+  2 all                      1     1
+...
+111 whi                      1     1
+112 wit                      2     2
+    -----                   --    --
+    total                  142   133
+    pct                     86    86
+```
+
+Our word counting program thought these two texts only 76% similar, but our kmer counter thinks they are 86% similar.
 
 
 
