@@ -539,7 +539,7 @@ But what is particularly nifty about Counters is that they have built-in methods
 [('A', 6), ('G', 4), ('C', 2), ('T', 2)]
 ```
 
-You should read the documentation to learn more \([https://docs.python.org/3/library/collections.html\](https://docs.python.org/3/library/collections.html\)\).
+You should read the documentation to learn more \([https://docs.python.org/3/library/collections.html\](https://docs.python.org/3/library/collections.html%29\).
 
 # Character Counter with the works
 
@@ -729,117 +729,393 @@ Lastly, here is an implementation of the game "Hangman" that uses dictionaries t
 
 ```
 $ cat -n hangman.py
-     1	#!/usr/bin/env python3
-     2	"""Hangman game"""
+     1    #!/usr/bin/env python3
+     2    """Hangman game"""
      3
-     4	import argparse
-     5	import os
-     6	import random
-     7	import re
-     8	import sys
+     4    import argparse
+     5    import os
+     6    import random
+     7    import re
+     8    import sys
+     9
+    10    # --------------------------------------------------
+    11    def get_args():
+    12        """parse arguments"""
+    13        parser = argparse.ArgumentParser(description='Hangman')
+    14        parser.add_argument('-l', '--maxlen', help='Max word length',
+    15                            type=int, default=10)
+    16        parser.add_argument('-n', '--minlen', help='Min word length',
+    17                            type=int, default=5)
+    18        parser.add_argument('-m', '--misses', help='Max number of misses',
+    19                            type=int, default=10)
+    20        parser.add_argument('-w', '--wordlist', help='Word list',
+    21                            type=str, default='/usr/share/dict/words')
+    22        return parser.parse_args()
+    23
+    24    # --------------------------------------------------
+    25    def main():
+    26        """main"""
+    27        args = get_args()
+    28        max_len = args.maxlen
+    29        min_len = args.minlen
+    30        max_misses = args.misses
+    31        wordlist = args.wordlist
+    32
+    33        if not os.path.isfile(wordlist):
+    34            print('--wordlist "{}" is not a file.'.format(wordlist))
+    35            sys.exit(1)
+    36
+    37        if min_len < 1:
+    38            print('--minlen must be positive')
+    39            sys.exit(1)
+    40
+    41        if not 3 <= max_len <= 20:
+    42            print('--maxlen should be between 3 and 20')
+    43            sys.exit(1)
+    44
+    45        if min_len > max_len:
+    46            print('--minlen ({}) is greater than --maxlen ({})'.format(min_len, max_len))
+    47            sys.exit(1)
+    48
+    49        regex = re.compile('^[a-z]{' + str(min_len) + ',' + str(max_len) + '}$')
+    50        words = [w for w in open(wordlist).read().split() if regex.match(w)]
+    51        word = random.choice(words)
+    52        play({'word': word, 'max_misses': max_misses})
+    53
+    54    # --------------------------------------------------
+    55    def play(state):
+    56        """Loop to play the game"""
+    57        word = state.get('word') or ''
+    58
+    59        if not word:
+    60            print('No word!')
+    61            sys.exit(1)
+    62
+    63        guessed = state.get('guessed') or list('_' * len(word))
+    64        prev_guesses = state.get('prev_guesses') or set()
+    65        num_misses = state.get('num_misses') or 0
+    66        max_misses = state.get('max_misses') or 0
+    67
+    68        if ''.join(guessed) == word:
+    69            msg = 'You win. You guessed "{}" with "{}" miss{}!'
+    70            print(msg.format(word, num_misses, '' if num_misses == 1 else 'es'))
+    71            sys.exit(0)
+    72
+    73        if num_misses >= max_misses:
+    74            print('You lose, loser!  The word was "{}."'.format(word))
+    75            sys.exit(0)
+    76
+    77        print('{} (Misses: {})'.format(' '.join(guessed), num_misses))
+    78        new_guess = input('Your guess? ("?" for hint, "!" to quit) ').lower()
+    79
+    80        if new_guess == '!':
+    81            print('Better luck next time, loser.')
+    82            sys.exit(0)
+    83        elif new_guess == '?':
+    84            new_guess = random.choice([x for x in word if x not in guessed])
+    85            num_misses += 1
+    86
+    87        if not re.match('^[a-zA-Z]$', new_guess):
+    88            print('"{}" is not a letter'.format(new_guess))
+    89            num_misses += 1
+    90        elif new_guess in prev_guesses:
+    91            print('You already guessed that')
+    92        elif new_guess in word:
+    93            prev_guesses.add(new_guess)
+    94            last_pos = 0
+    95            while True:
+    96                pos = word.find(new_guess, last_pos)
+    97                if pos < 0:
+    98                    break
+    99                elif pos >= 0:
+   100                    guessed[pos] = new_guess
+   101                    last_pos = pos + 1
+   102        else:
+   103            num_misses += 1
+   104
+   105        play({'word': word, 'guessed': guessed, 'num_misses': num_misses,
+   106              'prev_guesses': prev_guesses, 'max_misses': max_misses})
+   107
+   108    # --------------------------------------------------
+   109    if __name__ == '__main__':
+   110        main()
+```
+
+# Sequence Similarity
+
+We can use dictionaries to count how many words are in common between any two texts.  Since I'm only trying to see if a word is present, I can use a `set` which is like a `dict` where the values are just "1."  Here is the code:
+
+```
+$ cat -n common_words.py
+     1    #!/usr/bin/env python3
+     2    """Count words in common between two files"""
+     3
+     4    import os
+     5    import re
+     6    import sys
+     7    import string
+     8
+     9    # --------------------------------------------------
+    10    def main():
+    11        files = sys.argv[1:]
+    12
+    13        if len(files) != 2:
+    14            msg = 'Usage: {} FILE1 FILE2'
+    15            print(msg.format(os.path.basename(sys.argv[0])))
+    16            sys.exit(1)
+    17
+    18        for file in files:
+    19            if not os.path.isfile(file):
+    20                print('"{}" is not a file'.format(file))
+    21                sys.exit(1)
+    22
+    23        file1, file2 = files[0], files[1]
+    24        words1 = uniq_words(file1)
+    25        words2 = uniq_words(file2)
+    26        common = words1.intersection(words2)
+    27        num_common = len(common)
+    28        msg = 'There {} {} word{} in common between "{}" and "{}."'
+    29        print(msg.format('is' if num_common == 1 else 'are',
+    30                         num_common,
+    31                         '' if num_common == 1 else 's',
+    32                         os.path.basename(file1),
+    33                         os.path.basename(file2)))
+    34
+    35        for i, word in enumerate(sorted(common)):
+    36            print('{:3}: {}'.format(i + 1, word))
+    37
+    38    # --------------------------------------------------
+    39    def uniq_words(file):
+    40        regex = re.compile('[' + string.punctuation + ']')
+    41        words = set()
+    42        for line in open(file):
+    43            for word in [regex.sub('', w) for w in line.lower().split()]:
+    44                words.add(word)
+    45
+    46        return words
+    47
+    48    # --------------------------------------------------
+    49    if __name__ == '__main__':
+    50        main()
+```
+
+Let's see it in action using a common nursery rhyme and a poem by William Blake \(1757-1827\):
+
+```
+$ cat mary-had-a-little-lamb.txt
+Mary had a little lamb,
+It's fleece was white as snow,
+And everywhere that Mary went,
+The lamb was sure to go.
+$ cat little-lamb.txt
+Little Lamb, who made thee?
+Dost thou know who made thee?
+Gave thee life, & bid thee feed
+By the stream & o'er the mead;
+Gave thee clothing of delight,
+Softest clothing, wooly, bright;
+Gave thee such a tender voice,
+Making all the vales rejoice?
+Little Lamb, who made thee?
+Dost thou know who made thee?
+Little Lamb, I'll tell thee,
+Little Lamb, I'll tell thee,
+He is called by thy name,
+For he calls himself a Lamb.
+He is meek, & he is mild;
+He became a little child.
+I a child, & thou a lamb,
+We are called by his name.
+Little Lamb, God bless thee!
+Little Lamb, God bless thee!
+$ ./common_words.py mary-had-a-little-lamb.txt little-lamb.txt
+There are 4 words in common between "mary-had-a-little-lamb.txt" and "little-lamb.txt."
+  1: a
+  2: lamb
+  3: little
+  4: the
+```
+
+Well, that's pretty uninformative.  Sure "a" and "the" are shared, but we don't much care about those.  And while "little" and "lamb" are present, it hardly tells us about how prevalent they are.  In the nursery rhyme, they occur a total of 3 times, but they make up a significant portion of the Blake poem.  Let's try to work in word frequency:
+
+```
+$ cat -n common_words2.py
+     1	#!/usr/bin/env python3
+     2	"""Count words/frequencies in two files"""
+     3
+     4	import os
+     5	import re
+     6	import sys
+     7	import string
+     8	from collections import defaultdict
      9
     10	# --------------------------------------------------
-    11	def get_args():
-    12	    """parse arguments"""
-    13	    parser = argparse.ArgumentParser(description='Hangman')
-    14	    parser.add_argument('-l', '--maxlen', help='Max word length',
-    15	                        type=int, default=10)
-    16	    parser.add_argument('-n', '--minlen', help='Min word length',
-    17	                        type=int, default=5)
-    18	    parser.add_argument('-m', '--misses', help='Max number of misses',
-    19	                        type=int, default=10)
-    20	    parser.add_argument('-w', '--wordlist', help='Word list',
-    21	                        type=str, default='/usr/share/dict/words')
-    22	    return parser.parse_args()
-    23
-    24	# --------------------------------------------------
-    25	def main():
-    26	    """main"""
-    27	    args = get_args()
-    28	    max_len = args.maxlen
-    29	    min_len = args.minlen
-    30	    max_misses = args.misses
-    31	    wordlist = args.wordlist
-    32
-    33	    if not os.path.isfile(wordlist):
-    34	        print('--wordlist "{}" is not a file.'.format(wordlist))
-    35	        sys.exit(1)
-    36
-    37	    if min_len < 1:
-    38	        print('--minlen must be positive')
-    39	        sys.exit(1)
-    40
-    41	    if not 3 <= max_len <= 20:
-    42	        print('--maxlen should be between 3 and 20')
-    43	        sys.exit(1)
-    44
-    45	    if min_len > max_len:
-    46	        print('--minlen ({}) is greater than --maxlen ({})'.format(min_len, max_len))
-    47	        sys.exit(1)
+    11	def word_counts(file):
+    12	    """Return a dictionary of words/counts"""
+    13	    words = defaultdict(int)
+    14	    regex = re.compile('[' + string.punctuation + ']')
+    15	    for line in open(file):
+    16	        for word in [regex.sub('', w) for w in line.lower().split()]:
+    17	            words[word] += 1
+    18
+    19	    return words
+    20
+    21	# --------------------------------------------------
+    22	def main():
+    23	    """Start here"""
+    24	    args = sys.argv[1:]
+    25
+    26	    if len(args) != 2:
+    27	        msg = 'Usage: {} FILE1 FILE2'
+    28	        print(msg.format(os.path.basename(sys.argv[0])))
+    29	        sys.exit(1)
+    30
+    31	    for file in args[0:2]:
+    32	        if not os.path.isfile(file):
+    33	            print('"{}" is not a file'.format(file))
+    34	            sys.exit(1)
+    35
+    36	    file1 = args[0]
+    37	    file2 = args[1]
+    38	    words1 = word_counts(file1)
+    39	    words2 = word_counts(file2)
+    40	    common = set(words1.keys()).intersection(set(words2.keys()))
+    41	    num_common = len(common)
+    42	    verb = 'is' if num_common == 1 else 'are'
+    43	    plural = '' if num_common == 1 else 's'
+    44	    msg = 'There {} {} word{} in common between "{}" ({}) and "{}" ({}).'
+    45	    tot1 = sum(words1.values())
+    46	    tot2 = sum(words2.values())
+    47	    print(msg.format(verb, num_common, plural, file1, tot1, file2, tot2))
     48
-    49	    regex = re.compile('^[a-z]{' + str(min_len) + ',' + str(max_len) + '}$')
-    50	    words = [w for w in open(wordlist).read().split() if regex.match(w)]
-    51	    word = random.choice(words)
-    52	    play({'word': word, 'max_misses': max_misses})
-    53
-    54	# --------------------------------------------------
-    55	def play(state):
-    56	    """Loop to play the game"""
-    57	    word = state.get('word') or ''
-    58
-    59	    if not word:
-    60	        print('No word!')
-    61	        sys.exit(1)
-    62
-    63	    guessed = state.get('guessed') or list('_' * len(word))
-    64	    prev_guesses = state.get('prev_guesses') or set()
-    65	    num_misses = state.get('num_misses') or 0
-    66	    max_misses = state.get('max_misses') or 0
-    67
-    68	    if ''.join(guessed) == word:
-    69	        msg = 'You win. You guessed "{}" with "{}" miss{}!'
-    70	        print(msg.format(word, num_misses, '' if num_misses == 1 else 'es'))
-    71	        sys.exit(0)
-    72
-    73	    if num_misses >= max_misses:
-    74	        print('You lose, loser!  The word was "{}."'.format(word))
-    75	        sys.exit(0)
-    76
-    77	    print('{} (Misses: {})'.format(' '.join(guessed), num_misses))
-    78	    new_guess = input('Your guess? ("?" for hint, "!" to quit) ').lower()
-    79
-    80	    if new_guess == '!':
-    81	        print('Better luck next time, loser.')
-    82	        sys.exit(0)
-    83	    elif new_guess == '?':
-    84	        new_guess = random.choice([x for x in word if x not in guessed])
-    85	        num_misses += 1
-    86
-    87	    if not re.match('^[a-zA-Z]$', new_guess):
-    88	        print('"{}" is not a letter'.format(new_guess))
-    89	        num_misses += 1
-    90	    elif new_guess in prev_guesses:
-    91	        print('You already guessed that')
-    92	    elif new_guess in word:
-    93	        prev_guesses.add(new_guess)
-    94	        last_pos = 0
-    95	        while True:
-    96	            pos = word.find(new_guess, last_pos)
-    97	            if pos < 0:
-    98	                break
-    99	            elif pos >= 0:
-   100	                guessed[pos] = new_guess
-   101	                last_pos = pos + 1
-   102	    else:
-   103	        num_misses += 1
-   104
-   105	    play({'word': word, 'guessed': guessed, 'num_misses': num_misses,
-   106	          'prev_guesses': prev_guesses, 'max_misses': max_misses})
-   107
-   108	# --------------------------------------------------
-   109	if __name__ == '__main__':
-   110	    main()
+    49	    if num_common > 0:
+    50	        fmt = '{:>3} {:20} {:>5} {:>5}'
+    51	        print(fmt.format('#', 'word', '1', '2'))
+    52	        print('-' * 36)
+    53	        shared1, shared2 = 0, 0
+    54	        for i, word in enumerate(sorted(common)):
+    55	            c1 = words1[word]
+    56	            c2 = words2[word]
+    57	            shared1 += c1
+    58	            shared2 += c2
+    59	            print(fmt.format(i + 1, word, c1, c2))
+    60
+    61	        print(fmt.format('', '-----', '--', '--'))
+    62	        print(fmt.format('', 'total', shared1, shared2))
+    63	        print(fmt.format('', 'pct',
+    64	                         int(shared1/tot1 * 100), int(shared2/tot2 * 100)))
+    65
+    66	# --------------------------------------------------
+    67	if __name__ == '__main__':
+    68	    main()
 ```
+
+And here it is in action:
+
+```
+$ ./common_words2.py mary-had-a-little-lamb.txt little-lamb.txt
+There are 4 words in common between "mary-had-a-little-lamb.txt" (22) and "little-lamb.txt" (113).
+  # word                     1     2
+------------------------------------
+  1 a                        1     5
+  2 lamb                     2     8
+  3 little                   1     7
+  4 the                      1     3
+    -----                   --    --
+    total                    5    23
+    pct                     22    20
+```
+
+It is interesting \(to me, at least\) that the shared content actually works out to about the same proportion no matter the direction.  Imagine comparing a large genome to a smaller one -- what is a significant portion of shared sequence space from the smaller genome might be only a small fraction of the larger one.  Here we see that just those few words make up an equivalent proportion of both texts because of how repeated the words are in the Blake poem.
+
+This is all pretty good as long as the words are spelled the same, but take the two texts here that show variations between British and American English:
+
+```
+$ cat british.txt
+I went to the theatre last night with my neighbour and had a litre of
+beer, the colour and flavour of which put us into such a good humour
+that we forgot our labours.  We set about to analyse our behaviour,
+organise our thoughts, recognise our faults, catalogue our merits, and
+generally have a dialogue without pretence as a licence to improve
+ourselves.
+$ cat american.txt
+I went to the theater last night with my neighbor and had a liter of
+beer, the color and flavor of which put us into such a good humor that
+we forgot our labors.  We set about to analyze our behavior, organize
+our thoughts, recognize our faults, catalog our merits, and generally
+have a dialog without pretense as a license to improve ourselves.
+$ ./common_words2.py british.txt american.txt
+There are 34 words in common between "british.txt" (63) and "american.txt" (63).
+  # word                     1     2
+------------------------------------
+  1 a                        4     4
+  2 about                    1     1
+  3 and                      3     3
+  4 as                       1     1
+  5 beer                     1     1
+  6 faults                   1     1
+  7 forgot                   1     1
+  8 generally                1     1
+  9 good                     1     1
+ 10 had                      1     1
+ 11 have                     1     1
+ 12 i                        1     1
+ 13 improve                  1     1
+ 14 into                     1     1
+ 15 last                     1     1
+ 16 merits                   1     1
+ 17 my                       1     1
+ 18 night                    1     1
+ 19 of                       2     2
+ 20 our                      5     5
+ 21 ourselves                1     1
+ 22 put                      1     1
+ 23 set                      1     1
+ 24 such                     1     1
+ 25 that                     1     1
+ 26 the                      2     2
+ 27 thoughts                 1     1
+ 28 to                       3     3
+ 29 us                       1     1
+ 30 we                       2     2
+ 31 went                     1     1
+ 32 which                    1     1
+ 33 with                     1     1
+ 34 without                  1     1
+    -----                   --    --
+    total                   48    48
+    pct                     76    76
+```
+
+Obviously we will miss all those words because the are not spelled exactly the same.  Neither are genomes.  So we need a way to decide if two words or sequences are similar enough.  One way is through sequence alignment:
+
+```
+l a b o u r      c a t a l o g u e      p r e t e n c e     l i t r e
+| | | |   |      | | | | | | |          | | | | | |   |     | | | 
+l a b o   r      c a t a l o g          p r e t e n s e     l i t e r
+```
+
+Try writing a sequence alignment program \(no, really!\), and you'll find it's really quite difficult.  Decades of research have gone into Smith-Waterman and BLAST and BLAT and LAST and more.  Alignment works very well, but it's computationally expensive.  We need a faster approximation of similarity.  Enter k-mers!
+
+A k-mer is a `k` length of "mers" or contiguous sequence \(think "polymers"\).  Here are the 3/4-mers in "foobar":
+
+```
+$ ./kmer_tiler.py foobar
+There are 4 3-mers in "foobar."
+foobar
+foo
+ oob
+  oba
+   bar
+$ ./kmer_tiler.py foobar 4
+There are 3 4-mers in "foobar."
+foobar
+foob
+ ooba
+  obar
+```
+
+
 
 
 

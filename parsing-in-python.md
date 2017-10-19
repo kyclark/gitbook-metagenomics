@@ -11,40 +11,40 @@ If you check out the new script, it has a `get_args` function that will show you
 
 ```
 $ cat -n test.py
-     1	#!/usr/bin/env python3
+     1    #!/usr/bin/env python3
      2
-     3	import argparse
-     4	import os
-     5	import sys
+     3    import argparse
+     4    import os
+     5    import sys
      6
-     7	# --------------------------------------------------
-     8	def get_args():
-     9	    parser = argparse.ArgumentParser(description='Argparse Python script')
-    10	    parser.add_argument('positional', metavar='str', help='A positional argument')
-    11	    parser.add_argument('-a', '--arg', help='A named string argument',
-    12	                        metavar='str', type=str, default='')
-    13	    parser.add_argument('-i', '--int', help='A named integer argument',
-    14	                        metavar='int', type=int, default=0)
-    15	    parser.add_argument('-f', '--flag', help='A boolean flag',
-    16	                        action='store_true')
-    17	    return parser.parse_args()
+     7    # --------------------------------------------------
+     8    def get_args():
+     9        parser = argparse.ArgumentParser(description='Argparse Python script')
+    10        parser.add_argument('positional', metavar='str', help='A positional argument')
+    11        parser.add_argument('-a', '--arg', help='A named string argument',
+    12                            metavar='str', type=str, default='')
+    13        parser.add_argument('-i', '--int', help='A named integer argument',
+    14                            metavar='int', type=int, default=0)
+    15        parser.add_argument('-f', '--flag', help='A boolean flag',
+    16                            action='store_true')
+    17        return parser.parse_args()
     18
-    19	# --------------------------------------------------
-    20	def main():
-    21	    args = get_args()
-    22	    str_arg = args.arg
-    23	    int_arg = args.int
-    24	    flag_arg = args.flag
-    25	    pos_arg = args.positional
+    19    # --------------------------------------------------
+    20    def main():
+    21        args = get_args()
+    22        str_arg = args.arg
+    23        int_arg = args.int
+    24        flag_arg = args.flag
+    25        pos_arg = args.positional
     26
-    27	    print('str_arg = "{}"'.format(str_arg))
-    28	    print('int_arg = "{}"'.format(int_arg))
-    29	    print('flag_arg = "{}"'.format(flag_arg))
-    30	    print('positional = "{}"'.format(pos_arg))
+    27        print('str_arg = "{}"'.format(str_arg))
+    28        print('int_arg = "{}"'.format(int_arg))
+    29        print('flag_arg = "{}"'.format(flag_arg))
+    30        print('positional = "{}"'.format(pos_arg))
     31
-    32	# --------------------------------------------------
-    33	if __name__ == '__main__':
-    34	    main()
+    32    # --------------------------------------------------
+    33    if __name__ == '__main__':
+    34        main()
 ```
 
 If you run without any arguments, you get a nice usage statement:
@@ -66,7 +66,7 @@ flag_arg = "True"
 
 # CSV Files
 
-Delimited text files are a standard way to distribute non-hierarchical data -- e.g., records that can be represented each on one line.  \(When you get into data that have relationships, e.g., parents/children, then structures like XML and JSON are more appropriate.\)  Let's first take a look at the `csv` module in Python \([https://docs.python.org/3/library/csv.html\](https://docs.python.org/3/library/csv.html%29\) to parse the output from Centrifuge \([http://www.ccb.jhu.edu/software/centrifuge/\](http://www.ccb.jhu.edu/software/centrifuge/%29\).
+Delimited text files are a standard way to distribute non-hierarchical data -- e.g., records that can be represented each on one line.  \(When you get into data that have relationships, e.g., parents/children, then structures like XML and JSON are more appropriate.\)  Let's first take a look at the `csv` module in Python \([https://docs.python.org/3/library/csv.html\](https://docs.python.org/3/library/csv.html%29\) to parse the output from Centrifuge \([http://www.ccb.jhu.edu/software/centrifuge/](http://www.ccb.jhu.edu/software/centrifuge/%29\)\).
 
 For this, we'll use some data from a study from Yellowstone National Park \([https://www.imicrobe.us/sample/view/1378\](https://www.imicrobe.us/sample/view/1378%29%29.  For each input file, Centrifuge creates two output files: 1\) a file \("YELLOWSTONE\_SMPL\_20723.sum"\) showing the taxonomy ID for each read it was able to classify and 2\) a file \("YELLOWSTONE\_SMPL\_20723.tsv"\) of the complete taxonomy information for each taxonomy ID.  One record from the first looks like this:
 
