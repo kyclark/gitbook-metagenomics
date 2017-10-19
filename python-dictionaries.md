@@ -1,6 +1,6 @@
 # Dictionaries
 
-Python has a data type called a "dictionary" that allows you to associate some "key" \(a string\) to some "value" \(which can be anything such as a string, number, tuple, list, set, or another dictionary\).  The same data structure is also called a map, hash, and associative array.
+Python has a data type called a "dictionary" that allows you to associate some "key" \(often a string\) to some "value" \(which can be anything such as a string, number, tuple, list, set, or another dictionary\).  The same data structure is also called a map, hash, and associative array.
 
 You can define the define a dictionary with all the key/value pairs using the `{}` braces:
 
@@ -1133,8 +1133,4 @@ There are 112 kmers in common between "british.txt" (127) and "american.txt" (12
 ```
 
 Our word counting program thought these two texts only 76% similar, but our kmer counter thinks they are 86% similar.
-
-
-
-
 
