@@ -64,7 +64,7 @@ int_arg = "42"
 flag_arg = "True"
 ```
 
-Please RTFM \(https://docs.python.org/3/library/argparse.html\) to find all the other Fine things you can do with argparse.
+Please RTFM \([https://docs.python.org/3/library/argparse.html\](https://docs.python.org/3/library/argparse.html\)\) to find all the other Fine things you can do with argparse.
 
 # CSV Files
 
@@ -291,13 +291,13 @@ $ cat -n tabchk.py
 
 # FASTA
 
-Now let's finally get into parsing good, old FASTA files.  The `argparse` and `csv` modules are standard in Python, but for FASTA we're going to need to install the BioPython \(http://biopython.org/\) module.  This should work for you:
+Now let's finally get into parsing good, old FASTA files.  The `argparse` and `csv` modules are standard in Python, but for FASTA we're going to need to install the BioPython \([http://biopython.org/\](http://biopython.org/\)\) module.  This should work for you:
 
 ```
 $ python3 -m pip install biopython
 ```
 
-For this exercise, I'll use a few reads from the Global Ocean Sampling Expedition \(https://imicrobe.us/sample/view/578\):
+For this exercise, I'll use a few reads from the Global Ocean Sampling Expedition \([https://imicrobe.us/sample/view/578\](https://imicrobe.us/sample/view/578\)\):
 
 ```
 $ head -5 CAM_SMPL_GS108.fa
@@ -316,7 +316,7 @@ name              alignment    min_len   max_len   avg_len  num_seqs
 CAM_SMPL_GS108.fa FALSE            168       440    325.60         5
 ```
 
-We'll skip the "alignment" and just do min/max/avg lengths and the number of sequences.  You can pretty much copy and paste the example code from http://biopython.org/wiki/SeqIO.  Here is the output from our script, "seqmagique.py":
+We'll skip the "alignment" and just do min/max/avg lengths and the number of sequences.  You can pretty much copy and paste the example code from [http://biopython.org/wiki/SeqIO](http://biopython.org/wiki/SeqIO).  Here is the output from our script, "seqmagique.py":
 
 ```
 $ ./seqmagique.py *.fa
@@ -329,41 +329,151 @@ The code to produce this builds on our earlier skills of lists and dictionaries 
 
 ```
 $ cat -n seqmagique.py
-     1	#!/usr/bin/env python3
-     2	"""Mimic seqmagick, print stats on FASTA sequences"""
+     1    #!/usr/bin/env python3
+     2    """Mimic seqmagick, print stats on FASTA sequences"""
      3
-     4	import os
-     5	import sys
-     6	from statistics import mean
-     7	from Bio import SeqIO
+     4    import os
+     5    import sys
+     6    from statistics import mean
+     7    from Bio import SeqIO
      8
-     9	files = sys.argv[1:]
+     9    files = sys.argv[1:]
     10
-    11	if len(files) < 1:
-    12	    print('Usage: {} F1.fa [F2.fa...]'.format(os.path.basename(sys.argv[0])))
-    13	    sys.exit(1)
+    11    if len(files) < 1:
+    12        print('Usage: {} F1.fa [F2.fa...]'.format(os.path.basename(sys.argv[0])))
+    13        sys.exit(1)
     14
-    15	info = []
-    16	for file in files:
-    17	    lengths = []
-    18	    for record in SeqIO.parse(file, "fasta"):
-    19	        lengths.append(len(record.seq))
+    15    info = []
+    16    for file in files:
+    17        lengths = []
+    18        for record in SeqIO.parse(file, "fasta"):
+    19            lengths.append(len(record.seq))
     20
-    21	    info.append({'name': os.path.basename(file),
-    22	                 'min_len': min(lengths),
-    23	                 'max_len': max(lengths),
-    24	                 'avg_len': mean(lengths),
-    25	                 'num_seqs': len(lengths)})
+    21        info.append({'name': os.path.basename(file),
+    22                     'min_len': min(lengths),
+    23                     'max_len': max(lengths),
+    24                     'avg_len': mean(lengths),
+    25                     'num_seqs': len(lengths)})
     26
-    27	if len(info):
-    28	    longest_file_name = max([len(f['name']) for f in info])
-    29	    fmt = '{:' + str(longest_file_name) + '} {:>10} {:>10} {:>10} {:>10}'
-    30	    flds = ['name', 'min_len', 'max_len', 'avg_len', 'num_seqs']
-    31	    print(fmt.format(*flds))
-    32	    for rec in info:
-    33	        print(fmt.format(*[rec[fld] for fld in flds]))
-    34	else:
-    35	    print('I had trouble parsing your data')
+    27    if len(info):
+    28        longest_file_name = max([len(f['name']) for f in info])
+    29        fmt = '{:' + str(longest_file_name) + '} {:>10} {:>10} {:>10} {:>10}'
+    30        flds = ['name', 'min_len', 'max_len', 'avg_len', 'num_seqs']
+    31        print(fmt.format(*flds))
+    32        for rec in info:
+    33            print(fmt.format(*[rec[fld] for fld in flds]))
+    34    else:
+    35        print('I had trouble parsing your data')
+```
+
+# FASTA splitter
+
+I seem to have implemented my own FASTA splitter a few times in as many languages.  Here is one that writes a maximum number of sequences to each output file.  It would not be hard to instead write a maximum number of bytes, but, for the short reads I usually handle, this works fine.  Again I will use the BioPython `SeqIO` module to parse the FASTA files
+
+```
+$ cat -n fasplit.py
+     1	#!/usr/bin/env python3
+     2	"""split FASTA files"""
+     3
+     4	import argparse
+     5	import os
+     6	from Bio import SeqIO
+     7
+     8	# --------------------------------------------------
+     9	def main():
+    10	    """main"""
+    11	    args = get_args()
+    12	    fasta = args.fasta
+    13	    out_dir = args.out_dir
+    14	    max_per = args.num
+    15
+    16	    if not os.path.isfile(fasta):
+    17	        print('--fasta "{}" is not valid'.format(fasta))
+    18	        exit(1)
+    19
+    20	    if not os.path.isdir(out_dir):
+    21	        os.mkdir(out_dir)
+    22
+    23	    if max_per < 1:
+    24	        print("--num cannot be less than one")
+    25	        exit(1)
+    26
+    27	    i = 0
+    28	    nseq = 0
+    29	    nfile = 0
+    30	    out_fh = None
+    31	    basename, ext = os.path.splitext(os.path.basename(fasta))
+    32
+    33	    for record in SeqIO.parse(fasta, "fasta"):
+    34	        if i == max_per:
+    35	            i = 0
+    36	            if out_fh is not None:
+    37	                out_fh.close()
+    38	                out_fh = None
+    39
+    40	        i += 1
+    41	        nseq += 1
+    42	        if out_fh is None:
+    43	            nfile += 1
+    44	            path = os.path.join(out_dir, basename + '.' + str(nfile) + ext)
+    45	            out_fh = open(path, 'wt')
+    46
+    47	        SeqIO.write(record, out_fh, "fasta")
+    48
+    49	    print('Done, wrote {} sequence{} to {} file{}'.format(
+    50	        nseq, '' if nseq == 1 else 's',
+    51	        nfile, '' if nfile == 1 else 's'))
+    52
+    53	# --------------------------------------------------
+    54	def get_args():
+    55	    """get args"""
+    56	    parser = argparse.ArgumentParser(description='Split FASTA files')
+    57	    parser.add_argument('-f', '--fasta', help='FASTA input file',
+    58	                        type=str, metavar='FILE', required=True)
+    59	    parser.add_argument('-n', '--num', help='Number of records per file',
+    60	                        type=int, metavar='NUM', default=50)
+    61	    parser.add_argument('-o', '--out_dir', help='Output directory',
+    62	                        type=str, metavar='DIR', default='fasplit')
+    63	    return parser.parse_args()
+    64
+    65	# --------------------------------------------------
+    66	if __name__ == '__main__':
+    67	    main()
+```
+
+If you type `make` in the "python/fasta-splitter" directory, you should see:
+
+```
+$ make
+./fasplit.py -f POV_L.Sum.O.1000m_reads.fa -o pov -n 100
+Done, wrote 2061 sequences to 21 files
+```
+
+We can verify that things worked:
+
+```
+$ for file in *; do echo -n $file && grep '^>' $file | wc -l; done
+POV_L.Sum.O.1000m_reads.1.fa     100
+POV_L.Sum.O.1000m_reads.10.fa     100
+POV_L.Sum.O.1000m_reads.11.fa     100
+POV_L.Sum.O.1000m_reads.12.fa     100
+POV_L.Sum.O.1000m_reads.13.fa     100
+POV_L.Sum.O.1000m_reads.14.fa     100
+POV_L.Sum.O.1000m_reads.15.fa     100
+POV_L.Sum.O.1000m_reads.16.fa     100
+POV_L.Sum.O.1000m_reads.17.fa     100
+POV_L.Sum.O.1000m_reads.18.fa     100
+POV_L.Sum.O.1000m_reads.19.fa     100
+POV_L.Sum.O.1000m_reads.2.fa     100
+POV_L.Sum.O.1000m_reads.20.fa     100
+POV_L.Sum.O.1000m_reads.21.fa      61
+POV_L.Sum.O.1000m_reads.3.fa     100
+POV_L.Sum.O.1000m_reads.4.fa     100
+POV_L.Sum.O.1000m_reads.5.fa     100
+POV_L.Sum.O.1000m_reads.6.fa     100
+POV_L.Sum.O.1000m_reads.7.fa     100
+POV_L.Sum.O.1000m_reads.8.fa     100
+POV_L.Sum.O.1000m_reads.9.fa     100
 ```
 
 
