@@ -39,4 +39,5 @@
 * [Python Strings Lists Tuples](python-strings.md)
 * [Python Dictionaries](python-dictionaries.md)
 * [Parsing in Python](parsing-in-python.md)
+* [Guessing Game in Python](guessing-game-in-python.md)
 
