@@ -64,7 +64,7 @@ int_arg = "42"
 flag_arg = "True"
 ```
 
-Please RTFM \([https://docs.python.org/3/library/argparse.html\](https://docs.python.org/3/library/argparse.html\)\) to find all the other Fine things you can do with argparse.
+Please RTFM \([https://docs.python.org/3/library/argparse.html\](https://docs.python.org/3/library/argparse.html%29\) to find all the other Fine things you can do with argparse.
 
 # CSV Files
 
@@ -291,13 +291,13 @@ $ cat -n tabchk.py
 
 # FASTA
 
-Now let's finally get into parsing good, old FASTA files.  The `argparse` and `csv` modules are standard in Python, but for FASTA we're going to need to install the BioPython \([http://biopython.org/\](http://biopython.org/\)\) module.  This should work for you:
+Now let's finally get into parsing good, old FASTA files.  The `argparse` and `csv` modules are standard in Python, but for FASTA we're going to need to install the BioPython \([http://biopython.org/\](http://biopython.org/%29\) module.  This should work for you:
 
 ```
 $ python3 -m pip install biopython
 ```
 
-For this exercise, I'll use a few reads from the Global Ocean Sampling Expedition \([https://imicrobe.us/sample/view/578\](https://imicrobe.us/sample/view/578\)\):
+For this exercise, I'll use a few reads from the Global Ocean Sampling Expedition \([https://imicrobe.us/sample/view/578\](https://imicrobe.us/sample/view/578%29\):
 
 ```
 $ head -5 CAM_SMPL_GS108.fa
@@ -372,73 +372,73 @@ I seem to have implemented my own FASTA splitter a few times in as many language
 
 ```
 $ cat -n fasplit.py
-     1	#!/usr/bin/env python3
-     2	"""split FASTA files"""
+     1    #!/usr/bin/env python3
+     2    """split FASTA files"""
      3
-     4	import argparse
-     5	import os
-     6	from Bio import SeqIO
+     4    import argparse
+     5    import os
+     6    from Bio import SeqIO
      7
-     8	# --------------------------------------------------
-     9	def main():
-    10	    """main"""
-    11	    args = get_args()
-    12	    fasta = args.fasta
-    13	    out_dir = args.out_dir
-    14	    max_per = args.num
+     8    # --------------------------------------------------
+     9    def main():
+    10        """main"""
+    11        args = get_args()
+    12        fasta = args.fasta
+    13        out_dir = args.out_dir
+    14        max_per = args.num
     15
-    16	    if not os.path.isfile(fasta):
-    17	        print('--fasta "{}" is not valid'.format(fasta))
-    18	        exit(1)
+    16        if not os.path.isfile(fasta):
+    17            print('--fasta "{}" is not valid'.format(fasta))
+    18            exit(1)
     19
-    20	    if not os.path.isdir(out_dir):
-    21	        os.mkdir(out_dir)
+    20        if not os.path.isdir(out_dir):
+    21            os.mkdir(out_dir)
     22
-    23	    if max_per < 1:
-    24	        print("--num cannot be less than one")
-    25	        exit(1)
+    23        if max_per < 1:
+    24            print("--num cannot be less than one")
+    25            exit(1)
     26
-    27	    i = 0
-    28	    nseq = 0
-    29	    nfile = 0
-    30	    out_fh = None
-    31	    basename, ext = os.path.splitext(os.path.basename(fasta))
+    27        i = 0
+    28        nseq = 0
+    29        nfile = 0
+    30        out_fh = None
+    31        basename, ext = os.path.splitext(os.path.basename(fasta))
     32
-    33	    for record in SeqIO.parse(fasta, "fasta"):
-    34	        if i == max_per:
-    35	            i = 0
-    36	            if out_fh is not None:
-    37	                out_fh.close()
-    38	                out_fh = None
+    33        for record in SeqIO.parse(fasta, "fasta"):
+    34            if i == max_per:
+    35                i = 0
+    36                if out_fh is not None:
+    37                    out_fh.close()
+    38                    out_fh = None
     39
-    40	        i += 1
-    41	        nseq += 1
-    42	        if out_fh is None:
-    43	            nfile += 1
-    44	            path = os.path.join(out_dir, basename + '.' + str(nfile) + ext)
-    45	            out_fh = open(path, 'wt')
+    40            i += 1
+    41            nseq += 1
+    42            if out_fh is None:
+    43                nfile += 1
+    44                path = os.path.join(out_dir, basename + '.' + str(nfile) + ext)
+    45                out_fh = open(path, 'wt')
     46
-    47	        SeqIO.write(record, out_fh, "fasta")
+    47            SeqIO.write(record, out_fh, "fasta")
     48
-    49	    print('Done, wrote {} sequence{} to {} file{}'.format(
-    50	        nseq, '' if nseq == 1 else 's',
-    51	        nfile, '' if nfile == 1 else 's'))
+    49        print('Done, wrote {} sequence{} to {} file{}'.format(
+    50            nseq, '' if nseq == 1 else 's',
+    51            nfile, '' if nfile == 1 else 's'))
     52
-    53	# --------------------------------------------------
-    54	def get_args():
-    55	    """get args"""
-    56	    parser = argparse.ArgumentParser(description='Split FASTA files')
-    57	    parser.add_argument('-f', '--fasta', help='FASTA input file',
-    58	                        type=str, metavar='FILE', required=True)
-    59	    parser.add_argument('-n', '--num', help='Number of records per file',
-    60	                        type=int, metavar='NUM', default=50)
-    61	    parser.add_argument('-o', '--out_dir', help='Output directory',
-    62	                        type=str, metavar='DIR', default='fasplit')
-    63	    return parser.parse_args()
+    53    # --------------------------------------------------
+    54    def get_args():
+    55        """get args"""
+    56        parser = argparse.ArgumentParser(description='Split FASTA files')
+    57        parser.add_argument('-f', '--fasta', help='FASTA input file',
+    58                            type=str, metavar='FILE', required=True)
+    59        parser.add_argument('-n', '--num', help='Number of records per file',
+    60                            type=int, metavar='NUM', default=50)
+    61        parser.add_argument('-o', '--out_dir', help='Output directory',
+    62                            type=str, metavar='DIR', default='fasplit')
+    63        return parser.parse_args()
     64
-    65	# --------------------------------------------------
-    66	if __name__ == '__main__':
-    67	    main()
+    65    # --------------------------------------------------
+    66    if __name__ == '__main__':
+    67        main()
 ```
 
 If you type `make` in the "python/fasta-splitter" directory, you should see:
