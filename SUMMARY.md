@@ -40,4 +40,5 @@
 * [Python Dictionaries](python-dictionaries.md)
 * [Parsing in Python](parsing-in-python.md)
 * [Games in Python](guessing-game-in-python.md)
+* [SQLite in Python](sqlite-in-python.md)
 
