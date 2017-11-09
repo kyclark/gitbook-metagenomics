@@ -366,6 +366,74 @@ $ cat -n seqmagique.py
     35        print('I had trouble parsing your data')
 ```
 
+# FASTA subset
+
+Sometimes you may only want to use part of a FASTA file, e.g., you want the first 1000 sequences to test some code, or you have samples that vary wildly in size and you want to sub-sample them down to an equal number of reads.  Here is a Python program that will write the first N samples to a given output directory:
+
+```
+$ cat -n fa_subset.py
+     1	#!/usr/bin/env python3
+     2	"""Subset FASTA files"""
+     3
+     4	import argparse
+     5	import os
+     6	import sys
+     7	from Bio import SeqIO
+     8
+     9	# --------------------------------------------------
+    10	def get_args():
+    11	    """get args"""
+    12	    parser = argparse.ArgumentParser(description='Split FASTA files')
+    13	    parser.add_argument('fasta', help='FASTA input file', metavar='FILE')
+    14	    parser.add_argument('-n', '--num', help='Number of records per file',
+    15	                        type=int, metavar='NUM', default=500000)
+    16	    parser.add_argument('-o', '--out_dir', help='Output directory',
+    17	                        type=str, metavar='DIR', default='subset')
+    18	    return parser.parse_args()
+    19
+    20	# --------------------------------------------------
+    21	def main():
+    22	    """main"""
+    23	    args = get_args()
+    24	    fasta = args.fasta
+    25	    out_dir = args.out_dir
+    26	    num_seqs = args.num
+    27
+    28	    if not os.path.isfile(fasta):
+    29	        print('--fasta "{}" is not valid'.format(fasta))
+    30	        sys.exit(1)
+    31
+    32	    if os.path.dirname(fasta) == out_dir:
+    33	        print('--outdir cannot be the same as input files')
+    34	        sys.exit(1)
+    35
+    36	    if num_seqs < 1:
+    37	        print("--num cannot be less than one")
+    38	        sys.exit(1)
+    39
+    40	    if not os.path.isdir(out_dir):
+    41	        os.mkdir(out_dir)
+    42
+    43	    basename = os.path.basename(fasta)
+    44	    out_file = os.path.join(out_dir, basename)
+    45	    out_fh = open(out_file, 'wt')
+    46	    num_written = 0
+    47
+    48	    for record in SeqIO.parse(fasta, "fasta"):
+    49	        SeqIO.write(record, out_fh, "fasta")
+    50	        num_written += 1
+    51
+    52	        if num_written == num_seqs:
+    53	            break
+    54
+    55	    print('Done, wrote {} sequence{} to "{}"'.format(
+    56	        num_written, '' if num_written == 1 else 's', out_file))
+    57
+    58	# --------------------------------------------------
+    59	if __name__ == '__main__':
+    60	    main()
+```
+
 # FASTA splitter
 
 I seem to have implemented my own FASTA splitter a few times in as many languages.  Here is one that writes a maximum number of sequences to each output file.  It would not be hard to instead write a maximum number of bytes, but, for the short reads I usually handle, this works fine.  Again I will use the BioPython `SeqIO` module to parse the FASTA files
@@ -474,6 +542,55 @@ POV_L.Sum.O.1000m_reads.6.fa     100
 POV_L.Sum.O.1000m_reads.7.fa     100
 POV_L.Sum.O.1000m_reads.8.fa     100
 POV_L.Sum.O.1000m_reads.9.fa     100
+```
+
+# GFF
+
+Two of the most common output files in bioinformatics, GFF \(General Feature Format\) and BLAST's tab/CSV files do not include headers, so it's up to you to merge in the headers.  Additionally, some of the lines may be comments \(they start with "\#" just like bash and Python\), so you should skip those.  Further, the last field in GFF is basically a dumping ground for whatever else the data provider felt like putting there.  Usually it's a bunch of "key=value" pairs, but there's no guarantee.  Let's take a look at parsing the GFF output from Prodigal:
+
+```
+$ cat -n parse_prodigal_gff.py
+     1	#!/usr/bin/env python3
+     2
+     3	import argparse
+     4	import csv
+     5	import os
+     6	import sys
+     7
+     8	# --------------------------------------------------
+     9	def get_args():
+    10	    parser = argparse.ArgumentParser(description='Parse Prodigal GFF')
+    11	    parser.add_argument('gff', metavar='GFF', help='Prodigal GFF output')
+    12	    parser.add_argument('-m', '--min', help='Minimum score',
+    13	                        metavar='float', type=float, default=0.0)
+    14	    return parser.parse_args()
+    15
+    16	# --------------------------------------------------
+    17	def main():
+    18	    args = get_args()
+    19	    gff_file = args.gff
+    20	    min_score = args.min
+    21	    flds = 'seqname source feature start end score strand frame attribute'.split()
+    22
+    23	    for line in open(gff_file):
+    24	        if line[0] == '#':
+    25	            continue
+    26
+    27	        row = dict(zip(flds, line.split('\t')))
+    28	        attrs = {}
+    29	        if 'attribute' in row:
+    30	            for fld in row['attribute'].split(';'):
+    31	                if '=' in fld:
+    32	                    name, val = fld.split('=')
+    33	                    attrs[name] = val
+    34
+    35	        if 'score' in attrs and float(attrs['score']) > min_score:
+    36	            print(row)
+    37	            break
+    38
+    39	# --------------------------------------------------
+    40	if __name__ == '__main__':
+    41	    main()
 ```
 
 
