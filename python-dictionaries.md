@@ -237,19 +237,68 @@ Or we can use the `get` method of a dictionary to safely get a value by a key ev
 If you look at "dna4.py," you'll see it's exactly the same as "dna3.py" with this exception:
 
 ```
-    24    for base in "acgt":
-    25        num = count.get(base) or 0
-    26        counts.append(str(num))
+    23	counts = []
+    24	for base in "acgt":
+    25	    num = count.get(base, 0)
+    26	    counts.append(str(num))
 ```
 
-The `get` method will not blow up your program:
+The `get` method will not blow up your program, and it accepts an optional second argument for the default value when nothing is present:
 
 ```
 >>> cat.get('likes')
 >>> type(cat.get('likes'))
 <class 'NoneType'>
+>>> cat.get('likes', 'Cats like nothing')
+'Cats like nothing'
+```
+
+## Sidebar: Truthiness
+
+Note that you might be tempted to write:
+
+```
 >>> cat.get('likes') or 'Cats like nothing'
 'Cats like nothing'
+```
+
+Which appears to do the same thing, but compare with this:
+
+```
+>>> d = {'x': 0, 'y': '', 'z': None}
+>>> for k in sorted(d.keys()):
+...   print('{} = "{}"'.format(k, d.get(k) or 'NA'))
+...
+x = "NA"
+y = "NA"
+z = "NA"
+>>> for k in sorted(d.keys()):
+...   print('{} = "{}"'.format(k, d.get(k, 'NA')))
+...
+x = "0"
+y = ""
+z = "None"
+```
+
+This is a minor but potentially pernicious error due to Python's idea of Truthiness \(tm\):
+
+```
+>>> 1 == True
+True
+>>> 0 == False
+True
+```
+
+The integer `1` is not actually the same thing as the boolean value `True`, but Python will treat it as such.  Vice verse for `0` and `False`.  The only true way to get around this is to explicitly check for `None`:
+
+```
+>>> for k in sorted(d.keys()):
+...   val = d.get(k)
+...   print('{} = "{}"'.format(k, 'NA' if val is None else val))
+...
+x = "0"
+y = ""
+z = "NA"
 ```
 
 To get around the check, we could initialize the dict:
@@ -282,6 +331,8 @@ $ cat -n dna5.py
     24
     25    print(' '.join(counts))
 ```
+
+## Back To Our Program
 
 Now when we check on line 18, we're only going to count bases that we initialized; further, we can then just use the `keys` method to get the bases:
 
